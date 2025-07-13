@@ -194,14 +194,19 @@ export const CodeEditor = () => {
           {/* Me typing animation */}
           {(step === 'typing-me' || step === 'showing-intellisense') && (
             <div className="text-lg mt-16">
-              <span className="syntax-variable">me</span>
-              <span className="syntax-keyword">.</span>
               {step === 'typing-me' && (
                 <TypewriterAnimation
-                  text=""
+                  text="me."
                   delay={150}
                   onComplete={handleMeComplete}
+                  className="syntax-variable"
                 />
+              )}
+              {step === 'showing-intellisense' && (
+                <>
+                  <span className="syntax-variable">me</span>
+                  <span className="syntax-keyword">.</span>
+                </>
               )}
               
               {/* Intellisense tooltips */}
