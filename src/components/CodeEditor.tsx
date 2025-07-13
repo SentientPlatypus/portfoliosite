@@ -108,104 +108,157 @@ export const CodeEditor = () => {
   };
 
   return (
-    <div className="min-h-screen editor-bg text-foreground font-mono relative overflow-hidden">
-      {/* Line numbers */}
-      <div className="absolute left-0 top-0 w-12 h-full border-r border-border bg-muted/10">
-        <div className="text-editor-line-number text-sm p-2 leading-6">
-          <div>1</div>
-          <div>2</div>
-          <div>3</div>
-          <div>4</div>
-          <div>5</div>
+    <div className="min-h-screen bg-background text-foreground font-mono flex flex-col">
+      {/* VS Code Title Bar */}
+      <div className="h-8 bg-[#323233] border-b border-[#2d2d30] flex items-center px-2">
+        <div className="flex items-center space-x-2">
+          <div className="flex space-x-1">
+            <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#27ca3f]"></div>
+          </div>
+          <span className="text-xs text-muted-foreground ml-4">Visual Studio Code</span>
         </div>
       </div>
 
-      {/* Main content area */}
-      <div className="ml-12 p-4 relative">
-        {/* Code declaration line */}
-        <div className="text-lg leading-relaxed">
-          <span className="syntax-keyword">let</span>{' '}
-          <span className="syntax-variable">mut</span>{' '}
-          <span className="syntax-variable">me</span>{' '}
-          <span className="syntax-keyword">=</span>{' '}
-          <span className="syntax-type">Dev</span>
-          <span className="syntax-keyword">{'{'}</span>
-          <span className="syntax-variable">name</span>
-          <span className="syntax-keyword">:</span>{' '}
-          <span className="syntax-type">String</span>
-          <span className="syntax-keyword">::</span>
-          <span className="syntax-method">from</span>
-          <span className="syntax-keyword">(</span>
-          <span className="syntax-string">"Gene"</span>
-          <span className="syntax-keyword">)</span>
-          <span className="syntax-keyword">,</span>{' '}
-          <span className="syntax-variable">age</span>
-          <span className="syntax-keyword">:</span>{' '}
-          <span className="syntax-number">18</span>
-          <span className="syntax-keyword">{'}'}</span>
-          <span className="syntax-keyword">;</span>
+      {/* Menu Bar */}
+      <div className="h-8 bg-[#2d2d30] border-b border-[#2d2d30] flex items-center px-2">
+        <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+          <span className="hover:text-foreground cursor-pointer">File</span>
+          <span className="hover:text-foreground cursor-pointer">Edit</span>
+          <span className="hover:text-foreground cursor-pointer">View</span>
+          <span className="hover:text-foreground cursor-pointer">Go</span>
+          <span className="hover:text-foreground cursor-pointer">Run</span>
+          <span className="hover:text-foreground cursor-pointer">Terminal</span>
+          <span className="hover:text-foreground cursor-pointer">Help</span>
+        </div>
+      </div>
+
+      {/* File Tabs */}
+      <div className="h-9 bg-[#252526] border-b border-border flex items-center">
+        <div className="bg-[#1e1e1e] border-r border-border px-4 py-2 text-sm text-foreground flex items-center space-x-2">
+          <span>me.rs</span>
+          <span className="text-muted-foreground hover:text-foreground cursor-pointer">×</span>
+        </div>
+        <div className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground cursor-pointer">
+          portfolio.ts
+        </div>
+      </div>
+
+      {/* Main Editor Area */}
+      <div className="flex-1 flex">
+        {/* Line numbers */}
+        <div className="w-12 bg-[#1e1e1e] border-r border-border">
+          <div className="text-editor-line-number text-sm p-2 leading-6">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+          </div>
         </div>
 
-        {/* Empty line */}
-        <div className="h-6"></div>
+        {/* Editor Content */}
+        <div className="flex-1 bg-[#1e1e1e] p-4 relative">
+          {/* Code declaration line */}
+          <div className="text-lg leading-relaxed">
+            <span className="syntax-keyword">let</span>{' '}
+            <span className="syntax-variable">mut</span>{' '}
+            <span className="syntax-variable">me</span>{' '}
+            <span className="syntax-keyword">=</span>{' '}
+            <span className="syntax-type">Dev</span>
+            <span className="syntax-keyword">{'{'}</span>
+            <span className="syntax-variable">name</span>
+            <span className="syntax-keyword">:</span>{' '}
+            <span className="syntax-type">String</span>
+            <span className="syntax-keyword">::</span>
+            <span className="syntax-method">from</span>
+            <span className="syntax-keyword">(</span>
+            <span className="syntax-string">"Gene"</span>
+            <span className="syntax-keyword">)</span>
+            <span className="syntax-keyword">,</span>{' '}
+            <span className="syntax-variable">age</span>
+            <span className="syntax-keyword">:</span>{' '}
+            <span className="syntax-number">18</span>
+            <span className="syntax-keyword">{'}'}</span>
+            <span className="syntax-keyword">;</span>
+          </div>
 
-        {/* Code typing animation */}
-        <div 
-          className="absolute text-xl font-bold transition-all duration-700 ease-in-out"
-          style={{
-            left: codePosition.x,
-            top: codePosition.y,
-            transform: codePosition.transform,
-          }}
-        >
-          {step === 'typing-code' && (
-            <TypewriterAnimation
-              text="code"
-              delay={150}
-              onComplete={handleCodeComplete}
-              className="syntax-keyword"
-            />
-          )}
-          {(step === 'moving-code' || step === 'typing-me' || step === 'showing-intellisense') && (
-            <span className="syntax-keyword">code</span>
-          )}
-        </div>
+          {/* Empty line */}
+          <div className="h-6"></div>
 
-        {/* Me typing animation */}
-        {(step === 'typing-me' || step === 'showing-intellisense') && (
-          <div className="text-lg mt-16">
-            <span className="syntax-variable">me</span>
-            <span className="syntax-keyword">.</span>
-            {step === 'typing-me' && (
+          {/* Code typing animation */}
+          <div 
+            className="absolute text-xl font-bold transition-all duration-700 ease-in-out"
+            style={{
+              left: codePosition.x,
+              top: codePosition.y,
+              transform: codePosition.transform,
+            }}
+          >
+            {step === 'typing-code' && (
               <TypewriterAnimation
-                text=""
+                text="code"
                 delay={150}
-                onComplete={handleMeComplete}
+                onComplete={handleCodeComplete}
+                className="syntax-keyword"
               />
             )}
-            
-            {/* Intellisense tooltips */}
-            {showIntellisense && (
-              <div className="relative inline-block">
-                <div className="absolute top-6 left-0 flex z-10">
-                  <Intellisense
-                    options={intellisenseOptions}
-                    onSelectionChange={handleSelectionChange}
-                  />
-                  <IntellisenseContent
-                    content={selectedOption.content}
-                    className="max-w-md"
-                  />
-                </div>
-              </div>
+            {(step === 'moving-code' || step === 'typing-me' || step === 'showing-intellisense') && (
+              <span className="syntax-keyword">code</span>
             )}
           </div>
-        )}
+
+          {/* Me typing animation */}
+          {(step === 'typing-me' || step === 'showing-intellisense') && (
+            <div className="text-lg mt-16">
+              <span className="syntax-variable">me</span>
+              <span className="syntax-keyword">.</span>
+              {step === 'typing-me' && (
+                <TypewriterAnimation
+                  text=""
+                  delay={150}
+                  onComplete={handleMeComplete}
+                />
+              )}
+              
+              {/* Intellisense tooltips */}
+              {showIntellisense && (
+                <div className="relative inline-block">
+                  <div className="absolute top-6 left-0 flex z-10">
+                    <Intellisense
+                      options={intellisenseOptions}
+                      onSelectionChange={handleSelectionChange}
+                    />
+                    <IntellisenseContent
+                      content={selectedOption.content}
+                      className="max-w-md"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* VS Code Status Bar */}
+      <div className="h-6 bg-[#007ACC] flex items-center justify-between px-4 text-xs text-white">
+        <div className="flex items-center space-x-4">
+          <span>Rust</span>
+          <span>UTF-8</span>
+          <span>LF</span>
+          <span>Ln 3, Col 18</span>
+        </div>
+        <div className="flex items-center space-x-4">
+          <span>✓ Prettier</span>
+          <span>⚡ Auto Save</span>
+        </div>
       </div>
 
       {/* Footer with instructions */}
       {showIntellisense && (
-        <div className="absolute bottom-4 left-16 text-sm text-muted-foreground">
+        <div className="absolute bottom-8 left-16 text-sm text-muted-foreground">
           Use ↑↓ arrow keys or click to navigate • Press tab to select
         </div>
       )}
