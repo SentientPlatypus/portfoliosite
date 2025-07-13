@@ -80,20 +80,12 @@ Let's build something amazing together!`
 ];
 
 export const CodeEditor = () => {
-  const [step, setStep] = useState<'typing-code' | 'moving-code' | 'typing-me' | 'showing-intellisense'>('typing-code');
+  const [step, setStep] = useState<'typing-dev' | 'typing-me' | 'showing-intellisense'>('typing-dev');
   const [showIntellisense, setShowIntellisense] = useState(false);
   const [selectedOption, setSelectedOption] = useState(intellisenseOptions[0]);
-  const [codePosition, setCodePosition] = useState({ x: '50%', y: '50%', transform: 'translate(-50%, -50%)' });
 
-  const handleCodeComplete = () => {
-    setStep('moving-code');
-    // Animate to top right
-    setTimeout(() => {
-      setCodePosition({ x: 'calc(100% - 6rem)', y: '2rem', transform: 'translate(0, 0)' });
-      setTimeout(() => {
-        setStep('typing-me');
-      }, 800);
-    }, 100);
+  const handleDevComplete = () => {
+    setStep('typing-me');
   };
 
   const handleMeComplete = () => {
@@ -160,54 +152,44 @@ export const CodeEditor = () => {
 
         {/* Editor Content */}
         <div className="flex-1 bg-[#1e1e1e] p-4 relative">
-          {/* Code declaration line */}
+          {/* Dev declaration typing animation */}
           <div className="text-lg leading-relaxed">
-            <span className="syntax-keyword">let</span>{' '}
-            <span className="syntax-variable">mut</span>{' '}
-            <span className="syntax-variable">me</span>{' '}
-            <span className="syntax-keyword">=</span>{' '}
-            <span className="syntax-type">Dev</span>
-            <span className="syntax-keyword">{'{'}</span>
-            <span className="syntax-variable">name</span>
-            <span className="syntax-keyword">:</span>{' '}
-            <span className="syntax-type">String</span>
-            <span className="syntax-keyword">::</span>
-            <span className="syntax-method">from</span>
-            <span className="syntax-keyword">(</span>
-            <span className="syntax-string">"Gene"</span>
-            <span className="syntax-keyword">)</span>
-            <span className="syntax-keyword">,</span>{' '}
-            <span className="syntax-variable">age</span>
-            <span className="syntax-keyword">:</span>{' '}
-            <span className="syntax-number">18</span>
-            <span className="syntax-keyword">{'}'}</span>
-            <span className="syntax-keyword">;</span>
+            {step === 'typing-dev' && (
+              <TypewriterAnimation
+                text='let mut me = Dev{name: String::from("Gene"), age: 18};'
+                delay={80}
+                onComplete={handleDevComplete}
+                className="syntax-variable"
+              />
+            )}
+            {(step === 'typing-me' || step === 'showing-intellisense') && (
+              <>
+                <span className="syntax-keyword">let</span>{' '}
+                <span className="syntax-variable">mut</span>{' '}
+                <span className="syntax-variable">me</span>{' '}
+                <span className="syntax-keyword">=</span>{' '}
+                <span className="syntax-type">Dev</span>
+                <span className="syntax-keyword">{'{'}</span>
+                <span className="syntax-variable">name</span>
+                <span className="syntax-keyword">:</span>{' '}
+                <span className="syntax-type">String</span>
+                <span className="syntax-keyword">::</span>
+                <span className="syntax-method">from</span>
+                <span className="syntax-keyword">(</span>
+                <span className="syntax-string">"Gene"</span>
+                <span className="syntax-keyword">)</span>
+                <span className="syntax-keyword">,</span>{' '}
+                <span className="syntax-variable">age</span>
+                <span className="syntax-keyword">:</span>{' '}
+                <span className="syntax-number">18</span>
+                <span className="syntax-keyword">{'}'}</span>
+                <span className="syntax-keyword">;</span>
+              </>
+            )}
           </div>
 
           {/* Empty line */}
           <div className="h-6"></div>
-
-          {/* Code typing animation */}
-          <div 
-            className="absolute text-xl font-bold transition-all duration-700 ease-in-out"
-            style={{
-              left: codePosition.x,
-              top: codePosition.y,
-              transform: codePosition.transform,
-            }}
-          >
-            {step === 'typing-code' && (
-              <TypewriterAnimation
-                text="code"
-                delay={150}
-                onComplete={handleCodeComplete}
-                className="syntax-keyword"
-              />
-            )}
-            {(step === 'moving-code' || step === 'typing-me' || step === 'showing-intellisense') && (
-              <span className="syntax-keyword">code</span>
-            )}
-          </div>
 
           {/* Me typing animation */}
           {(step === 'typing-me' || step === 'showing-intellisense') && (
