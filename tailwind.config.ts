@@ -52,6 +52,13 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				'editor-line-number': 'hsl(var(--editor-line-number))',
+				'keyword': 'hsl(var(--keyword))',
+				'string': 'hsl(var(--string))',
+				'variable': 'hsl(var(--variable))',
+				'method': 'hsl(var(--method))',
+				'type': 'hsl(var(--type))',
+				'number': 'hsl(var(--number))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
