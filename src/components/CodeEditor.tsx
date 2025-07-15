@@ -208,27 +208,27 @@ export const CodeEditor = () => {
                 />
               )}
               {step === 'showing-intellisense' && (
-                <>
+                <div className="relative">
                   <span className="syntax-variable">me</span>
                   <span className="text-white">.</span>
                   <span className="syntax-method">
                     {selectedOption.label}()
                   </span>
-                </>
-              )}
-              
-              {/* Intellisense tooltips */}
-              {showIntellisense && (
-                <div className="absolute top-6 left-8 flex z-10">
-                  <Intellisense
-                    options={intellisenseOptions}
-                    onSelectionChange={handleSelectionChange}
-                    onHoverChange={handleHoverChange}
-                  />
-                  <IntellisenseContent
-                    content={selectedOption.content}
-                    className="w-96 h-80"
-                  />
+                  
+                  {/* Intellisense tooltips */}
+                  {showIntellisense && (
+                    <div className="absolute top-6 left-0 flex z-10">
+                      <Intellisense
+                        options={intellisenseOptions}
+                        onSelectionChange={handleSelectionChange}
+                        onHoverChange={handleHoverChange}
+                      />
+                      <IntellisenseContent
+                        content={selectedOption.content}
+                        className="w-96 h-80"
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
