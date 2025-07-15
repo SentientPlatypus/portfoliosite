@@ -58,7 +58,7 @@ export const Intellisense = ({ options, onSelectionChange, onHoverChange, classN
           onMouseEnter={() => onHoverChange?.(option)}
           onMouseLeave={() => onHoverChange?.(null)}
         >
-          <div className="w-4 h-4 bg-accent rounded-sm mr-2 flex items-center justify-center text-xs font-bold">
+          <div className="w-4 h-4 rounded-sm mr-2 flex items-center justify-center text-xs font-bold" style={{ backgroundColor: 'hsl(var(--intellisense-icon))' }}>
             M
           </div>
           {option.label}

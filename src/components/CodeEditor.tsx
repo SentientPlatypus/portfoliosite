@@ -212,8 +212,8 @@ export const CodeEditor = () => {
                   <span className="syntax-variable">me</span>
                   <span className="text-white">.</span>
                   {hoveredOption && (
-                    <span className="text-foreground/60 ml-2 text-sm whitespace-pre-line">
-                      {hoveredOption.content}
+                    <span className="syntax-method">
+                      {hoveredOption.label}()
                     </span>
                   )}
                 </>
