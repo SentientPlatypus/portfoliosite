@@ -83,6 +83,7 @@ export const CodeEditor = () => {
   const [step, setStep] = useState<'typing-dev' | 'typing-me' | 'showing-intellisense'>('typing-dev');
   const [showIntellisense, setShowIntellisense] = useState(false);
   const [selectedOption, setSelectedOption] = useState(intellisenseOptions[0]);
+  const [hoveredOption, setHoveredOption] = useState<typeof intellisenseOptions[0] | null>(null);
 
   const handleDevComplete = () => {
     setStep('typing-me');
@@ -97,6 +98,10 @@ export const CodeEditor = () => {
 
   const handleSelectionChange = (option: typeof intellisenseOptions[0]) => {
     setSelectedOption(option);
+  };
+
+  const handleHoverChange = (option: typeof intellisenseOptions[0] | null) => {
+    setHoveredOption(option);
   };
 
   return (
@@ -206,6 +211,11 @@ export const CodeEditor = () => {
                 <>
                   <span className="syntax-variable">me</span>
                   <span className="text-white">.</span>
+                  {hoveredOption && (
+                    <span className="text-foreground/60 ml-2 text-sm whitespace-pre-line">
+                      {hoveredOption.content}
+                    </span>
+                  )}
                 </>
               )}
               
@@ -216,6 +226,7 @@ export const CodeEditor = () => {
                     <Intellisense
                       options={intellisenseOptions}
                       onSelectionChange={handleSelectionChange}
+                      onHoverChange={handleHoverChange}
                     />
                     <IntellisenseContent
                       content={selectedOption.content}

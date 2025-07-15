@@ -10,10 +10,11 @@ interface IntellisenseOption {
 interface IntellisenseProps {
   options: IntellisenseOption[];
   onSelectionChange?: (option: IntellisenseOption) => void;
+  onHoverChange?: (option: IntellisenseOption | null) => void;
   className?: string;
 }
 
-export const Intellisense = ({ options, onSelectionChange, className }: IntellisenseProps) => {
+export const Intellisense = ({ options, onSelectionChange, onHoverChange, className }: IntellisenseProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
@@ -54,6 +55,8 @@ export const Intellisense = ({ options, onSelectionChange, className }: Intellis
             index === selectedIndex ? 'intellisense-selected' : 'hover:bg-muted/50'
           )}
           onClick={() => handleOptionClick(index)}
+          onMouseEnter={() => onHoverChange?.(option)}
+          onMouseLeave={() => onHoverChange?.(null)}
         >
           <div className="w-4 h-4 bg-accent rounded-sm mr-2 flex items-center justify-center text-xs font-bold">
             M
