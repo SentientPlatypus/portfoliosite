@@ -165,25 +165,25 @@ export const CodeEditor = () => {
             {(step === 'typing-me' || step === 'showing-intellisense') && (
               <>
                 <span className="syntax-keyword">let</span>{' '}
-                <span className="syntax-variable">mut</span>{' '}
+                <span className="syntax-mut">mut</span>{' '}
                 <span className="syntax-variable">me</span>{' '}
-                <span className="syntax-keyword">=</span>{' '}
+                <span className="text-white">=</span>{' '}
                 <span className="syntax-type">Dev</span>
-                <span className="syntax-keyword">{'{'}</span>
+                <span className="text-white">{'{'}</span>
                 <span className="syntax-variable">name</span>
-                <span className="syntax-keyword">:</span>{' '}
+                <span className="text-white">:</span>{' '}
                 <span className="syntax-type">String</span>
-                <span className="syntax-keyword">::</span>
+                <span className="text-white">::</span>
                 <span className="syntax-method">from</span>
-                <span className="syntax-keyword">(</span>
+                <span className="text-white">(</span>
                 <span className="syntax-string">"Gene"</span>
-                <span className="syntax-keyword">)</span>
-                <span className="syntax-keyword">,</span>{' '}
+                <span className="text-white">)</span>
+                <span className="text-white">,</span>{' '}
                 <span className="syntax-variable">age</span>
-                <span className="syntax-keyword">:</span>{' '}
+                <span className="text-white">:</span>{' '}
                 <span className="syntax-number">18</span>
-                <span className="syntax-keyword">{'}'}</span>
-                <span className="syntax-keyword">;</span>
+                <span className="text-white">{'}'}</span>
+                <span className="text-white">;</span>
               </>
             )}
           </div>
@@ -205,7 +205,7 @@ export const CodeEditor = () => {
               {step === 'showing-intellisense' && (
                 <>
                   <span className="syntax-variable">me</span>
-                  <span className="syntax-keyword">.</span>
+                  <span className="text-white">.</span>
                 </>
               )}
               
@@ -219,7 +219,7 @@ export const CodeEditor = () => {
                     />
                     <IntellisenseContent
                       content={selectedOption.content}
-                      className="max-w-md"
+                      className="w-96 h-80"
                     />
                   </div>
                 </div>

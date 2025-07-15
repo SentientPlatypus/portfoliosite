@@ -34,16 +34,17 @@
     --input: 220 13% 28%;
     --ring: 207 100% 68%;
 
-    /* VS Code specific colors */
+    /* VS Code specific colors matching the image */
     --editor-bg: 220 13% 18%;
     --editor-line-number: 220 14% 45%;
-    --keyword: 197 71% 73%;
-    --string: 114 31% 68%;
+    --keyword: 197 100% 75%;  /* Light blue for 'let' */
+    --string: 114 100% 60%;   /* Green for string literals */
     --comment: 220 14% 45%;
-    --variable: 220 14% 71%;
-    --method: 40 100% 50%;
-    --type: 122 39% 49%;
-    --number: 104 65% 65%;
+    --variable: 220 14% 85%;  /* Light text for variables */
+    --method: 60 100% 65%;    /* Yellow-green for methods/types */
+    --type: 60 100% 65%;      /* Yellow-green for Dev, String */
+    --number: 280 100% 75%;   /* Purple-pink for numbers */
+    --mut-keyword: 15 100% 70%; /* Orange-red for 'mut' */
     
     /* Intellisense colors */
     --intellisense-bg: 217 19% 27%;
@@ -123,6 +124,10 @@
 @layer components {
   .syntax-keyword {
     color: hsl(var(--keyword));
+  }
+  
+  .syntax-mut {
+    color: hsl(var(--mut-keyword));
   }
   
   .syntax-string {
