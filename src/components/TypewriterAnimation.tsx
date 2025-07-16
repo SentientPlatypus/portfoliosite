@@ -112,11 +112,52 @@ export const TypewriterAnimation = ({ text, delay = 100, onComplete, className =
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showCursor, setShowCursor] = useState(true);
+  const [pendingClosers, setPendingClosers] = useState<string[]>([]);
+
+  const pairedChars: {[key: string]: string} = {
+    '"': '"',
+    '(': ')',
+    '{': '}',
+    '[': ']'
+  };
 
   useEffect(() => {
     if (currentIndex < text.length) {
       const timeout = setTimeout(() => {
-        setDisplayText(prev => prev + text[currentIndex]);
+        const currentChar = text[currentIndex];
+        
+        // Check if this character is a closing character we need to skip
+        if (pendingClosers.length > 0 && pendingClosers[pendingClosers.length - 1] === currentChar) {
+          // Remove the closer from pending and skip this character
+          setPendingClosers(prev => prev.slice(0, -1));
+          setCurrentIndex(currentIndex + 1);
+          return;
+        }
+        
+        // Check if this is an opening paired character
+        if (pairedChars[currentChar]) {
+          const closingChar = pairedChars[currentChar];
+          // Add both opening and closing characters
+          setDisplayText(prev => prev + currentChar + closingChar);
+          // Add closer to pending list
+          setPendingClosers(prev => [...prev, closingChar]);
+        } else {
+          // Regular character - add it at the correct position
+          if (pendingClosers.length > 0) {
+            // Insert before the last pending closer
+            setDisplayText(prev => {
+              const lastCloserIndex = prev.lastIndexOf(pendingClosers[pendingClosers.length - 1]);
+              if (lastCloserIndex !== -1) {
+                return prev.slice(0, lastCloserIndex) + currentChar + prev.slice(lastCloserIndex);
+              }
+              return prev + currentChar;
+            });
+          } else {
+            // Just append normally
+            setDisplayText(prev => prev + currentChar);
+          }
+        }
+        
         setCurrentIndex(currentIndex + 1);
       }, delay);
 
@@ -127,7 +168,7 @@ export const TypewriterAnimation = ({ text, delay = 100, onComplete, className =
       }, 500);
       return () => clearTimeout(timeout);
     }
-  }, [currentIndex, text, delay, onComplete]);
+  }, [currentIndex, text, delay, onComplete, pendingClosers]);
 
   useEffect(() => {
     const cursorInterval = setInterval(() => {
