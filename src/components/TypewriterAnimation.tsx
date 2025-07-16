@@ -137,25 +137,33 @@ export const TypewriterAnimation = ({ text, delay = 100, onComplete, className =
         // Check if this is an opening paired character
         if (pairedChars[currentChar]) {
           const closingChar = pairedChars[currentChar];
-          // Add both opening and closing characters
-          setDisplayText(prev => prev + currentChar + closingChar);
+          // Insert both opening and closing at the cursor position
+          setDisplayText(prev => {
+            if (pendingClosers.length > 0) {
+              // Find the position just before the last pending closer
+              const lastCloser = pendingClosers[pendingClosers.length - 1];
+              const lastCloserIndex = prev.lastIndexOf(lastCloser);
+              if (lastCloserIndex !== -1) {
+                return prev.slice(0, lastCloserIndex) + currentChar + closingChar + prev.slice(lastCloserIndex);
+              }
+            }
+            return prev + currentChar + closingChar;
+          });
           // Add closer to pending list
           setPendingClosers(prev => [...prev, closingChar]);
         } else {
-          // Regular character - add it at the correct position
-          if (pendingClosers.length > 0) {
-            // Insert before the last pending closer
-            setDisplayText(prev => {
-              const lastCloserIndex = prev.lastIndexOf(pendingClosers[pendingClosers.length - 1]);
+          // Regular character - insert at cursor position (before the most recent closer)
+          setDisplayText(prev => {
+            if (pendingClosers.length > 0) {
+              // Find the position just before the last pending closer
+              const lastCloser = pendingClosers[pendingClosers.length - 1];
+              const lastCloserIndex = prev.lastIndexOf(lastCloser);
               if (lastCloserIndex !== -1) {
                 return prev.slice(0, lastCloserIndex) + currentChar + prev.slice(lastCloserIndex);
               }
-              return prev + currentChar;
-            });
-          } else {
-            // Just append normally
-            setDisplayText(prev => prev + currentChar);
-          }
+            }
+            return prev + currentChar;
+          });
         }
         
         setCurrentIndex(currentIndex + 1);
