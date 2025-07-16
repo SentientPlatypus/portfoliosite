@@ -7,6 +7,18 @@ interface TypewriterAnimationProps {
   className?: string;
 }
 
+const applySyntaxHighlighting = (text: string) => {
+  if (text === 'me.') {
+    return (
+      <>
+        <span className="syntax-variable">me</span>
+        <span className="text-white">.</span>
+      </>
+    );
+  }
+  return <span className="syntax-variable">{text}</span>;
+};
+
 export const TypewriterAnimation = ({ text, delay = 100, onComplete, className = '' }: TypewriterAnimationProps) => {
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,7 +50,7 @@ export const TypewriterAnimation = ({ text, delay = 100, onComplete, className =
 
   return (
     <span className={className}>
-      {displayText}
+      {applySyntaxHighlighting(displayText)}
       <span className={`${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity`}>|</span>
     </span>
   );

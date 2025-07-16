@@ -73,11 +73,31 @@ interface IntellisenseContentProps {
   className?: string;
 }
 
+const parseMarkdown = (text: string) => {
+  const lines = text.split('\n');
+  return lines.map((line, index) => {
+    // Handle H1 (# heading)
+    if (line.startsWith('# ')) {
+      return <h1 key={index} className="text-lg font-bold mb-2">{line.slice(2)}</h1>;
+    }
+    // Handle bullets (•)
+    if (line.startsWith('• ')) {
+      return <div key={index} className="ml-2 mb-1">{line}</div>;
+    }
+    // Handle empty lines
+    if (line.trim() === '') {
+      return <div key={index} className="h-2"></div>;
+    }
+    // Regular text
+    return <div key={index} className="mb-1">{line}</div>;
+  });
+};
+
 export const IntellisenseContent = ({ content, className }: IntellisenseContentProps) => {
   return (
     <div className={cn('intellisense-bg rounded shadow-lg p-3 ml-2', className)}>
-      <div className="text-sm whitespace-pre-line">
-        {content}
+      <div className="text-sm">
+        {parseMarkdown(content)}
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ const intellisenseOptions = [
   {
     id: 'info',
     label: 'info',
-    content: `Hey! I'm Gene
+    content: `# Hey! I'm Gene
 
 A passionate developer who loves creating 
 beautiful and functional web applications.
@@ -217,7 +217,7 @@ export const CodeEditor = () => {
                   
                   {/* Intellisense tooltips */}
                   {showIntellisense && (
-                    <div className="absolute top-6 left-0 flex z-10">
+                    <div className="absolute top-6 left-4 flex z-10">
                       <Intellisense
                         options={intellisenseOptions}
                         onSelectionChange={handleSelectionChange}
@@ -225,7 +225,7 @@ export const CodeEditor = () => {
                       />
                       <IntellisenseContent
                         content={selectedOption.content}
-                        className="w-96 h-80"
+                        className="w-[40vw] min-w-96 h-96"
                       />
                     </div>
                   )}
