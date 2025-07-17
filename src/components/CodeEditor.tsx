@@ -86,9 +86,10 @@ export const CodeEditor = () => {
   const [hoveredOption, setHoveredOption] = useState<typeof intellisenseOptions[0] | null>(null);
 
   const handleDevComplete = () => {
-    // Wait half second before shifting up and starting next animation
+    // Immediately shift up, then wait 500ms before starting next animation
+    setStep('typing-me');
     setTimeout(() => {
-      setStep('typing-me');
+      // Trigger the actual typing of "me." after the shift completes
     }, 500);
   };
 
@@ -202,7 +203,7 @@ export const CodeEditor = () => {
             )}
           </div>
 
-          {/* Me typing animation - appears on next line */}
+          {/* Me typing animation - appears on next line after delay */}
           {(step === 'typing-me' || step === 'showing-intellisense') && (
             <div className="text-lg" style={{ lineHeight: '1.75rem' }}>
               {step === 'typing-me' && (
@@ -211,6 +212,7 @@ export const CodeEditor = () => {
                   delay={150}
                   onComplete={handleMeComplete}
                   className="syntax-variable"
+                  startDelay={500}
                 />
               )}
               {step === 'showing-intellisense' && (
