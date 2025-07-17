@@ -86,7 +86,9 @@ export const CodeEditor = () => {
   const [hoveredOption, setHoveredOption] = useState<typeof intellisenseOptions[0] | null>(null);
 
   const handleDevComplete = () => {
-    setStep('typing-me');
+    setTimeout(() => {
+      setStep('typing-me');
+    }, 500);
   };
 
   const handleMeComplete = () => {
@@ -146,9 +148,9 @@ export const CodeEditor = () => {
       <div className="flex-1 flex">
         {/* Line numbers */}
         <div className="w-12 bg-[#1e1e1e] border-r border-border">
-          <div className="text-editor-line-number text-sm p-2 leading-6">
+          <div className="text-editor-line-number text-sm p-2 leading-relaxed">
             {/* Line numbers transition based on animation step */}
-            <div className={`transition-all duration-300 ${step === 'typing-dev' ? 'mt-[50vh] -translate-y-6' : ''}`}>
+            <div className={`transition-all duration-300 ${step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''}`}>
               1
             </div>
             {(step === 'typing-me' || step === 'showing-intellisense') && (
@@ -163,7 +165,7 @@ export const CodeEditor = () => {
         <div className="flex-1 bg-[#1e1e1e] p-4 relative">
           {/* Dev declaration typing animation - starts in middle of screen */}
           <div className={`text-lg leading-relaxed transition-all duration-300 ${
-            step === 'typing-dev' ? 'mt-[50vh] -translate-y-6' : ''
+            step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''
           }`}>
             {step === 'typing-dev' && (
               <TypewriterAnimation
