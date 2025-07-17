@@ -86,9 +86,10 @@ export const CodeEditor = () => {
   const [hoveredOption, setHoveredOption] = useState<typeof intellisenseOptions[0] | null>(null);
 
   const handleDevComplete = () => {
-    // Wait 500ms for slide up animation to complete, then start typing "me."
+    // Immediately shift up, then wait 500ms before starting next animation
+    setStep('typing-me');
     setTimeout(() => {
-      setStep('typing-me');
+      // Trigger the actual typing of "me." after the shift completes
     }, 500);
   };
 
@@ -151,7 +152,7 @@ export const CodeEditor = () => {
         <div className="w-12 bg-[#1e1e1e] border-r border-border">
           <div className="text-editor-line-number text-sm p-2" style={{ lineHeight: '1.75rem' }}>
             {/* Line numbers transition based on animation step */}
-            <div className={`transition-all duration-500 ${step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''}`}>
+            <div className={`transition-all duration-300 ${step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''}`}>
               1
             </div>
             {(step === 'typing-me' || step === 'showing-intellisense') && (
@@ -165,7 +166,7 @@ export const CodeEditor = () => {
         {/* Editor Content */}
         <div className="flex-1 bg-[#1e1e1e] p-4 relative">
           {/* Dev declaration typing animation - starts in middle of screen */}
-          <div className={`text-lg transition-all duration-500 ${
+          <div className={`text-lg transition-all duration-300 ${
             step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''
           }`} style={{ lineHeight: '1.75rem' }}>
             {step === 'typing-dev' && (
@@ -211,6 +212,7 @@ export const CodeEditor = () => {
                   delay={150}
                   onComplete={handleMeComplete}
                   className="syntax-variable"
+                  startDelay={500}
                 />
               )}
               {step === 'showing-intellisense' && (
