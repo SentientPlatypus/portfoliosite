@@ -86,6 +86,7 @@ export const CodeEditor = () => {
   const [hoveredOption, setHoveredOption] = useState<typeof intellisenseOptions[0] | null>(null);
 
   const handleDevComplete = () => {
+    // Wait half second before shifting up and starting next animation
     setTimeout(() => {
       setStep('typing-me');
     }, 500);
@@ -148,7 +149,7 @@ export const CodeEditor = () => {
       <div className="flex-1 flex">
         {/* Line numbers */}
         <div className="w-12 bg-[#1e1e1e] border-r border-border">
-          <div className="text-editor-line-number text-sm p-2 leading-relaxed">
+          <div className="text-editor-line-number text-sm p-2" style={{ lineHeight: '1.75rem' }}>
             {/* Line numbers transition based on animation step */}
             <div className={`transition-all duration-300 ${step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''}`}>
               1
@@ -164,9 +165,9 @@ export const CodeEditor = () => {
         {/* Editor Content */}
         <div className="flex-1 bg-[#1e1e1e] p-4 relative">
           {/* Dev declaration typing animation - starts in middle of screen */}
-          <div className={`text-lg leading-relaxed transition-all duration-300 ${
+          <div className={`text-lg transition-all duration-300 ${
             step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''
-          }`}>
+          }`} style={{ lineHeight: '1.75rem' }}>
             {step === 'typing-dev' && (
               <TypewriterAnimation
                 text='let mut me = Dev{name: String::from("Gene"), age: 18};'
@@ -203,7 +204,7 @@ export const CodeEditor = () => {
 
           {/* Me typing animation - appears on next line */}
           {(step === 'typing-me' || step === 'showing-intellisense') && (
-            <div className="text-lg leading-relaxed">
+            <div className="text-lg" style={{ lineHeight: '1.75rem' }}>
               {step === 'typing-me' && (
                 <TypewriterAnimation
                   text="me."
