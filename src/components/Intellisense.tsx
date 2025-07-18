@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 interface IntellisenseOption {
   id: string;
   label: string;
-  content: string;
+  content: string | React.ReactNode;
 }
 
 interface IntellisenseProps {
@@ -69,7 +69,7 @@ export const Intellisense = ({ options, onSelectionChange, onHoverChange, classN
 };
 
 interface IntellisenseContentProps {
-  content: string;
+  content: string | React.ReactNode;
   className?: string;
 }
 
@@ -97,7 +97,7 @@ export const IntellisenseContent = ({ content, className }: IntellisenseContentP
   return (
     <div className={cn('intellisense-bg rounded shadow-lg p-3 ml-2', className)}>
       <div className="text-sm">
-        {parseMarkdown(content)}
+        {typeof content === 'string' ? parseMarkdown(content) : content}
       </div>
     </div>
   );

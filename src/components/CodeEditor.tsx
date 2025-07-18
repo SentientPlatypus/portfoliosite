@@ -1,22 +1,13 @@
 import { useState, useEffect } from 'react';
 import { TypewriterAnimation } from './TypewriterAnimation';
 import { Intellisense, IntellisenseContent } from './Intellisense';
+import { InteractiveInfo } from './InteractiveWidgets';
 
 const intellisenseOptions = [
   {
     id: 'info',
     label: 'info',
-    content: `# Hey! I'm Gene
-
-A passionate developer who loves creating 
-beautiful and functional web applications.
-
-I specialize in React, TypeScript, and 
-modern web technologies.
-
-When I'm not coding, you can find me 
-exploring new technologies or contributing 
-to open-source projects.`
+    content: <InteractiveInfo />
   },
   {
     id: 'work',
@@ -89,7 +80,7 @@ export const CodeEditor = () => {
     // Immediately shift up, then wait 500ms before starting next animation
     setStep('typing-me');
     setTimeout(() => {
-      // Trigger the actual typing of "me." after the shift completes
+      setStep('typing-me');
     }, 500);
   };
 
@@ -212,7 +203,6 @@ export const CodeEditor = () => {
                   delay={150}
                   onComplete={handleMeComplete}
                   className="syntax-variable"
-                  startDelay={500}
                 />
               )}
               {step === 'showing-intellisense' && (
