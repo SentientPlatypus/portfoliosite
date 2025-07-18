@@ -223,7 +223,7 @@ export const CodeEditor = () => {
                       />
                       <IntellisenseContent
                         content={selectedOption.content}
-                        className="w-[70vw] min-w-96 h-[80vh]"
+                        className="w-[60vw] min-w-96 max-h-[calc(100vh-300px)] overflow-y-auto"
                       />
                     </div>
                   )}
