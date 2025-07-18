@@ -11,25 +11,25 @@ interface WidgetProps {
 }
 
 const Widget = ({ icon, title, description, isClickable = true, onClick, children }: WidgetProps) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div
-      className={`relative p-3 rounded-lg border border-border bg-card/50 backdrop-blur-sm transition-all duration-200 ${
-        isClickable ? 'cursor-pointer hover:bg-card/80 hover:scale-105' : 'cursor-default hover:bg-card/70'
-      }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={`p-3 rounded-lg border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 ${
+        isClickable ? 'cursor-pointer hover:bg-card/80' : 'cursor-default hover:bg-card/70'
+      } ${isExpanded ? 'col-span-2' : ''}`}
+      onMouseEnter={() => setIsExpanded(true)}
+      onMouseLeave={() => setIsExpanded(false)}
       onClick={isClickable ? onClick : undefined}
     >
       <div className="flex items-center space-x-2 mb-1">
         <div className="text-primary">{icon}</div>
         <span className="text-sm font-medium text-foreground">{title}</span>
       </div>
-      <p className="text-xs text-muted-foreground">{description}</p>
+      <p className="text-xs text-muted-foreground mb-2">{description}</p>
       
-      {isHovered && children && (
-        <div className="absolute top-full left-0 mt-2 p-3 bg-popover border border-border rounded-lg shadow-lg z-10 min-w-64">
+      {isExpanded && children && (
+        <div className="mt-3 pt-3 border-t border-border animate-fade-in">
           {children}
         </div>
       )}
@@ -46,19 +46,33 @@ const SpotifyWidget = () => {
     <Widget
       icon={<Music className="w-4 h-4" />}
       title="Spotify"
-      description="Currently listening to Lo-Fi Hip Hop"
+      description="🎵 Currently Playing"
       onClick={handleClick}
     >
-      <div className="space-y-2">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded"></div>
-          <div>
-            <p className="text-sm font-medium">Lo-Fi Study Beats</p>
-            <p className="text-xs text-muted-foreground">Chill Playlist</p>
+      <div className="space-y-3">
+        <div className="flex items-center space-x-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
+            <Music className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium">Lofi Study Mix</p>
+            <p className="text-xs text-muted-foreground">ChilledCow</p>
+            <p className="text-xs text-green-500">• Live</p>
           </div>
         </div>
-        <div className="w-full bg-muted h-1 rounded">
-          <div className="bg-green-500 h-1 rounded w-1/3"></div>
+        <div className="space-y-1">
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>2:34</span>
+            <span>3:45</span>
+          </div>
+          <div className="w-full bg-muted h-1 rounded overflow-hidden">
+            <div className="bg-green-500 h-1 rounded w-3/5 animate-pulse"></div>
+          </div>
+        </div>
+        <div className="flex items-center justify-center space-x-4 text-muted-foreground">
+          <button className="hover:text-foreground">⏮</button>
+          <button className="hover:text-foreground text-lg">⏸</button>
+          <button className="hover:text-foreground">⏭</button>
         </div>
       </div>
     </Widget>
@@ -95,40 +109,83 @@ const GitHubWidget = () => {
     window.open('https://github.com/gene', '_blank');
   };
 
-  const commitData = [
-    { day: 'Mon', commits: 3 },
-    { day: 'Tue', commits: 7 },
-    { day: 'Wed', commits: 2 },
-    { day: 'Thu', commits: 5 },
-    { day: 'Fri', commits: 8 },
-    { day: 'Sat', commits: 1 },
-    { day: 'Sun', commits: 4 },
-  ];
+  // Generate a realistic commit pattern for the last 12 weeks
+  const generateCommitData = () => {
+    const weeks = [];
+    const today = new Date();
+    
+    for (let week = 11; week >= 0; week--) {
+      const weekData = [];
+      for (let day = 0; day < 7; day++) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - (week * 7 + (6 - day)));
+        
+        // Simulate realistic commit patterns (more on weekdays, less on weekends)
+        let commits = 0;
+        if (day >= 1 && day <= 5) { // Monday to Friday
+          commits = Math.floor(Math.random() * 8); // 0-7 commits
+        } else { // Weekend
+          commits = Math.floor(Math.random() * 3); // 0-2 commits
+        }
+        
+        weekData.push({
+          date: date.toISOString().split('T')[0],
+          count: commits,
+          level: commits === 0 ? 0 : commits <= 2 ? 1 : commits <= 4 ? 2 : commits <= 6 ? 3 : 4
+        });
+      }
+      weeks.push(weekData);
+    }
+    return weeks;
+  };
+
+  const commitWeeks = generateCommitData();
+  const totalCommits = commitWeeks.flat().reduce((sum, day) => sum + day.count, 0);
+
+  const getIntensityColor = (level: number) => {
+    const colors = [
+      'bg-muted', // 0 commits
+      'bg-green-200', // 1-2 commits
+      'bg-green-400', // 3-4 commits  
+      'bg-green-600', // 5-6 commits
+      'bg-green-800'  // 7+ commits
+    ];
+    return colors[level];
+  };
 
   return (
     <Widget
       icon={<Github className="w-4 h-4" />}
       title="GitHub"
-      description="42 commits this week"
+      description={`${totalCommits} contributions in last 12 weeks`}
       onClick={handleClick}
     >
       <div className="space-y-2">
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium">Contribution Activity</span>
-          <span className="text-xs text-muted-foreground">This week</span>
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">12 weeks ago</span>
+          <span className="text-muted-foreground">Today</span>
         </div>
-        <div className="flex space-x-1">
-          {commitData.map((data, index) => (
-            <div key={index} className="text-center">
-              <div
-                className="w-6 h-6 rounded bg-green-500/20 border border-green-500/40 mb-1"
-                style={{
-                  backgroundColor: `hsl(142 76% 36% / ${Math.min(data.commits / 10, 1)})`,
-                }}
-              ></div>
-              <span className="text-xs text-muted-foreground">{data.day.charAt(0)}</span>
+        <div className="grid grid-cols-12 gap-0.5">
+          {commitWeeks.map((week, weekIndex) => (
+            <div key={weekIndex} className="grid grid-rows-7 gap-0.5">
+              {week.map((day, dayIndex) => (
+                <div
+                  key={dayIndex}
+                  className={`w-2 h-2 rounded-sm ${getIntensityColor(day.level)}`}
+                  title={`${day.count} commits on ${day.date}`}
+                />
+              ))}
             </div>
           ))}
+        </div>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>Less</span>
+          <div className="flex space-x-0.5">
+            {[0, 1, 2, 3, 4].map(level => (
+              <div key={level} className={`w-2 h-2 rounded-sm ${getIntensityColor(level)}`} />
+            ))}
+          </div>
+          <span>More</span>
         </div>
       </div>
     </Widget>
@@ -211,7 +268,7 @@ export const InteractiveInfo = () => {
         </p>
       </div>
       
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3">
         <SpotifyWidget />
         <YouTubeWidget />
         <GitHubWidget />
