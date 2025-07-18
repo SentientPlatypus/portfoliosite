@@ -8,19 +8,36 @@ interface WidgetProps {
   isClickable?: boolean;
   onClick?: () => void;
   children?: React.ReactNode;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
-const Widget = ({ icon, title, description, isClickable = true, onClick, children }: WidgetProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const Widget = ({ icon, title, description, isClickable = true, onClick, children, isExpanded, onToggleExpand }: WidgetProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleClick = () => {
+    if (onToggleExpand) {
+      onToggleExpand();
+    }
+    if (onClick && isClickable) {
+      onClick();
+    }
+  };
 
   return (
     <div
-      className={`p-3 rounded-lg border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 ${
-        isClickable ? 'cursor-pointer hover:bg-card/80' : 'cursor-default hover:bg-card/70'
-      } ${isExpanded ? 'col-span-2' : ''}`}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
-      onClick={isClickable ? onClick : undefined}
+      className={`p-3 rounded-lg border transition-all duration-200 ${
+        isHovered 
+          ? 'border-primary/50 bg-card/80 shadow-md' 
+          : 'border-border bg-card/50'
+      } ${
+        isExpanded ? 'col-span-2' : ''
+      } ${
+        isClickable || onToggleExpand ? 'cursor-pointer' : 'cursor-default'
+      }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
     >
       <div className="flex items-center space-x-2 mb-1">
         <div className="text-primary">{icon}</div>
@@ -37,8 +54,9 @@ const Widget = ({ icon, title, description, isClickable = true, onClick, childre
   );
 };
 
-const SpotifyWidget = () => {
-  const handleClick = () => {
+const SpotifyWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onToggleExpand: () => void }) => {
+  const handleExternalClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     window.open('https://open.spotify.com/user/gene', '_blank');
   };
 
@@ -47,7 +65,8 @@ const SpotifyWidget = () => {
       icon={<Music className="w-4 h-4" />}
       title="Spotify"
       description="🎵 Currently Playing"
-      onClick={handleClick}
+      isExpanded={isExpanded}
+      onToggleExpand={onToggleExpand}
     >
       <div className="space-y-3">
         <div className="flex items-center space-x-3">
@@ -70,17 +89,16 @@ const SpotifyWidget = () => {
           </div>
         </div>
         <div className="flex items-center justify-center space-x-4 text-muted-foreground">
-          <button className="hover:text-foreground">⏮</button>
-          <button className="hover:text-foreground text-lg">⏸</button>
-          <button className="hover:text-foreground">⏭</button>
+          <button className="hover:text-foreground" onClick={handleExternalClick}>Open Spotify</button>
         </div>
       </div>
     </Widget>
   );
 };
 
-const YouTubeWidget = () => {
-  const handleClick = () => {
+const YouTubeWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onToggleExpand: () => void }) => {
+  const handleExternalClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     window.open('https://youtube.com/@gene', '_blank');
   };
 
@@ -89,7 +107,8 @@ const YouTubeWidget = () => {
       icon={<Play className="w-4 h-4" />}
       title="YouTube"
       description="Latest: Building a React Portfolio"
-      onClick={handleClick}
+      isExpanded={isExpanded}
+      onToggleExpand={onToggleExpand}
     >
       <div className="space-y-2">
         <div className="aspect-video bg-gradient-to-br from-red-400 to-red-600 rounded flex items-center justify-center">
@@ -98,14 +117,21 @@ const YouTubeWidget = () => {
         <div>
           <p className="text-sm font-medium">Building a React Portfolio</p>
           <p className="text-xs text-muted-foreground">23K views • 2 days ago</p>
+          <button 
+            className="mt-2 text-xs text-red-500 hover:text-red-400" 
+            onClick={handleExternalClick}
+          >
+            View on YouTube
+          </button>
         </div>
       </div>
     </Widget>
   );
 };
 
-const GitHubWidget = () => {
-  const handleClick = () => {
+const GitHubWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onToggleExpand: () => void }) => {
+  const handleExternalClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     window.open('https://github.com/gene', '_blank');
   };
 
@@ -158,7 +184,8 @@ const GitHubWidget = () => {
       icon={<Github className="w-4 h-4" />}
       title="GitHub"
       description={`${totalCommits} contributions in last 12 weeks`}
-      onClick={handleClick}
+      isExpanded={isExpanded}
+      onToggleExpand={onToggleExpand}
     >
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs">
@@ -187,13 +214,20 @@ const GitHubWidget = () => {
           </div>
           <span>More</span>
         </div>
+        <button 
+          className="mt-2 text-xs text-foreground hover:text-primary" 
+          onClick={handleExternalClick}
+        >
+          View GitHub Profile
+        </button>
       </div>
     </Widget>
   );
 };
 
-const LeetCodeWidget = () => {
-  const handleClick = () => {
+const LeetCodeWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onToggleExpand: () => void }) => {
+  const handleExternalClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     window.open('https://leetcode.com/gene', '_blank');
   };
 
@@ -202,7 +236,8 @@ const LeetCodeWidget = () => {
       icon={<Trophy className="w-4 h-4" />}
       title="LeetCode"
       description="Daily streak: 25 days"
-      onClick={handleClick}
+      isExpanded={isExpanded}
+      onToggleExpand={onToggleExpand}
     >
       <div className="space-y-2">
         <div className="grid grid-cols-3 gap-2 text-center">
@@ -222,18 +257,26 @@ const LeetCodeWidget = () => {
         <div className="text-xs text-muted-foreground text-center">
           Rank: 234,567 • Rating: 1,842
         </div>
+        <button 
+          className="mt-2 text-xs text-foreground hover:text-primary" 
+          onClick={handleExternalClick}
+        >
+          View LeetCode Profile
+        </button>
       </div>
     </Widget>
   );
 };
 
-const ClashRoyaleWidget = () => {
+const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onToggleExpand: () => void }) => {
   return (
     <Widget
       icon={<Swords className="w-4 h-4" />}
       title="Clash Royale"
       description="Arena 15 • King Level 14"
       isClickable={false}
+      isExpanded={isExpanded}
+      onToggleExpand={onToggleExpand}
     >
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -259,6 +302,12 @@ const ClashRoyaleWidget = () => {
 };
 
 export const InteractiveInfo = () => {
+  const [expandedWidget, setExpandedWidget] = useState<string | null>(null);
+
+  const toggleWidget = (widgetId: string) => {
+    setExpandedWidget(expandedWidget === widgetId ? null : widgetId);
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -268,12 +317,27 @@ export const InteractiveInfo = () => {
         </p>
       </div>
       
-      <div className="grid grid-cols-1 gap-3">
-        <SpotifyWidget />
-        <YouTubeWidget />
-        <GitHubWidget />
-        <LeetCodeWidget />
-        <ClashRoyaleWidget />
+      <div className="grid grid-cols-2 gap-3">
+        <SpotifyWidget 
+          isExpanded={expandedWidget === 'spotify'} 
+          onToggleExpand={() => toggleWidget('spotify')} 
+        />
+        <YouTubeWidget 
+          isExpanded={expandedWidget === 'youtube'} 
+          onToggleExpand={() => toggleWidget('youtube')} 
+        />
+        <GitHubWidget 
+          isExpanded={expandedWidget === 'github'} 
+          onToggleExpand={() => toggleWidget('github')} 
+        />
+        <LeetCodeWidget 
+          isExpanded={expandedWidget === 'leetcode'} 
+          onToggleExpand={() => toggleWidget('leetcode')} 
+        />
+        <ClashRoyaleWidget 
+          isExpanded={expandedWidget === 'clash'} 
+          onToggleExpand={() => toggleWidget('clash')} 
+        />
       </div>
     </div>
   );
