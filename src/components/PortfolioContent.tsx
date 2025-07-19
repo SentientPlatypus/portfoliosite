@@ -64,36 +64,36 @@ const projects = [
   }
 ];
 
-const Portfolio = () => {
+export const PortfolioContent = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">My Projects</h1>
-          <p className="text-xl text-muted-foreground">
+    <div className="p-4 h-full overflow-y-auto">
+      <div className="max-w-4xl">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold mb-2">My Projects</h1>
+          <p className="text-muted-foreground">
             A collection of projects showcasing my development skills
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {projects.map((project) => (
             <Card key={project.id} className="hover:shadow-lg transition-shadow duration-200">
-              <CardHeader>
+              <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <Badge variant={project.status === 'completed' ? 'default' : 'secondary'}>
                     {project.status === 'completed' ? 'Completed' : 'In Progress'}
                   </Badge>
                   <div className="flex items-center text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4 mr-1" />
+                    <Calendar className="w-3 h-3 mr-1" />
                     {project.date}
                   </div>
                 </div>
-                <CardTitle className="text-xl">{project.title}</CardTitle>
-                <CardDescription>{project.description}</CardDescription>
+                <CardTitle className="text-lg">{project.title}</CardTitle>
+                <CardDescription className="text-sm">{project.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex flex-wrap gap-2">
+                <div className="space-y-3">
+                  <div className="flex flex-wrap gap-1">
                     {project.technologies.map((tech) => (
                       <Badge key={tech} variant="outline" className="text-xs">
                         {tech}
@@ -104,14 +104,14 @@ const Portfolio = () => {
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" asChild>
                       <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                        <Github className="w-4 h-4 mr-2" />
+                        <Github className="w-3 h-3 mr-1" />
                         Code
                       </a>
                     </Button>
                     {project.liveUrl && (
                       <Button size="sm" asChild>
                         <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="w-4 h-4 mr-2" />
+                          <ExternalLink className="w-3 h-3 mr-1" />
                           Live Demo
                         </a>
                       </Button>
@@ -126,5 +126,3 @@ const Portfolio = () => {
     </div>
   );
 };
-
-export default Portfolio;

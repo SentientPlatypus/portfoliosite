@@ -3,6 +3,7 @@ import { TypewriterAnimation } from './TypewriterAnimation';
 import { Intellisense, IntellisenseContent } from './Intellisense';
 import { InteractiveInfo } from './InteractiveWidgets';
 import { ProjectsError } from './ProjectsError';
+import { PortfolioContent } from './PortfolioContent';
 
 const intellisenseOptions = [
   {
@@ -50,11 +51,6 @@ Python, AWS, Docker`
   - Outdoor enthusiast`
   },
   {
-    id: 'projects',
-    label: 'projects',
-    content: <ProjectsError />
-  },
-  {
     id: 'contact',
     label: 'contact',
     content: `Get In Touch
@@ -81,6 +77,27 @@ export const CodeEditor = () => {
   const [showIntellisense, setShowIntellisense] = useState(false);
   const [selectedOption, setSelectedOption] = useState(intellisenseOptions[0]);
   const [hoveredOption, setHoveredOption] = useState<typeof intellisenseOptions[0] | null>(null);
+  const [activeTab, setActiveTab] = useState<'me.rs' | 'portfolio.ts'>('me.rs');
+  const [artifactsGenerated, setArtifactsGenerated] = useState(false);
+
+  const intellisenseOptionsWithProjects = [
+    ...intellisenseOptions.slice(0, -1), // All except contact
+    {
+      id: 'projects',
+      label: 'projects',
+      content: (
+        <ProjectsError 
+          onGenerateArtifacts={() => {
+            setArtifactsGenerated(true);
+            setActiveTab('portfolio.ts');
+          }}
+          artifactsGenerated={artifactsGenerated}
+          onGoToPortfolio={() => setActiveTab('portfolio.ts')}
+        />
+      )
+    },
+    intellisenseOptions[intellisenseOptions.length - 1] // contact
+  ];
 
   const handleDevComplete = () => {
     // Immediately shift up, then wait 500ms before starting next animation
@@ -97,11 +114,11 @@ export const CodeEditor = () => {
     }, 300);
   };
 
-  const handleSelectionChange = (option: typeof intellisenseOptions[0]) => {
+  const handleSelectionChange = (option: typeof intellisenseOptionsWithProjects[0]) => {
     setSelectedOption(option);
   };
 
-  const handleHoverChange = (option: typeof intellisenseOptions[0] | null) => {
+  const handleHoverChange = (option: typeof intellisenseOptionsWithProjects[0] | null) => {
     setHoveredOption(option);
   };
 
@@ -134,13 +151,26 @@ export const CodeEditor = () => {
 
       {/* File Tabs */}
       <div className="h-9 bg-[#252526] border-b border-border flex items-center">
-        <div className="bg-[#1e1e1e] border-r border-border px-4 py-2 text-sm text-foreground flex items-center space-x-2">
+        <div 
+          className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors ${
+            activeTab === 'me.rs' ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => setActiveTab('me.rs')}
+        >
           <span>me.rs</span>
           <span className="text-muted-foreground hover:text-foreground cursor-pointer">×</span>
         </div>
-        <div className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground cursor-pointer">
-          portfolio.ts
-        </div>
+        {artifactsGenerated && (
+          <div 
+            className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors ${
+              activeTab === 'portfolio.ts' ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
+            }`}
+            onClick={() => setActiveTab('portfolio.ts')}
+          >
+            <span>portfolio.ts</span>
+            <span className="text-muted-foreground hover:text-foreground cursor-pointer">×</span>
+          </div>
+        )}
       </div>
 
       {/* Main Editor Area */}
@@ -162,80 +192,86 @@ export const CodeEditor = () => {
 
         {/* Editor Content */}
         <div className="flex-1 bg-[#1e1e1e] p-4 relative">
-          {/* Dev declaration typing animation - starts in middle of screen */}
-          <div className={`text-lg transition-all duration-300 ${
-            step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''
-          }`} style={{ lineHeight: '1.75rem' }}>
-            {step === 'typing-dev' && (
-              <TypewriterAnimation
-                text='let mut me = Dev{name: String::from("Gene"), age: 18};'
-                delay={80}
-                onComplete={handleDevComplete}
-                className="syntax-variable"
-              />
-            )}
-            {(step === 'typing-me' || step === 'showing-intellisense') && (
-              <>
-                <span className="syntax-keyword">let</span>{' '}
-                <span className="syntax-mut">mut</span>{' '}
-                <span className="syntax-variable">me</span>{' '}
-                <span className="text-white">=</span>{' '}
-                <span className="syntax-type">Dev</span>
-                <span className="text-white">{'{'}</span>
-                <span className="syntax-variable">name</span>
-                <span className="text-white">:</span>{' '}
-                <span className="syntax-type">String</span>
-                <span className="text-white">::</span>
-                <span className="syntax-method">from</span>
-                <span className="text-white">(</span>
-                <span className="syntax-string">"Gene"</span>
-                <span className="text-white">)</span>
-                <span className="text-white">,</span>{' '}
-                <span className="syntax-variable">age</span>
-                <span className="text-white">:</span>{' '}
-                <span className="syntax-number">18</span>
-                <span className="text-white">{'}'}</span>
-                <span className="text-white">;</span>
-              </>
-            )}
-          </div>
+          {activeTab === 'me.rs' ? (
+            <>
+              {/* Dev declaration typing animation - starts in middle of screen */}
+              <div className={`text-lg transition-all duration-300 ${
+                step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''
+              }`} style={{ lineHeight: '1.75rem' }}>
+                {step === 'typing-dev' && (
+                  <TypewriterAnimation
+                    text='let mut me = Dev{name: String::from("Gene"), age: 18};'
+                    delay={80}
+                    onComplete={handleDevComplete}
+                    className="syntax-variable"
+                  />
+                )}
+                {(step === 'typing-me' || step === 'showing-intellisense') && (
+                  <>
+                    <span className="syntax-keyword">let</span>{' '}
+                    <span className="syntax-mut">mut</span>{' '}
+                    <span className="syntax-variable">me</span>{' '}
+                    <span className="text-white">=</span>{' '}
+                    <span className="syntax-type">Dev</span>
+                    <span className="text-white">{'{'}</span>
+                    <span className="syntax-variable">name</span>
+                    <span className="text-white">:</span>{' '}
+                    <span className="syntax-type">String</span>
+                    <span className="text-white">::</span>
+                    <span className="syntax-method">from</span>
+                    <span className="text-white">(</span>
+                    <span className="syntax-string">"Gene"</span>
+                    <span className="text-white">)</span>
+                    <span className="text-white">,</span>{' '}
+                    <span className="syntax-variable">age</span>
+                    <span className="text-white">:</span>{' '}
+                    <span className="syntax-number">18</span>
+                    <span className="text-white">{'}'}</span>
+                    <span className="text-white">;</span>
+                  </>
+                )}
+              </div>
 
-          {/* Me typing animation - appears on next line after delay */}
-          {(step === 'typing-me' || step === 'showing-intellisense') && (
-            <div className="text-lg" style={{ lineHeight: '1.75rem' }}>
-              {step === 'typing-me' && (
-                <TypewriterAnimation
-                  text="me."
-                  delay={150}
-                  onComplete={handleMeComplete}
-                  className="syntax-variable"
-                />
-              )}
-              {step === 'showing-intellisense' && (
-                <div className="relative">
-                  <span className="syntax-variable">me</span>
-                  <span className="text-white">.</span>
-                  <span className="syntax-method">
-                    {selectedOption.label}()
-                  </span>
-                  
-                  {/* Intellisense tooltips */}
-                  {showIntellisense && (
-                    <div className="absolute top-6 left-4 flex z-10">
-                      <Intellisense
-                        options={intellisenseOptions}
-                        onSelectionChange={handleSelectionChange}
-                        onHoverChange={handleHoverChange}
-                      />
-                      <IntellisenseContent
-                        content={selectedOption.content}
-                        className="w-[60vw] min-w-96 max-h-[calc(100vh-300px)] overflow-y-auto"
-                      />
+              {/* Me typing animation - appears on next line after delay */}
+              {(step === 'typing-me' || step === 'showing-intellisense') && (
+                <div className="text-lg" style={{ lineHeight: '1.75rem' }}>
+                  {step === 'typing-me' && (
+                    <TypewriterAnimation
+                      text="me."
+                      delay={150}
+                      onComplete={handleMeComplete}
+                      className="syntax-variable"
+                    />
+                  )}
+                  {step === 'showing-intellisense' && (
+                    <div className="relative">
+                      <span className="syntax-variable">me</span>
+                      <span className="text-white">.</span>
+                      <span className="syntax-method">
+                        {selectedOption.label}()
+                      </span>
+                      
+                      {/* Intellisense tooltips */}
+                      {showIntellisense && (
+                        <div className="absolute top-6 left-4 flex z-10">
+                          <Intellisense
+                            options={intellisenseOptionsWithProjects}
+                            onSelectionChange={handleSelectionChange}
+                            onHoverChange={handleHoverChange}
+                          />
+                          <IntellisenseContent
+                            content={selectedOption.content}
+                            className="w-[60vw] min-w-96 max-h-[calc(100vh-300px)] overflow-y-auto"
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
               )}
-            </div>
+            </>
+          ) : (
+            <PortfolioContent />
           )}
         </div>
       </div>

@@ -1,20 +1,54 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 
-export const ProjectsError = () => {
+interface ProjectsErrorProps {
+  onGenerateArtifacts: () => void;
+  artifactsGenerated: boolean;
+  onGoToPortfolio: () => void;
+}
+
+export const ProjectsError = ({ onGenerateArtifacts, artifactsGenerated, onGoToPortfolio }: ProjectsErrorProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleGenerateArtifacts = () => {
     setIsLoading(true);
     
     // Simulate loading for 0.5 seconds
     setTimeout(() => {
-      navigate('/portfolio');
+      onGenerateArtifacts();
+      setIsLoading(false);
     }, 500);
   };
+
+  if (artifactsGenerated) {
+    return (
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold mb-2">Projects</h2>
+          <div className="bg-card/50 border border-border rounded-lg p-4">
+            <div className="space-y-3">
+              <div className="text-sm">
+                <div className="text-muted-foreground">I've been sorta busy...</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Working on some cool projects lately 🚀
+                </div>
+              </div>
+              
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onGoToPortfolio}
+                className="border-primary/50 text-primary hover:bg-primary/10"
+              >
+                take me to portfolio
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
