@@ -46,7 +46,7 @@ const Widget = ({ icon, title, description, isClickable = true, onClick, childre
       <p className="text-xs text-muted-foreground mb-2">{description}</p>
       
       {isExpanded && children && (
-        <div className="mt-3 pt-3 border-t border-border animate-fade-in">
+        <div className="mt-3 pt-3 border-t border-border animate-scale-in">
           {children}
         </div>
       )}

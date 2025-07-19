@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { TypewriterAnimation } from './TypewriterAnimation';
 import { Intellisense, IntellisenseContent } from './Intellisense';
 import { InteractiveInfo } from './InteractiveWidgets';
+import { ProjectsError } from './ProjectsError';
 
 const intellisenseOptions = [
   {
@@ -47,6 +48,11 @@ Python, AWS, Docker`
 🏃‍♂️ Running & Fitness
   - Marathon runner
   - Outdoor enthusiast`
+  },
+  {
+    id: 'projects',
+    label: 'projects',
+    content: <ProjectsError />
   },
   {
     id: 'contact',
