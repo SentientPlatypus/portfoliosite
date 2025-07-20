@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import ScrollMagic from 'scrollmagic';
 
 interface WorkExperience {
   id: string;
@@ -64,32 +63,27 @@ const workExperiences: WorkExperience[] = [
 export const WorkTimeline = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const controllerRef = useRef<ScrollMagic.Controller | null>(null);
+
+  const handleWheel = (event: WheelEvent) => {
+    event.preventDefault();
+    
+    if (event.deltaY > 0) {
+      // Scroll down - move to next experience
+      setActiveIndex((prev) => Math.min(prev + 1, workExperiences.length - 1));
+    } else {
+      // Scroll up - move to previous experience
+      setActiveIndex((prev) => Math.max(prev - 1, 0));
+    }
+  };
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    // Initialize ScrollMagic controller
-    const controller = new ScrollMagic.Controller();
-    controllerRef.current = controller;
-
-    // Create scenes for each work experience
-    workExperiences.forEach((_, index) => {
-      const triggerElement = containerRef.current?.querySelector(`[data-trigger="${index}"]`);
-      if (!triggerElement) return;
-
-      new ScrollMagic.Scene({
-        triggerElement: triggerElement as Element,
-        triggerHook: 0.5,
-        offset: -100,
-        duration: 200
-      })
-        .on('enter', () => setActiveIndex(index))
-        .addTo(controller);
-    });
+    container.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
-      controller.destroy(true);
+      container.removeEventListener('wheel', handleWheel);
     };
   }, []);
 
