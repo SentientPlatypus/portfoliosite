@@ -85,7 +85,7 @@ export const WorkTimeline = () => {
     const spacing = 160; // Space between experiences  
     const totalWidth = experienceWidth + spacing;
     const containerWidth = scrollRef.current.clientWidth;
-    const scrollPosition = (activeIndex * totalWidth) - (containerWidth / 2) + (experienceWidth / 2);
+    const scrollPosition = (activeIndex * totalWidth) - (containerWidth / 2) + (experienceWidth / 2) + 160; // Add padding offset
     
     scrollRef.current.scrollTo({
       left: Math.max(0, scrollPosition),
@@ -128,8 +128,8 @@ export const WorkTimeline = () => {
                     : 'scale-95 opacity-50'
                 }`}
               >
-                {/* Experience card */}
-                <div className="space-y-4 p-6 rounded-lg border bg-card mb-8">
+                {/* Experience content without background box */}
+                <div className="space-y-4 p-6 mb-8 relative">
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold text-foreground">
                       {experience.title}
@@ -158,16 +158,17 @@ export const WorkTimeline = () => {
                       </span>
                     ))}
                   </div>
+                  
+                  {/* Scroll indicator positioned at bottom right of this experience */}
+                  {activeIndex === index && index < workExperiences.length - 1 && (
+                    <div className="absolute bottom-0 right-0 text-muted-foreground animate-pulse">
+                      <div className="flex items-center space-x-1">
+                        <span className="text-xs">Scroll right</span>
+                        <span className="text-xs">→</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                
-                {/* Timeline dot positioned on the timeline line */}
-                <div 
-                  className={`absolute bottom-14 left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 transition-all duration-300 z-10 ${
-                    activeIndex === index
-                      ? 'bg-primary border-primary scale-125'
-                      : 'bg-background border-border'
-                  }`}
-                ></div>
                 
                 {/* Employment duration under the timeline */}
                 <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center">
@@ -178,21 +179,12 @@ export const WorkTimeline = () => {
               </div>
             ))}
             
-            {/* Visual indicators for scroll directions */}
+            {/* Visual indicator for scroll left */}
             {activeIndex > 0 && (
               <div className="fixed left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground animate-pulse">
                 <div className="flex items-center space-x-1">
                   <span className="text-xs">←</span>
                   <span className="text-xs">Scroll left</span>
-                </div>
-              </div>
-            )}
-            
-            {activeIndex < workExperiences.length - 1 && (
-              <div className="fixed right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground animate-pulse">
-                <div className="flex items-center space-x-1">
-                  <span className="text-xs">Scroll right</span>
-                  <span className="text-xs">→</span>
                 </div>
               </div>
             )}
