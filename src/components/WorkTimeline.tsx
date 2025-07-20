@@ -92,74 +92,66 @@ export const WorkTimeline = () => {
     };
   }, [activeIndex, isScrolling]);
 
-  const getVisibleExperiences = () => {
-    const visible = [];
-    
-    // Show previous experience
-    if (activeIndex > 0) {
-      visible.push({ ...workExperiences[activeIndex - 1], position: 'previous', index: activeIndex - 1 });
-    }
-    
-    // Show current experience
-    visible.push({ ...workExperiences[activeIndex], position: 'current', index: activeIndex });
-    
-    // Show next experience
-    if (activeIndex < workExperiences.length - 1) {
-      visible.push({ ...workExperiences[activeIndex + 1], position: 'next', index: activeIndex + 1 });
-    }
-    
-    return visible;
-  };
-
   return (
-    <div ref={containerRef} className="relative h-screen flex items-center justify-center overflow-hidden bg-background">
-      <div className="max-w-4xl mx-auto px-8">
-        <div className="relative flex items-center justify-center min-h-[600px]">
-          {/* Vertical line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-foreground"></div>
+    <div ref={containerRef} className="relative h-screen flex items-center justify-center overflow-hidden">
+      <div className="w-full max-w-7xl mx-auto px-8">
+        <div className="relative flex items-center justify-center h-full">
+          {/* Horizontal line that moves */}
+          <div 
+            className="absolute top-1/2 h-0.5 bg-foreground transition-all duration-700 ease-in-out"
+            style={{
+              left: `${20 + (activeIndex * 20)}%`,
+              width: `${60 - (activeIndex * 10)}%`,
+              transform: 'translateY(-50%)'
+            }}
+          ></div>
           
-          {/* Timeline items */}
-          <div className="relative w-full">
-            {getVisibleExperiences().map((experience) => {
-              const isActive = experience.position === 'current';
-              const isPrevious = experience.position === 'previous';
-              const isNext = experience.position === 'next';
+          {/* Timeline items in horizontal layout */}
+          <div className="flex items-center justify-center w-full space-x-32">
+            {workExperiences.map((experience, index) => {
+              const isActive = index === activeIndex;
+              const distance = Math.abs(index - activeIndex);
               
               return (
                 <div
                   key={experience.id}
-                  className={`relative transition-all duration-700 ease-in-out mb-32 ${
+                  className={`relative transition-all duration-700 ease-in-out text-center ${
                     isActive 
-                      ? 'opacity-100' 
-                      : 'opacity-30'
-                  } ${
-                    isPrevious ? 'transform -translate-y-16' :
-                    isNext ? 'transform translate-y-16' :
-                    ''
+                      ? 'opacity-100 scale-100' 
+                      : `opacity-${Math.max(20, 60 - distance * 20)} scale-${Math.max(75, 100 - distance * 15)}`
                   }`}
                 >
+                  {/* Timeline dot */}
+                  <div 
+                    className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all duration-500 ${
+                      isActive
+                        ? 'bg-foreground scale-150'
+                        : 'bg-muted-foreground/40 scale-75'
+                    }`}
+                  ></div>
+                  
                   {/* Content */}
-                  <div className="ml-16">
-                    <div className={`transition-all duration-700 ${
-                      isActive ? 'text-4xl' : 'text-2xl'
-                    } font-light text-foreground mb-4`}>
+                  <div className="pt-16">
+                    <div className={`transition-all duration-700 font-light text-foreground mb-2 ${
+                      isActive ? 'text-3xl' : 'text-xl'
+                    }`}>
                       {experience.company}
                     </div>
                     
-                    <div className={`transition-all duration-700 ${
-                      isActive ? 'text-xl' : 'text-lg'
-                    } text-muted-foreground mb-2`}>
+                    <div className={`transition-all duration-700 text-muted-foreground mb-1 ${
+                      isActive ? 'text-lg' : 'text-sm'
+                    }`}>
                       {experience.title}
                     </div>
                     
-                    <div className={`transition-all duration-700 ${
-                      isActive ? 'text-base' : 'text-sm'
-                    } text-muted-foreground/60 mb-6`}>
+                    <div className={`transition-all duration-700 text-muted-foreground/60 ${
+                      isActive ? 'text-base' : 'text-xs'
+                    }`}>
                       {experience.duration}
                     </div>
                     
                     {isActive && (
-                      <div className="text-muted-foreground/80 space-y-1 animate-fade-in">
+                      <div className="mt-6 text-muted-foreground/80 space-y-1 animate-fade-in max-w-xs">
                         {experience.description.map((item, i) => (
                           <div key={i} className="text-sm">
                             {item}
