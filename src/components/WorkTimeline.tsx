@@ -62,6 +62,7 @@ const workExperiences: WorkExperience[] = [
 
 export const WorkTimeline = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handleWheel = (event: WheelEvent) => {
@@ -76,6 +77,22 @@ export const WorkTimeline = () => {
     }
   };
 
+  // Center the active experience
+  useEffect(() => {
+    if (!scrollRef.current) return;
+    
+    const experienceWidth = 400; // Width of each experience card
+    const spacing = 160; // Space between experiences  
+    const totalWidth = experienceWidth + spacing;
+    const containerWidth = scrollRef.current.clientWidth;
+    const scrollPosition = (activeIndex * totalWidth) - (containerWidth / 2) + (experienceWidth / 2);
+    
+    scrollRef.current.scrollTo({
+      left: Math.max(0, scrollPosition),
+      behavior: 'smooth'
+    });
+  }, [activeIndex]);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -89,36 +106,44 @@ export const WorkTimeline = () => {
 
   return (
     <div ref={containerRef} className="relative py-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full">
         <h2 className="text-2xl font-bold mb-12 text-center">Professional Experience</h2>
         
-        <div className="relative">
-          {/* Vertical line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
-          
-          {/* Timeline items */}
-          <div className="space-y-16">
+        {/* Horizontal scrolling container */}
+        <div 
+          ref={scrollRef}
+          className="overflow-x-auto scrollbar-hide"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          <div className="flex items-center gap-40 px-40 min-w-max">
             {workExperiences.map((experience, index) => (
               <div
                 key={experience.id}
-                data-trigger={index}
-                className={`relative transition-all duration-500 ${
+                className={`relative transition-all duration-500 w-96 flex-shrink-0 ${
                   activeIndex === index 
-                    ? 'scale-100 opacity-100' 
-                    : 'scale-95 opacity-60'
+                    ? 'scale-105 opacity-100' 
+                    : 'scale-95 opacity-50'
                 }`}
               >
                 {/* Timeline dot */}
                 <div 
-                  className={`absolute left-6 w-4 h-4 rounded-full border-2 transition-all duration-300 ${
+                  className={`absolute -top-8 left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 transition-all duration-300 ${
                     activeIndex === index
                       ? 'bg-primary border-primary scale-125'
                       : 'bg-background border-border'
                   }`}
                 ></div>
                 
+                {/* Horizontal line connecting dots */}
+                {index < workExperiences.length - 1 && (
+                  <div 
+                    className="absolute -top-7 left-1/2 w-40 h-0.5 bg-border"
+                    style={{ transform: 'translateX(8px)' }}
+                  ></div>
+                )}
+                
                 {/* Content */}
-                <div className="ml-20 space-y-4">
+                <div className="space-y-4 p-6 rounded-lg border bg-card">
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold text-foreground">
                       {experience.title}

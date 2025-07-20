@@ -21,7 +21,7 @@ export const Intellisense = ({ options, onSelectionChange, onHoverChange, classN
     if (options[selectedIndex] && onSelectionChange) {
       onSelectionChange(options[selectedIndex]);
     }
-  }, [selectedIndex, options, onSelectionChange]);
+  }, [selectedIndex, options]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
