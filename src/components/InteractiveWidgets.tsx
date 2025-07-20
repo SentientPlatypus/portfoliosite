@@ -680,9 +680,9 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
               <img 
                 src="https://cdns3.royaleapi.com/cdn-cgi/image/w=64,h=64,format=auto/static/img/arenas-fs8/64x64/league10-fs8.png" 
                 alt="Ultimate Champion" 
-                className="w-4 h-4" 
+                className="w-5 h-5" 
               />
-              <div className="text-sm font-bold text-orange-400">{clashData?.bestRating}</div>
+              <div className="text-lg font-bold text-orange-400">{clashData?.bestRating}</div>
             </div>
             <div className="text-xs text-muted-foreground">Ultimate Champion</div>
           </div>
