@@ -94,71 +94,74 @@ export const WorkTimeline = () => {
 
   return (
     <div ref={containerRef} className="relative h-screen flex items-center justify-center overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto px-8">
+      <div className="w-full max-w-6xl mx-auto">
         <div className="relative flex items-center justify-center h-full">
-          {/* Horizontal line that moves */}
-          <div 
-            className="absolute top-1/2 h-0.5 bg-foreground transition-all duration-700 ease-in-out"
-            style={{
-              left: `${20 + (activeIndex * 20)}%`,
-              width: `${60 - (activeIndex * 10)}%`,
-              transform: 'translateY(-50%)'
-            }}
-          ></div>
+          {/* Horizontal line */}
+          <div className="absolute top-1/2 left-1/4 right-1/4 h-0.5 bg-foreground transform -translate-y-1/2"></div>
           
-          {/* Timeline items in horizontal layout */}
-          <div className="flex items-center justify-center w-full space-x-32">
+          {/* Timeline container that slides */}
+          <div 
+            className="flex items-center transition-transform duration-700 ease-in-out"
+            style={{
+              transform: `translateX(-${activeIndex * 100}vw)`,
+              width: `${workExperiences.length * 100}vw`
+            }}
+          >
             {workExperiences.map((experience, index) => {
               const isActive = index === activeIndex;
-              const distance = Math.abs(index - activeIndex);
               
               return (
                 <div
                   key={experience.id}
-                  className={`relative transition-all duration-700 ease-in-out text-center ${
-                    isActive 
-                      ? 'opacity-100 scale-100' 
-                      : `opacity-${Math.max(20, 60 - distance * 20)} scale-${Math.max(75, 100 - distance * 15)}`
-                  }`}
+                  className="w-screen flex items-center justify-center relative"
                 >
                   {/* Timeline dot */}
                   <div 
-                    className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all duration-500 ${
+                    className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all duration-500 z-10 ${
                       isActive
                         ? 'bg-foreground scale-150'
-                        : 'bg-muted-foreground/40 scale-75'
+                        : 'bg-muted-foreground/40'
                     }`}
                   ></div>
                   
                   {/* Content */}
-                  <div className="pt-16">
-                    <div className={`transition-all duration-700 font-light text-foreground mb-2 ${
-                      isActive ? 'text-3xl' : 'text-xl'
-                    }`}>
-                      {experience.company}
-                    </div>
-                    
-                    <div className={`transition-all duration-700 text-muted-foreground mb-1 ${
-                      isActive ? 'text-lg' : 'text-sm'
-                    }`}>
-                      {experience.title}
-                    </div>
-                    
-                    <div className={`transition-all duration-700 text-muted-foreground/60 ${
-                      isActive ? 'text-base' : 'text-xs'
-                    }`}>
-                      {experience.duration}
-                    </div>
-                    
-                    {isActive && (
-                      <div className="mt-6 text-muted-foreground/80 space-y-1 animate-fade-in max-w-xs">
-                        {experience.description.map((item, i) => (
-                          <div key={i} className="text-sm">
-                            {item}
-                          </div>
-                        ))}
+                  <div className={`text-center transition-all duration-700 ${
+                    isActive ? 'opacity-100' : 'opacity-0'
+                  }`}>
+                    <div className="pt-16">
+                      <div className="text-4xl font-light text-foreground mb-4">
+                        {experience.company}
                       </div>
-                    )}
+                      
+                      <div className="text-xl text-muted-foreground mb-2">
+                        {experience.title}
+                      </div>
+                      
+                      <div className="text-base text-muted-foreground/60 mb-8">
+                        {experience.duration}
+                      </div>
+                      
+                      {isActive && (
+                        <div className="text-muted-foreground/80 space-y-2 animate-fade-in max-w-md mx-auto">
+                          {experience.description.map((item, i) => (
+                            <div key={i} className="text-sm">
+                              {item}
+                            </div>
+                          ))}
+                          
+                          <div className="flex flex-wrap gap-2 justify-center mt-6">
+                            {experience.skills.map((skill) => (
+                              <span
+                                key={skill}
+                                className="px-3 py-1 text-xs bg-muted/20 text-muted-foreground rounded-full border border-muted"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
