@@ -214,7 +214,7 @@ export const CodeEditor = () => {
                     <span className="text-white">=</span>{' '}
                     <span className="syntax-type">Dev</span>
                     <span className="text-white">{'{'}</span>
-                    <span className="syntax-variable">name</span>
+                    <span className="text-orange-400">name</span>
                     <span className="text-white">:</span>{' '}
                     <span className="syntax-type">String</span>
                     <span className="text-white">::</span>
@@ -223,7 +223,7 @@ export const CodeEditor = () => {
                     <span className="syntax-string">"Gene"</span>
                     <span className="text-white">)</span>
                     <span className="text-white">,</span>{' '}
-                    <span className="syntax-variable">age</span>
+                    <span className="text-orange-400">age</span>
                     <span className="text-white">:</span>{' '}
                     <span className="syntax-number">18</span>
                     <span className="text-white">{'}'}</span>
