@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Github, Music, Play, Trophy, Swords } from 'lucide-react';
 
 interface WidgetProps {
@@ -130,13 +130,47 @@ const YouTubeWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; on
 };
 
 const GitHubWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onToggleExpand: () => void }) => {
+  const [githubData, setGithubData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
   const handleExternalClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open('https://github.com/gene', '_blank');
+    window.open('https://github.com/SentientPlatypus', '_blank');
   };
 
-  // Generate a realistic commit pattern for the last 12 weeks
+  // Fetch real GitHub data
+  useEffect(() => {
+    const fetchGitHubData = async () => {
+      try {
+        const userResponse = await fetch('https://api.github.com/users/SentientPlatypus');
+        const userData = await userResponse.json();
+        
+        const reposResponse = await fetch('https://api.github.com/users/SentientPlatypus/repos?sort=updated&per_page=10');
+        const reposData = await reposResponse.json();
+        
+        // Get contributions data (this is a simplified approach)
+        const eventsResponse = await fetch('https://api.github.com/users/SentientPlatypus/events/public?per_page=100');
+        const eventsData = await eventsResponse.json();
+        
+        setGithubData({
+          user: userData,
+          repos: reposData,
+          events: eventsData
+        });
+      } catch (error) {
+        console.error('Failed to fetch GitHub data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGitHubData();
+  }, []);
+
+  // Generate commit activity based on real GitHub events
   const generateCommitData = () => {
+    if (!githubData?.events) return [];
+    
     const weeks = [];
     const today = new Date();
     
@@ -146,13 +180,15 @@ const GitHubWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onT
         const date = new Date(today);
         date.setDate(date.getDate() - (week * 7 + (6 - day)));
         
-        // Simulate realistic commit patterns (more on weekdays, less on weekends)
-        let commits = 0;
-        if (day >= 1 && day <= 5) { // Monday to Friday
-          commits = Math.floor(Math.random() * 8); // 0-7 commits
-        } else { // Weekend
-          commits = Math.floor(Math.random() * 3); // 0-2 commits
-        }
+        // Count actual events for this date
+        const dayEvents = githubData.events.filter((event: any) => {
+          const eventDate = new Date(event.created_at).toDateString();
+          return eventDate === date.toDateString();
+        });
+        
+        const commits = dayEvents.filter((event: any) => 
+          event.type === 'PushEvent' || event.type === 'CreateEvent'
+        ).length;
         
         weekData.push({
           date: date.toISOString().split('T')[0],
@@ -167,6 +203,7 @@ const GitHubWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onT
 
   const commitWeeks = generateCommitData();
   const totalCommits = commitWeeks.flat().reduce((sum, day) => sum + day.count, 0);
+  const publicRepos = githubData?.user?.public_repos || 0;
 
   const getIntensityColor = (level: number) => {
     const colors = [
@@ -179,11 +216,27 @@ const GitHubWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onT
     return colors[level];
   };
 
+  if (loading) {
+    return (
+      <Widget
+        icon={<Github className="w-4 h-4" />}
+        title="GitHub"
+        description="Loading..."
+        isExpanded={isExpanded}
+        onToggleExpand={onToggleExpand}
+      >
+        <div className="flex items-center justify-center p-4">
+          <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      </Widget>
+    );
+  }
+
   return (
     <Widget
       icon={<Github className="w-4 h-4" />}
       title="GitHub"
-      description={`${totalCommits} contributions in last 12 weeks`}
+      description={`${totalCommits} recent contributions • ${publicRepos} repos`}
       isExpanded={isExpanded}
       onToggleExpand={onToggleExpand}
     >
@@ -213,6 +266,27 @@ const GitHubWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onT
             ))}
           </div>
           <span>More</span>
+        </div>
+        <div className="space-y-2 text-xs">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Followers:</span>
+            <span>{githubData?.user?.followers || 0}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Following:</span>
+            <span>{githubData?.user?.following || 0}</span>
+          </div>
+          {githubData?.repos && githubData.repos.length > 0 && (
+            <div className="mt-2">
+              <div className="text-muted-foreground mb-1">Recent repos:</div>
+              {githubData.repos.slice(0, 3).map((repo: any, index: number) => (
+                <div key={index} className="text-xs text-foreground hover:text-primary cursor-pointer" 
+                     onClick={(e) => { e.stopPropagation(); window.open(repo.html_url, '_blank'); }}>
+                  • {repo.name}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <button 
           className="mt-2 text-xs text-foreground hover:text-primary" 
