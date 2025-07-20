@@ -663,21 +663,7 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
     >
       <div className="space-y-3">
         <div className="text-xs text-muted-foreground mb-1">{clashData?.tag}</div>
-        <div className="flex items-center justify-between">
-          <div className="text-center">
-            <div className="text-lg font-bold text-purple-500">{clashData?.trophies?.toLocaleString()}</div>
-            <div className="text-xs text-muted-foreground">Current</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-yellow-500">{clashData?.bestTrophies?.toLocaleString()}</div>
-            <div className="text-xs text-muted-foreground">Best</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-blue-500">{clashData?.kingLevel}</div>
-            <div className="text-xs text-muted-foreground">King Level</div>
-          </div>
-        </div>
-        <div className="flex items-center justify-center space-x-2 py-2">
+        <div className="flex items-center justify-center space-x-4 mb-3">
           <img 
             src="https://cdns3.royaleapi.com/cdn-cgi/image/w=64,h=64,format=auto/static/img/arenas-fs8/64x64/league10-fs8.png" 
             alt="Ultimate Champion" 
@@ -686,6 +672,16 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
           <div className="text-center">
             <div className="text-sm font-bold text-orange-500">Ultimate Champion</div>
             <div className="text-lg font-bold text-orange-400">{clashData?.bestRating}</div>
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="text-center">
+            <div className="text-lg font-bold text-yellow-500">{clashData?.bestTrophies?.toLocaleString()}</div>
+            <div className="text-xs text-muted-foreground">Best</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-blue-500">{clashData?.kingLevel}</div>
+            <div className="text-xs text-muted-foreground">King Level</div>
           </div>
         </div>
         <div>
