@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import ScrollMagic from 'scrollmagic';
 
 interface WorkExperience {
   id: string;
@@ -63,114 +64,100 @@ const workExperiences: WorkExperience[] = [
 export const WorkTimeline = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isScrolling, setIsScrolling] = useState(false);
+  const controllerRef = useRef<ScrollMagic.Controller | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      
-      if (isScrolling) return;
-      
-      setIsScrolling(true);
-      
-      if (e.deltaY > 0 && activeIndex < workExperiences.length - 1) {
-        setActiveIndex(prev => prev + 1);
-      } else if (e.deltaY < 0 && activeIndex > 0) {
-        setActiveIndex(prev => prev - 1);
-      }
-      
-      setTimeout(() => setIsScrolling(false), 800);
-    };
+    // Initialize ScrollMagic controller
+    const controller = new ScrollMagic.Controller();
+    controllerRef.current = controller;
 
-    const container = containerRef.current;
-    container.addEventListener('wheel', handleWheel, { passive: false });
+    // Create scenes for each work experience
+    workExperiences.forEach((_, index) => {
+      const triggerElement = containerRef.current?.querySelector(`[data-trigger="${index}"]`);
+      if (!triggerElement) return;
+
+      new ScrollMagic.Scene({
+        triggerElement: triggerElement as Element,
+        triggerHook: 0.5,
+        offset: -100,
+        duration: 200
+      })
+        .on('enter', () => setActiveIndex(index))
+        .addTo(controller);
+    });
 
     return () => {
-      container.removeEventListener('wheel', handleWheel);
+      controller.destroy(true);
     };
-  }, [activeIndex, isScrolling]);
+  }, []);
 
   return (
-    <div ref={containerRef} className="relative h-screen flex items-center justify-center overflow-hidden">
-      <div className="w-full max-w-6xl mx-auto">
-        <div className="relative flex items-center justify-center h-full">
-          {/* Horizontal line */}
-          <div className="absolute top-1/2 left-1/4 right-1/4 h-0.5 bg-foreground transform -translate-y-1/2"></div>
+    <div ref={containerRef} className="relative py-8">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-2xl font-bold mb-12 text-center">Professional Experience</h2>
+        
+        <div className="relative">
+          {/* Vertical line */}
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
           
-          {/* Timeline container that slides */}
-          <div 
-            className="flex items-center transition-transform duration-700 ease-in-out"
-            style={{
-              transform: `translateX(-${activeIndex * 100}vw)`,
-              width: `${workExperiences.length * 100}vw`
-            }}
-          >
-            {workExperiences.map((experience, index) => {
-              const isActive = index === activeIndex;
-              
-              return (
-                <div
-                  key={experience.id}
-                  className="w-screen flex items-center justify-center relative"
-                >
-                  {/* Timeline dot */}
-                  <div 
-                    className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all duration-500 z-10 ${
-                      isActive
-                        ? 'bg-foreground scale-150'
-                        : 'bg-muted-foreground/40'
-                    }`}
-                  ></div>
-                  
-                  {/* Content */}
-                  <div className={`text-center transition-all duration-700 ${
-                    isActive ? 'opacity-100' : 'opacity-0'
-                  }`}>
-                    <div className="pt-16">
-                      <div className="text-4xl font-light text-foreground mb-4">
-                        {experience.company}
-                      </div>
-                      
-                      <div className="text-xl text-muted-foreground mb-2">
-                        {experience.title}
-                      </div>
-                      
-                      <div className="text-base text-muted-foreground/60 mb-8">
-                        {experience.duration}
-                      </div>
-                      
-                      {isActive && (
-                        <div className="text-muted-foreground/80 space-y-2 animate-fade-in max-w-md mx-auto">
-                          {experience.description.map((item, i) => (
-                            <div key={i} className="text-sm">
-                              {item}
-                            </div>
-                          ))}
-                          
-                          <div className="flex flex-wrap gap-2 justify-center mt-6">
-                            {experience.skills.map((skill) => (
-                              <span
-                                key={skill}
-                                className="px-3 py-1 text-xs bg-muted/20 text-muted-foreground rounded-full border border-muted"
-                              >
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+          {/* Timeline items */}
+          <div className="space-y-16">
+            {workExperiences.map((experience, index) => (
+              <div
+                key={experience.id}
+                data-trigger={index}
+                className={`relative transition-all duration-500 ${
+                  activeIndex === index 
+                    ? 'scale-100 opacity-100' 
+                    : 'scale-95 opacity-60'
+                }`}
+              >
+                {/* Timeline dot */}
+                <div 
+                  className={`absolute left-6 w-4 h-4 rounded-full border-2 transition-all duration-300 ${
+                    activeIndex === index
+                      ? 'bg-primary border-primary scale-125'
+                      : 'bg-background border-border'
+                  }`}
+                ></div>
+                
+                {/* Content */}
+                <div className="ml-20 space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold text-foreground">
+                      {experience.title}
+                    </h3>
+                    <div className="flex items-center space-x-2 text-muted-foreground">
+                      <span className="font-medium text-primary">{experience.company}</span>
+                      <span>•</span>
+                      <span>{experience.duration}</span>
                     </div>
                   </div>
+                  
+                  <ul className="space-y-1 text-muted-foreground">
+                    {experience.description.map((item, i) => (
+                      <li key={i} className="flex items-start">
+                        <span className="text-primary mr-2">•</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {experience.skills.map((skill) => (
+                      <span
+                        key={skill}
+                        className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-full border border-primary/20"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-          
-          {/* Minimal progress indicator */}
-          <div className="absolute bottom-8 left-8 text-muted-foreground/40 text-sm font-mono">
-            {String(activeIndex + 1).padStart(2, '0')} / {String(workExperiences.length).padStart(2, '0')}
+              </div>
+            ))}
           </div>
         </div>
       </div>
