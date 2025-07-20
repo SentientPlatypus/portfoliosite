@@ -677,6 +677,17 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
             <div className="text-xs text-muted-foreground">King Level</div>
           </div>
         </div>
+        <div className="flex items-center justify-center space-x-2 py-2">
+          <img 
+            src="https://cdns3.royaleapi.com/cdn-cgi/image/w=64,h=64,format=auto/static/img/arenas-fs8/64x64/league10-fs8.png" 
+            alt="Ultimate Champion" 
+            className="w-6 h-6" 
+          />
+          <div className="text-center">
+            <div className="text-sm font-bold text-orange-500">Ultimate Champion</div>
+            <div className="text-lg font-bold text-orange-400">{clashData?.bestRating}</div>
+          </div>
+        </div>
         <div>
           <div className="text-xs text-muted-foreground mb-2">Current Deck:</div>
           <div className="grid grid-cols-4 gap-0.5">
@@ -703,9 +714,6 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
               </div>
             ))}
           </div>
-        </div>
-        <div className="text-xs text-muted-foreground italic">
-          Data source: Manual entry based on player tag {clashData?.tag}
         </div>
       </div>
     </Widget>

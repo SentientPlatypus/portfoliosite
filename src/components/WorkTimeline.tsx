@@ -61,128 +61,64 @@ const workExperiences: WorkExperience[] = [
 ];
 
 export const WorkTimeline = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const handleWheel = (event: WheelEvent) => {
-    event.preventDefault();
-    
-    if (event.deltaY > 0) {
-      // Scroll down - move to next experience
-      setActiveIndex((prev) => Math.min(prev + 1, workExperiences.length - 1));
-    } else {
-      // Scroll up - move to previous experience
-      setActiveIndex((prev) => Math.max(prev - 1, 0));
-    }
-  };
-
-  // Center the active experience
-  useEffect(() => {
-    if (!scrollRef.current) return;
-    
-    const experienceWidth = 400; // Width of each experience card
-    const spacing = 160; // Space between experiences  
-    const totalWidth = experienceWidth + spacing;
-    const containerWidth = scrollRef.current.clientWidth;
-    const scrollPosition = (activeIndex * totalWidth) - (containerWidth / 2) + (experienceWidth / 2) + 160; // Add padding offset
-    
-    scrollRef.current.scrollTo({
-      left: Math.max(0, scrollPosition),
-      behavior: 'smooth'
-    });
-  }, [activeIndex]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    container.addEventListener('wheel', handleWheel, { passive: false });
-
-    return () => {
-      container.removeEventListener('wheel', handleWheel);
-    };
-  }, []);
-
   return (
-    <div ref={containerRef} className="relative py-8">
-      <div className="w-full">
+    <div className="relative py-8">
+      <div className="w-full max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold mb-12 text-center">Professional Experience</h2>
         
-        {/* Horizontal scrolling container */}
-        <div 
-          ref={scrollRef}
-          className="overflow-x-auto scrollbar-hide"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          <div className="flex items-start gap-40 px-40 min-w-max relative">
-            {/* Continuous timeline line */}
-            <div className="absolute bottom-20 left-0 right-0 h-0.5 bg-border"></div>
-            
-            {workExperiences.map((experience, index) => (
-              <div
-                key={experience.id}
-                className={`relative transition-all duration-500 w-96 flex-shrink-0 ${
-                  activeIndex === index 
-                    ? 'scale-95 opacity-100' 
-                    : 'scale-85 opacity-50'
-                }`}
-              >
-                {/* Experience content without background box */}
-                <div className="space-y-4 p-6 mb-16 relative">
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-foreground">
-                      {experience.title}
-                    </h3>
-                    <div className="flex items-center space-x-2 text-muted-foreground">
-                      <span className="font-medium text-primary">{experience.company}</span>
-                    </div>
+        {/* Vertical timeline */}
+        <div className="relative">
+          {/* Vertical timeline line */}
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
+          
+          {workExperiences.map((experience, index) => (
+            <div
+              key={experience.id}
+              className="relative flex items-start mb-12 last:mb-0"
+            >
+              {/* Timeline dot */}
+              <div className={`w-4 h-4 rounded-full border-2 bg-background flex-shrink-0 mt-2 z-10 ${
+                activeIndex === index ? 'border-primary bg-primary' : 'border-border'
+              }`}></div>
+              
+              {/* Experience content */}
+              <div className="ml-8 space-y-4 flex-1">
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold text-yellow-400">
+                    {experience.title}
+                  </h3>
+                  <div className="flex items-center space-x-2">
+                    <span className="font-medium text-primary">{experience.company}</span>
                   </div>
-                  
-                  <ul className="space-y-1 text-muted-foreground">
-                    {experience.description.map((item, i) => (
-                      <li key={i} className="flex items-start">
-                        <span className="text-primary mr-2">•</span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {experience.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-full border border-primary/20"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Employment duration under the timeline */}
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center">
-                  <div className="text-sm font-medium text-primary whitespace-nowrap">
+                  <div className="text-sm font-medium text-purple-400">
                     {experience.duration}
                   </div>
                 </div>
+                
+                <ul className="space-y-1 text-muted-foreground">
+                  {experience.description.map((item, i) => (
+                    <li key={i} className="flex items-start">
+                      <span className="text-primary mr-2">•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {experience.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="px-3 py-1 text-xs bg-orange-500/10 text-orange-400 rounded-full border border-orange-500/20"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Progress indicator */}
-        <div className="flex justify-center mt-8">
-          <div className="flex space-x-2">
-            {workExperiences.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  activeIndex === index ? 'bg-primary' : 'bg-border'
-                }`}
-              ></div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
