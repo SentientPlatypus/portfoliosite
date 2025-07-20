@@ -158,16 +158,6 @@ export const WorkTimeline = () => {
                       </span>
                     ))}
                   </div>
-                  
-                  {/* Scroll indicator positioned at bottom right of this experience */}
-                  {activeIndex === index && index < workExperiences.length - 1 && (
-                    <div className="absolute bottom-0 right-0 text-muted-foreground animate-pulse">
-                      <div className="flex items-center space-x-1">
-                        <span className="text-xs">Scroll right</span>
-                        <span className="text-xs">→</span>
-                      </div>
-                    </div>
-                  )}
                 </div>
                 
                 {/* Employment duration under the timeline */}
@@ -178,16 +168,6 @@ export const WorkTimeline = () => {
                 </div>
               </div>
             ))}
-            
-            {/* Visual indicator for scroll left */}
-            {activeIndex > 0 && (
-              <div className="fixed left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground animate-pulse">
-                <div className="flex items-center space-x-1">
-                  <span className="text-xs">←</span>
-                  <span className="text-xs">Scroll left</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
         
