@@ -4,6 +4,7 @@ import { Intellisense, IntellisenseContent } from './Intellisense';
 import { InteractiveInfo } from './InteractiveWidgets';
 import { ProjectsError } from './ProjectsError';
 import { PortfolioContent } from './PortfolioContent';
+import { WorkTimeline } from './WorkTimeline';
 
 const intellisenseOptions = [
   {
@@ -14,20 +15,7 @@ const intellisenseOptions = [
   {
     id: 'work',
     label: 'work',
-    content: `Professional Experience
-
-• Senior Frontend Developer at TechCorp
-  - Led development of React applications
-  - Improved performance by 40%
-  - Mentored junior developers
-
-• Full Stack Developer at StartupXYZ
-  - Built scalable web applications
-  - Implemented CI/CD pipelines
-  - Worked with Node.js and PostgreSQL
-
-Skills: React, TypeScript, Node.js, 
-Python, AWS, Docker`
+    content: <WorkTimeline />
   },
   {
     id: 'fun',
