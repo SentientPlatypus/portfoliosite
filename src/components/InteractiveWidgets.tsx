@@ -106,17 +106,19 @@ const YouTubeWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; on
   };
 
   useEffect(() => {
-    // Use accurate data for your channel
     const fetchYouTubeData = async () => {
       try {
-        // Real data based on your channel @sentientplatypus8740
+        // For now, using the correct data you provided since YouTube API requires API key
+        // In a real app, you would use YouTube Data API v3:
+        // https://developers.google.com/youtube/v3/docs/channels/list
+        console.log('YouTube data source: Manual data based on correct channel statistics');
         setYoutubeData({
-          subscriberCount: '16',
-          videoCount: 4,
+          subscriberCount: '148',
+          videoCount: 7,
           latestVideo: {
             title: 'Recent Upload',
-            views: '500+',
-            publishedTime: 'Recent'
+            views: '1.2K+',
+            publishedTime: '2 weeks ago'
           }
         });
       } catch (error) {
@@ -354,65 +356,78 @@ const LeetCodeWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; o
   useEffect(() => {
     const fetchLeetCodeData = async () => {
       try {
-        // Try to fetch from LeetCode's GraphQL API
-        const response = await fetch('https://leetcode.com/graphql/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: `
-              query getUserProfile($username: String!) {
-                allQuestionsCount {
-                  difficulty
-                  count
-                }
-                matchedUser(username: $username) {
-                  username
-                  submitStats {
-                    acSubmissionNum {
-                      difficulty
-                      count
-                    }
-                  }
-                  profile {
-                    ranking
-                    reputation
-                  }
-                }
-              }
-            `,
-            variables: {
-              username: "SentientPlatypus"
-            }
-          })
-        });
-
+        // Using alfa-leetcode-api for better reliability
+        const response = await fetch('https://alfa-leetcode-api.onrender.com/SentientPlatypus/solved');
+        
         if (response.ok) {
           const data = await response.json();
-          setLeetcodeData(data.data);
+          console.log('LeetCode data source: alfa-leetcode-api.onrender.com');
+          setLeetcodeData({
+            matchedUser: {
+              username: "SentientPlatypus",
+              submitStats: {
+                acSubmissionNum: [
+                  { difficulty: "Easy", count: data.easySolved || 0 },
+                  { difficulty: "Medium", count: data.mediumSolved || 0 },
+                  { difficulty: "Hard", count: data.hardSolved || 0 }
+                ]
+              },
+              profile: {
+                ranking: data.ranking || 800000,
+                reputation: 0
+              }
+            }
+          });
         } else {
           throw new Error('API request failed');
         }
       } catch (error) {
         console.error('Failed to fetch LeetCode data:', error);
-        // Accurate fallback data based on your actual stats
-        setLeetcodeData({
-          matchedUser: {
-            username: "SentientPlatypus",
-            submitStats: {
-              acSubmissionNum: [
-                { difficulty: "Easy", count: 120 },
-                { difficulty: "Medium", count: 70 },
-                { difficulty: "Hard", count: 12 }
-              ]
-            },
-            profile: {
-              ranking: 650000,
-              reputation: 0
-            }
+        // Try fallback API
+        try {
+          const fallbackResponse = await fetch('https://leetcode-stats-api.herokuapp.com/SentientPlatypus');
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            console.log('LeetCode data source: leetcode-stats-api.herokuapp.com (fallback)');
+            setLeetcodeData({
+              matchedUser: {
+                username: "SentientPlatypus",
+                submitStats: {
+                  acSubmissionNum: [
+                    { difficulty: "Easy", count: fallbackData.easySolved || 0 },
+                    { difficulty: "Medium", count: fallbackData.mediumSolved || 0 },
+                    { difficulty: "Hard", count: fallbackData.hardSolved || 0 }
+                  ]
+                },
+                profile: {
+                  ranking: fallbackData.ranking || 800000,
+                  reputation: 0
+                }
+              }
+            });
+          } else {
+            throw new Error('Fallback API also failed');
           }
-        });
+        } catch (fallbackError) {
+          console.error('Both LeetCode APIs failed:', fallbackError);
+          // Use manual fallback as last resort
+          setLeetcodeData({
+            matchedUser: {
+              username: "SentientPlatypus",
+              submitStats: {
+                acSubmissionNum: [
+                  { difficulty: "Easy", count: 0 },
+                  { difficulty: "Medium", count: 0 },
+                  { difficulty: "Hard", count: 0 }
+                ]
+              },
+              profile: {
+                ranking: 0,
+                reputation: 0
+              }
+            }
+          });
+        }
       } finally {
         setLoading(false);
       }
@@ -439,7 +454,7 @@ const LeetCodeWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; o
 
   const getStats = () => {
     if (!leetcodeData?.matchedUser?.submitStats?.acSubmissionNum) {
-      return { easy: 120, medium: 70, hard: 12, total: 202 };
+      return { easy: 0, medium: 0, hard: 0, total: 0 };
     }
     const stats = leetcodeData.matchedUser.submitStats.acSubmissionNum;
     const easy = stats.find((s: any) => s.difficulty === "Easy")?.count || 0;
@@ -507,36 +522,36 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
           rank: "Ultimate Champion",
           currentDeck: [
             {
-              name: "Mega Knight",
-              image: "https://static.wikia.nocookie.net/clashroyale/images/6/60/MegaKnightCard.png"
+              name: "Archers",
+              image: "https://cdns3.royaleapi.com/cdn-cgi/image/w=150,h=180,format=auto/static/img/cards/v5-989631e2/archers-ev1.png"
             },
             {
-              name: "Electro Wizard", 
-              image: "https://static.wikia.nocookie.net/clashroyale/images/8/8e/ElectroWizardCard.png"
+              name: "Tesla", 
+              image: "https://cdns3.royaleapi.com/cdn-cgi/image/w=150,h=180,format=auto/static/img/cards/v5-989631e2/tesla-ev1.png"
             },
             {
-              name: "Inferno Dragon",
-              image: "https://static.wikia.nocookie.net/clashroyale/images/c/c1/InfernoDragonCard.png"
+              name: "X-Bow",
+              image: "https://cdns3.royaleapi.com/cdn-cgi/image/w=150,h=180,format=auto/static/img/cards/v5-989631e2/x-bow.png"
             },
             {
-              name: "Bats",
-              image: "https://static.wikia.nocookie.net/clashroyale/images/f/f5/BatsCard.png"
+              name: "Knight",
+              image: "https://cdns3.royaleapi.com/cdn-cgi/image/w=150,h=180,format=auto/static/img/cards/v5-989631e2/knight.png"
             },
             {
-              name: "Wall Breakers",
-              image: "https://static.wikia.nocookie.net/clashroyale/images/1/15/WallBreakersCard.png"
+              name: "Fireball",
+              image: "https://cdns3.royaleapi.com/cdn-cgi/image/w=150,h=180,format=auto/static/img/cards/v5-989631e2/fireball.png"
             },
             {
-              name: "Zap",
-              image: "https://static.wikia.nocookie.net/clashroyale/images/4/4c/ZapCard.png"
+              name: "Skeletons",
+              image: "https://cdns3.royaleapi.com/cdn-cgi/image/w=150,h=180,format=auto/static/img/cards/v5-989631e2/skeletons.png"
             },
             {
-              name: "Miner",
-              image: "https://static.wikia.nocookie.net/clashroyale/images/7/7a/MinerCard.png"
+              name: "Ice Spirit",
+              image: "https://cdns3.royaleapi.com/cdn-cgi/image/w=150,h=180,format=auto/static/img/cards/v5-989631e2/ice-spirit.png"
             },
             {
-              name: "Poison",
-              image: "https://static.wikia.nocookie.net/clashroyale/images/8/8c/PoisonCard.png"
+              name: "The Log",
+              image: "https://cdns3.royaleapi.com/cdn-cgi/image/w=150,h=180,format=auto/static/img/cards/v5-989631e2/the-log.png"
             }
           ]
         });
@@ -595,7 +610,7 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
         <div>
           <div className="text-xs text-muted-foreground mb-2">Current Deck:</div>
           <div className="grid grid-cols-4 gap-1">
-            {clashData?.currentDeck?.map((card: any, index: number) => (
+            {clashData?.currentDeck && clashData.currentDeck.map((card: any, index: number) => (
               <div key={index} className="relative group">
                 <img 
                   src={card.image} 
@@ -610,7 +625,7 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
                   }}
                 />
                 <div className="w-full h-10 bg-gradient-to-br from-blue-400 to-purple-600 rounded border items-center justify-center text-xs text-white font-medium hidden">
-                  {card.name.slice(0, 3)}
+                  {card.name?.slice(0, 3) || 'N/A'}
                 </div>
                 <div className="absolute inset-x-0 bottom-0 bg-black/75 text-white text-[10px] text-center py-0.5 rounded-b opacity-0 group-hover:opacity-100 transition-opacity">
                   {card.name}
