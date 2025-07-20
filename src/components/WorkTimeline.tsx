@@ -117,19 +117,19 @@ export const WorkTimeline = () => {
         >
           <div className="flex items-start gap-40 px-40 min-w-max relative">
             {/* Continuous timeline line */}
-            <div className="absolute bottom-16 left-0 right-0 h-0.5 bg-border"></div>
+            <div className="absolute bottom-20 left-0 right-0 h-0.5 bg-border"></div>
             
             {workExperiences.map((experience, index) => (
               <div
                 key={experience.id}
                 className={`relative transition-all duration-500 w-96 flex-shrink-0 ${
                   activeIndex === index 
-                    ? 'scale-105 opacity-100' 
-                    : 'scale-95 opacity-50'
+                    ? 'scale-95 opacity-100' 
+                    : 'scale-85 opacity-50'
                 }`}
               >
                 {/* Experience content without background box */}
-                <div className="space-y-4 p-6 mb-8 relative">
+                <div className="space-y-4 p-6 mb-16 relative">
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold text-foreground">
                       {experience.title}
@@ -171,7 +171,7 @@ export const WorkTimeline = () => {
                 </div>
                 
                 {/* Employment duration under the timeline */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center">
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center">
                   <div className="text-sm font-medium text-primary whitespace-nowrap">
                     {experience.duration}
                   </div>
