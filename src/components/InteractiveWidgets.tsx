@@ -681,7 +681,7 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
           <div className="text-xs text-muted-foreground mb-2">Current Deck:</div>
           <div className="grid grid-cols-4 gap-1">
             {clashData?.currentDeck && clashData.currentDeck.map((card: any, index: number) => (
-              <div key={index} className="relative group aspect-[3/4]">
+              <div key={index} className="relative group aspect-[3/4] max-w-12">
                 <img 
                   src={card.image} 
                   alt={card.name}
