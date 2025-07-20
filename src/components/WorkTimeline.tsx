@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import ScrollMagic from 'scrollmagic';
 
 interface WorkExperience {
   id: string;
@@ -64,100 +63,145 @@ const workExperiences: WorkExperience[] = [
 export const WorkTimeline = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const controllerRef = useRef<ScrollMagic.Controller | null>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Initialize ScrollMagic controller
-    const controller = new ScrollMagic.Controller();
-    controllerRef.current = controller;
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      
+      if (isScrolling) return;
+      
+      setIsScrolling(true);
+      
+      if (e.deltaY > 0 && activeIndex < workExperiences.length - 1) {
+        setActiveIndex(prev => prev + 1);
+      } else if (e.deltaY < 0 && activeIndex > 0) {
+        setActiveIndex(prev => prev - 1);
+      }
+      
+      setTimeout(() => setIsScrolling(false), 800);
+    };
 
-    // Create scenes for each work experience
-    workExperiences.forEach((_, index) => {
-      const triggerElement = containerRef.current?.querySelector(`[data-trigger="${index}"]`);
-      if (!triggerElement) return;
-
-      new ScrollMagic.Scene({
-        triggerElement: triggerElement as Element,
-        triggerHook: 0.5,
-        offset: -100,
-        duration: 200
-      })
-        .on('enter', () => setActiveIndex(index))
-        .addTo(controller);
-    });
+    const container = containerRef.current;
+    container.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
-      controller.destroy(true);
+      container.removeEventListener('wheel', handleWheel);
     };
-  }, []);
+  }, [activeIndex, isScrolling]);
+
+  const getVisibleExperiences = () => {
+    const visible = [];
+    
+    // Show previous experience
+    if (activeIndex > 0) {
+      visible.push({ ...workExperiences[activeIndex - 1], position: 'previous', index: activeIndex - 1 });
+    }
+    
+    // Show current experience
+    visible.push({ ...workExperiences[activeIndex], position: 'current', index: activeIndex });
+    
+    // Show next experience
+    if (activeIndex < workExperiences.length - 1) {
+      visible.push({ ...workExperiences[activeIndex + 1], position: 'next', index: activeIndex + 1 });
+    }
+    
+    return visible;
+  };
 
   return (
-    <div ref={containerRef} className="relative py-8">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-12 text-center">Professional Experience</h2>
+    <div ref={containerRef} className="relative h-screen flex items-center justify-center overflow-hidden">
+      <div className="max-w-6xl mx-auto px-8">
+        <h2 className="text-2xl font-bold mb-16 text-center">Professional Experience</h2>
         
-        <div className="relative">
+        <div className="relative flex items-center justify-center min-h-[600px]">
           {/* Vertical line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
+          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-border transform -translate-x-1/2 z-0"></div>
           
           {/* Timeline items */}
-          <div className="space-y-16">
-            {workExperiences.map((experience, index) => (
-              <div
-                key={experience.id}
-                data-trigger={index}
-                className={`relative transition-all duration-500 ${
-                  activeIndex === index 
-                    ? 'scale-100 opacity-100' 
-                    : 'scale-95 opacity-60'
-                }`}
-              >
-                {/* Timeline dot */}
-                <div 
-                  className={`absolute left-6 w-4 h-4 rounded-full border-2 transition-all duration-300 ${
-                    activeIndex === index
-                      ? 'bg-primary border-primary scale-125'
-                      : 'bg-background border-border'
+          <div className="relative w-full flex flex-col items-center justify-center space-y-8">
+            {getVisibleExperiences().map((experience) => {
+              const isActive = experience.position === 'current';
+              const isPrevious = experience.position === 'previous';
+              const isNext = experience.position === 'next';
+              
+              return (
+                <div
+                  key={experience.id}
+                  className={`relative transition-all duration-700 ease-in-out flex items-center w-full ${
+                    isActive 
+                      ? 'scale-100 opacity-100 z-10' 
+                      : 'scale-75 opacity-40 z-5'
+                  } ${
+                    isPrevious ? 'transform -translate-y-8 translate-x-8' :
+                    isNext ? 'transform translate-y-8 translate-x-8' :
+                    ''
                   }`}
-                ></div>
-                
-                {/* Content */}
-                <div className="ml-20 space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-foreground">
-                      {experience.title}
-                    </h3>
-                    <div className="flex items-center space-x-2 text-muted-foreground">
-                      <span className="font-medium text-primary">{experience.company}</span>
-                      <span>•</span>
-                      <span>{experience.duration}</span>
+                >
+                  {/* Timeline dot */}
+                  <div 
+                    className={`absolute left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full border-2 transition-all duration-500 z-20 ${
+                      isActive
+                        ? 'bg-primary border-primary scale-125 shadow-lg shadow-primary/50'
+                        : 'bg-background border-border scale-75'
+                    }`}
+                  ></div>
+                  
+                  {/* Content */}
+                  <div className={`bg-card rounded-lg border shadow-lg p-8 transition-all duration-700 ${
+                    isActive 
+                      ? 'w-full max-w-3xl ml-12' 
+                      : 'w-80 ml-16'
+                  }`}>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <h3 className={`font-semibold text-foreground transition-all duration-500 ${
+                          isActive ? 'text-2xl' : 'text-lg'
+                        }`}>
+                          {experience.title}
+                        </h3>
+                        <div className="flex items-center space-x-2 text-muted-foreground">
+                          <span className="font-medium text-primary">{experience.company}</span>
+                          <span>•</span>
+                          <span>{experience.duration}</span>
+                        </div>
+                      </div>
+                      
+                      {isActive && (
+                        <>
+                          <ul className="space-y-2 text-muted-foreground">
+                            {experience.description.map((item, i) => (
+                              <li key={i} className="flex items-start">
+                                <span className="text-primary mr-2 mt-1">•</span>
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                          
+                          <div className="flex flex-wrap gap-2 mt-6">
+                            {experience.skills.map((skill) => (
+                              <span
+                                key={skill}
+                                className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-full border border-primary/20"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
-                  
-                  <ul className="space-y-1 text-muted-foreground">
-                    {experience.description.map((item, i) => (
-                      <li key={i} className="flex items-start">
-                        <span className="text-primary mr-2">•</span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {experience.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-full border border-primary/20"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+          </div>
+          
+          {/* Navigation hint */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center text-muted-foreground text-sm">
+            Scroll to navigate • {activeIndex + 1} of {workExperiences.length}
           </div>
         </div>
       </div>
