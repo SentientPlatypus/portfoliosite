@@ -115,7 +115,10 @@ export const WorkTimeline = () => {
           className="overflow-x-auto scrollbar-hide"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          <div className="flex items-center gap-40 px-40 min-w-max">
+          <div className="flex items-start gap-40 px-40 min-w-max relative">
+            {/* Continuous timeline line */}
+            <div className="absolute bottom-16 left-0 right-0 h-0.5 bg-border"></div>
+            
             {workExperiences.map((experience, index) => (
               <div
                 key={experience.id}
@@ -125,33 +128,14 @@ export const WorkTimeline = () => {
                     : 'scale-95 opacity-50'
                 }`}
               >
-                {/* Timeline dot */}
-                <div 
-                  className={`absolute -top-8 left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 transition-all duration-300 ${
-                    activeIndex === index
-                      ? 'bg-primary border-primary scale-125'
-                      : 'bg-background border-border'
-                  }`}
-                ></div>
-                
-                {/* Horizontal line connecting dots */}
-                {index < workExperiences.length - 1 && (
-                  <div 
-                    className="absolute -top-7 left-1/2 w-40 h-0.5 bg-border"
-                    style={{ transform: 'translateX(8px)' }}
-                  ></div>
-                )}
-                
-                {/* Content */}
-                <div className="space-y-4 p-6 rounded-lg border bg-card">
+                {/* Experience card */}
+                <div className="space-y-4 p-6 rounded-lg border bg-card mb-8">
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold text-foreground">
                       {experience.title}
                     </h3>
                     <div className="flex items-center space-x-2 text-muted-foreground">
                       <span className="font-medium text-primary">{experience.company}</span>
-                      <span>•</span>
-                      <span>{experience.duration}</span>
                     </div>
                   </div>
                   
@@ -175,7 +159,56 @@ export const WorkTimeline = () => {
                     ))}
                   </div>
                 </div>
+                
+                {/* Timeline dot positioned on the timeline line */}
+                <div 
+                  className={`absolute bottom-14 left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 transition-all duration-300 z-10 ${
+                    activeIndex === index
+                      ? 'bg-primary border-primary scale-125'
+                      : 'bg-background border-border'
+                  }`}
+                ></div>
+                
+                {/* Employment duration under the timeline */}
+                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center">
+                  <div className="text-sm font-medium text-primary whitespace-nowrap">
+                    {experience.duration}
+                  </div>
+                </div>
               </div>
+            ))}
+            
+            {/* Visual indicators for scroll directions */}
+            {activeIndex > 0 && (
+              <div className="fixed left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground animate-pulse">
+                <div className="flex items-center space-x-1">
+                  <span className="text-xs">←</span>
+                  <span className="text-xs">Scroll left</span>
+                </div>
+              </div>
+            )}
+            
+            {activeIndex < workExperiences.length - 1 && (
+              <div className="fixed right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground animate-pulse">
+                <div className="flex items-center space-x-1">
+                  <span className="text-xs">Scroll right</span>
+                  <span className="text-xs">→</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Progress indicator */}
+        <div className="flex justify-center mt-8">
+          <div className="flex space-x-2">
+            {workExperiences.map((_, index) => (
+              <div
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  activeIndex === index ? 'bg-primary' : 'bg-border'
+                }`}
+              ></div>
             ))}
           </div>
         </div>
