@@ -240,33 +240,61 @@ const GitHubWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onT
     fetchGitHubData();
   }, []);
 
-  // Generate commit activity based on real GitHub events
+  // Generate commit activity based on real GitHub events  
   const generateCommitData = () => {
     if (!githubData?.events) return [];
     
     const weeks = [];
     const today = new Date();
     
-    for (let week = 11; week >= 0; week--) {
+    // Create date range for the last 12 weeks (84 days)
+    const startDate = new Date(today);
+    startDate.setDate(startDate.getDate() - 83); // 12 weeks * 7 days - 1
+    
+    for (let week = 0; week < 12; week++) {
       const weekData = [];
       for (let day = 0; day < 7; day++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - (week * 7 + (6 - day)));
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + (week * 7 + day));
         
-        // Count actual events for this date
+        // Only show dates up to today
+        if (date > today) {
+          weekData.push({
+            date: date.toISOString().split('T')[0],
+            count: 0,
+            level: 0
+          });
+          continue;
+        }
+        
+        // Count actual GitHub events for this specific date
         const dayEvents = githubData.events.filter((event: any) => {
-          const eventDate = new Date(event.created_at).toDateString();
-          return eventDate === date.toDateString();
+          const eventDate = new Date(event.created_at);
+          const targetDate = new Date(date);
+          return eventDate.toDateString() === targetDate.toDateString();
         });
         
-        const commits = dayEvents.filter((event: any) => 
-          event.type === 'PushEvent' || event.type === 'CreateEvent'
+        // Count meaningful contribution events
+        const contributions = dayEvents.filter((event: any) => 
+          event.type === 'PushEvent' || 
+          event.type === 'CreateEvent' ||
+          event.type === 'PullRequestEvent' ||
+          event.type === 'IssuesEvent'
         ).length;
+        
+        // Calculate level based on contribution count
+        let level = 0;
+        if (contributions > 0) {
+          if (contributions <= 2) level = 1;
+          else if (contributions <= 4) level = 2; 
+          else if (contributions <= 7) level = 3;
+          else level = 4;
+        }
         
         weekData.push({
           date: date.toISOString().split('T')[0],
-          count: commits,
-          level: commits === 0 ? 0 : commits <= 2 ? 1 : commits <= 4 ? 2 : commits <= 6 ? 3 : 4
+          count: contributions,
+          level: level
         });
       }
       weeks.push(weekData);
@@ -562,8 +590,8 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
         setClashData({
           name: "Bagel",
           tag: "#22GQG09CL", 
-          trophies: 5644,
-          bestTrophies: 5644,
+          trophies: 9000,
+          bestTrophies: 9000,
           kingLevel: 15,
           rank: "Ultimate Champion",
           bestRating: 1833,
@@ -662,13 +690,13 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
         </div>
         <div>
           <div className="text-xs text-muted-foreground mb-2">Current Deck:</div>
-          <div className="grid grid-cols-2 gap-1">
+          <div className="grid grid-cols-4 gap-1">
             {clashData?.currentDeck && clashData.currentDeck.map((card: any, index: number) => (
-              <div key={index} className="relative group">
+              <div key={index} className="relative group aspect-[3/4]">
                 <img 
                   src={card.image} 
                   alt={card.name}
-                  className="w-full h-12 object-contain bg-muted rounded border hover:scale-105 transition-transform"
+                  className="w-full h-full object-cover rounded-lg border-2 border-muted hover:scale-105 transition-transform shadow-sm"
                   onError={(e) => {
                     // Fallback to colored placeholder if image fails
                     const target = e.target as HTMLImageElement;
@@ -677,10 +705,10 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
                     if (fallback) fallback.style.display = 'flex';
                   }}
                 />
-                <div className="w-full h-10 bg-gradient-to-br from-blue-400 to-purple-600 rounded border items-center justify-center text-xs text-white font-medium hidden">
+                <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg border-2 border-muted items-center justify-center text-xs text-white font-medium hidden">
                   {card.name?.slice(0, 3) || 'N/A'}
                 </div>
-                <div className="absolute inset-x-0 bottom-0 bg-black/75 text-white text-[10px] text-center py-0.5 rounded-b opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute inset-x-0 bottom-0 bg-black/75 text-white text-[10px] text-center py-0.5 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity">
                   {card.name}
                 </div>
               </div>
