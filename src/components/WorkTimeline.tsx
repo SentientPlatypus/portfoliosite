@@ -112,16 +112,14 @@ export const WorkTimeline = () => {
   };
 
   return (
-    <div ref={containerRef} className="relative h-screen flex items-center justify-center overflow-hidden">
-      <div className="max-w-6xl mx-auto px-8">
-        <h2 className="text-2xl font-bold mb-16 text-center">Professional Experience</h2>
-        
+    <div ref={containerRef} className="relative h-screen flex items-center justify-center overflow-hidden bg-background">
+      <div className="max-w-4xl mx-auto px-8">
         <div className="relative flex items-center justify-center min-h-[600px]">
           {/* Vertical line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-border transform -translate-x-1/2 z-0"></div>
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-foreground"></div>
           
           {/* Timeline items */}
-          <div className="relative w-full flex flex-col items-center justify-center space-y-8">
+          <div className="relative w-full">
             {getVisibleExperiences().map((experience) => {
               const isActive = experience.position === 'current';
               const isPrevious = experience.position === 'previous';
@@ -130,78 +128,54 @@ export const WorkTimeline = () => {
               return (
                 <div
                   key={experience.id}
-                  className={`relative transition-all duration-700 ease-in-out flex items-center w-full ${
+                  className={`relative transition-all duration-700 ease-in-out mb-32 ${
                     isActive 
-                      ? 'scale-100 opacity-100 z-10' 
-                      : 'scale-75 opacity-40 z-5'
+                      ? 'opacity-100' 
+                      : 'opacity-30'
                   } ${
-                    isPrevious ? 'transform -translate-y-8 translate-x-8' :
-                    isNext ? 'transform translate-y-8 translate-x-8' :
+                    isPrevious ? 'transform -translate-y-16' :
+                    isNext ? 'transform translate-y-16' :
                     ''
                   }`}
                 >
-                  {/* Timeline dot */}
-                  <div 
-                    className={`absolute left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full border-2 transition-all duration-500 z-20 ${
-                      isActive
-                        ? 'bg-primary border-primary scale-125 shadow-lg shadow-primary/50'
-                        : 'bg-background border-border scale-75'
-                    }`}
-                  ></div>
-                  
                   {/* Content */}
-                  <div className={`bg-card rounded-lg border shadow-lg p-8 transition-all duration-700 ${
-                    isActive 
-                      ? 'w-full max-w-3xl ml-12' 
-                      : 'w-80 ml-16'
-                  }`}>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <h3 className={`font-semibold text-foreground transition-all duration-500 ${
-                          isActive ? 'text-2xl' : 'text-lg'
-                        }`}>
-                          {experience.title}
-                        </h3>
-                        <div className="flex items-center space-x-2 text-muted-foreground">
-                          <span className="font-medium text-primary">{experience.company}</span>
-                          <span>•</span>
-                          <span>{experience.duration}</span>
-                        </div>
-                      </div>
-                      
-                      {isActive && (
-                        <>
-                          <ul className="space-y-2 text-muted-foreground">
-                            {experience.description.map((item, i) => (
-                              <li key={i} className="flex items-start">
-                                <span className="text-primary mr-2 mt-1">•</span>
-                                {item}
-                              </li>
-                            ))}
-                          </ul>
-                          
-                          <div className="flex flex-wrap gap-2 mt-6">
-                            {experience.skills.map((skill) => (
-                              <span
-                                key={skill}
-                                className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-full border border-primary/20"
-                              >
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </>
-                      )}
+                  <div className="ml-16">
+                    <div className={`transition-all duration-700 ${
+                      isActive ? 'text-4xl' : 'text-2xl'
+                    } font-light text-foreground mb-4`}>
+                      {experience.company}
                     </div>
+                    
+                    <div className={`transition-all duration-700 ${
+                      isActive ? 'text-xl' : 'text-lg'
+                    } text-muted-foreground mb-2`}>
+                      {experience.title}
+                    </div>
+                    
+                    <div className={`transition-all duration-700 ${
+                      isActive ? 'text-base' : 'text-sm'
+                    } text-muted-foreground/60 mb-6`}>
+                      {experience.duration}
+                    </div>
+                    
+                    {isActive && (
+                      <div className="text-muted-foreground/80 space-y-1 animate-fade-in">
+                        {experience.description.map((item, i) => (
+                          <div key={i} className="text-sm">
+                            {item}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
             })}
           </div>
           
-          {/* Navigation hint */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center text-muted-foreground text-sm">
-            Scroll to navigate • {activeIndex + 1} of {workExperiences.length}
+          {/* Minimal progress indicator */}
+          <div className="absolute bottom-8 left-8 text-muted-foreground/40 text-sm font-mono">
+            {String(activeIndex + 1).padStart(2, '0')} / {String(workExperiences.length).padStart(2, '0')}
           </div>
         </div>
       </div>
