@@ -516,10 +516,11 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
         setClashData({
           name: "Bagel",
           tag: "#22GQG09CL", 
-          trophies: 9000,
-          bestTrophies: 9200,
-          kingLevel: 14,
+          trophies: 5644,
+          bestTrophies: 5644,
+          kingLevel: 15,
           rank: "Ultimate Champion",
+          bestRating: 1833,
           currentDeck: [
             {
               name: "Archers",
@@ -584,9 +585,13 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
 
   return (
     <Widget
-      icon={<Swords className="w-4 h-4" />}
+      icon={
+        <div className="w-4 h-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded border border-yellow-400 flex items-center justify-center">
+          <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
+        </div>
+      }
       title="Clash Royale"
-      description={`${clashData?.name} • ${clashData?.rank}`}
+      description={`${clashData?.name} • ${clashData?.rank} (${clashData?.bestRating})`}
       isClickable={false}
       isExpanded={isExpanded}
       onToggleExpand={onToggleExpand}
@@ -609,13 +614,13 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
         </div>
         <div>
           <div className="text-xs text-muted-foreground mb-2">Current Deck:</div>
-          <div className="grid grid-cols-4 gap-1">
+          <div className="grid grid-cols-2 gap-1">
             {clashData?.currentDeck && clashData.currentDeck.map((card: any, index: number) => (
               <div key={index} className="relative group">
                 <img 
                   src={card.image} 
                   alt={card.name}
-                  className="w-full h-10 object-contain bg-muted rounded border hover:scale-105 transition-transform"
+                  className="w-full h-12 object-contain bg-muted rounded border hover:scale-105 transition-transform"
                   onError={(e) => {
                     // Fallback to colored placeholder if image fails
                     const target = e.target as HTMLImageElement;
