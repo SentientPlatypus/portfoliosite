@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { TypewriterAnimation } from './TypewriterAnimation';
 import { Intellisense, IntellisenseContent } from './Intellisense';
-import { InteractiveInfo } from './InteractiveWidgets';
+import { InteractiveWidgets } from './InteractiveWidgets';
 import { ProjectsError } from './ProjectsError';
 import { PortfolioContent } from './PortfolioContent';
 import { WorkTimeline } from './WorkTimeline';
@@ -10,7 +10,7 @@ const intellisenseOptions = [
   {
     id: 'info',
     label: 'info',
-    content: <InteractiveInfo />
+    content: <InteractiveWidgets />
   },
   {
     id: 'work',

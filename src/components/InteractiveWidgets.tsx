@@ -54,324 +54,53 @@ const Widget = ({ icon, title, description, isClickable = true, onClick, childre
   );
 };
 
-const SpotifyWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onToggleExpand: () => void }) => {
+const SpotifyWidget = () => {
   return (
-    <Widget
-      icon={<Music className="w-4 h-4" />}
-      title="Now Playing"
-      description="Currently listening to Spotify"
-      isClickable={false}
-      isExpanded={isExpanded}
-      onToggleExpand={onToggleExpand}
-    >
-      <div className="w-full">
-        <iframe 
-          data-testid="embed-iframe" 
-          style={{borderRadius: '12px'}} 
-          src="https://open.spotify.com/embed/track/4h4QlmocP3IuwYEj2j14p8?utm_source=generator" 
-          width="100%" 
-          height="152" 
-          frameBorder="0" 
-          allowFullScreen 
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-          loading="lazy"
-        />
-      </div>
-    </Widget>
+    <div className="col-span-2">
+      <iframe 
+        data-testid="embed-iframe" 
+        style={{borderRadius: '12px'}} 
+        src="https://open.spotify.com/embed/track/4h4QlmocP3IuwYEj2j14p8?utm_source=generator" 
+        width="100%" 
+        height="152" 
+        frameBorder="0" 
+        allowFullScreen 
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+        loading="lazy"
+      />
+    </div>
   );
 };
 
-const YouTubeWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onToggleExpand: () => void }) => {
-  const [youtubeData, setYoutubeData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  const handleExternalClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    window.open('https://www.youtube.com/@sentientplatypus8740', '_blank');
-  };
-
-  useEffect(() => {
-    const fetchYouTubeData = async () => {
-      try {
-        // For now, using the correct data you provided since YouTube API requires API key
-        // In a real app, you would use YouTube Data API v3:
-        // https://developers.google.com/youtube/v3/docs/channels/list
-        console.log('YouTube data source: Manual data based on correct channel statistics');
-        setYoutubeData({
-          subscriberCount: '148',
-          videoCount: 7,
-          latestVideo: {
-            title: 'Recent Upload',
-            views: '1.2K+',
-            publishedTime: '2 weeks ago'
-          }
-        });
-      } catch (error) {
-        console.error('Failed to fetch YouTube data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchYouTubeData();
-  }, []);
-
-  if (loading) {
-    return (
-      <Widget
-        icon={<Play className="w-4 h-4" />}
-        title="YouTube"
-        description="Loading..."
-        isExpanded={isExpanded}
-        onToggleExpand={onToggleExpand}
-      >
-        <div className="flex items-center justify-center p-4">
-          <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full"></div>
-        </div>
-      </Widget>
-    );
-  }
-
+const YouTubeWidget = () => {
   return (
-    <Widget
-      icon={
-        <div className="w-4 h-4 bg-red-500 rounded flex items-center justify-center">
-          <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 fill-white">
-            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-          </svg>
-        </div>
-      }
-      title="YouTube"
-      description={`${youtubeData?.subscriberCount} subscribers • ${youtubeData?.videoCount} videos`}
-      isExpanded={isExpanded}
-      onToggleExpand={onToggleExpand}
-    >
-      <div className="space-y-2">
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-muted">
-            <img 
-              src="https://yt3.ggpht.com/ytc/AIdro_n3KrlEQnR8i64nWxPu0rYzBcnqKaK8Qj8z3qNVdA=s88-c-k-c0x00ffffff-no-rj"
-              alt="Channel avatar"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                // Fallback to colored placeholder if image fails
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const fallback = target.parentElement?.querySelector('.fallback') as HTMLElement;
-                if (fallback) fallback.style.display = 'flex';
-              }}
-            />
-            <div className="w-full h-full bg-gradient-to-br from-red-400 to-red-600 items-center justify-center text-white font-bold hidden fallback">
-              S
-            </div>
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium">{youtubeData?.latestVideo?.title}</p>
-            <p className="text-xs text-muted-foreground">{youtubeData?.latestVideo?.views} views • {youtubeData?.latestVideo?.publishedTime}</p>
-          </div>
-        </div>
-        <button 
-          className="mt-2 text-xs text-red-500 hover:text-red-400" 
-          onClick={handleExternalClick}
-        >
-          View on YouTube
-        </button>
-      </div>
-    </Widget>
+    <div className="rounded-xl overflow-hidden bg-card border border-border col-span-2">
+      <iframe
+        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+        width="100%"
+        height="152"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="w-full"
+        title="YouTube video"
+      />
+    </div>
   );
 };
 
-const GitHubWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onToggleExpand: () => void }) => {
-  const [githubData, setGithubData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  const handleExternalClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    window.open('https://github.com/SentientPlatypus', '_blank');
-  };
-
-  // Fetch real GitHub data
-  useEffect(() => {
-    const fetchGitHubData = async () => {
-      try {
-        const userResponse = await fetch('https://api.github.com/users/SentientPlatypus');
-        const userData = await userResponse.json();
-        
-        const reposResponse = await fetch('https://api.github.com/users/SentientPlatypus/repos?sort=updated&per_page=10');
-        const reposData = await reposResponse.json();
-        
-        // Get contributions data (this is a simplified approach)
-        const eventsResponse = await fetch('https://api.github.com/users/SentientPlatypus/events/public?per_page=100');
-        const eventsData = await eventsResponse.json();
-        
-        setGithubData({
-          user: userData,
-          repos: reposData,
-          events: eventsData
-        });
-      } catch (error) {
-        console.error('Failed to fetch GitHub data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGitHubData();
-  }, []);
-
-  // Generate commit activity based on real GitHub events  
-  const generateCommitData = () => {
-    if (!githubData?.events) return [];
-    
-    const weeks = [];
-    const today = new Date();
-    
-    // Create a map of dates to contribution counts for faster lookup
-    const contributionMap = new Map();
-    githubData.events.forEach((event: any) => {
-      const eventDate = new Date(event.created_at).toDateString();
-      if (event.type === 'PushEvent' || event.type === 'CreateEvent' || 
-          event.type === 'PullRequestEvent' || event.type === 'IssuesEvent') {
-        contributionMap.set(eventDate, (contributionMap.get(eventDate) || 0) + 1);
-      }
-    });
-    
-    // Generate weeks starting from 12 weeks ago
-    for (let week = 0; week < 12; week++) {
-      const weekData = [];
-      for (let day = 0; day < 7; day++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - (84 - (week * 7 + day))); // Start from 12 weeks ago
-        
-        // Only count contributions for dates not in the future
-        const contributions = date <= today ? (contributionMap.get(date.toDateString()) || 0) : 0;
-        
-        let level = 0;
-        if (contributions > 0) {
-          if (contributions === 1) level = 1;
-          else if (contributions <= 3) level = 2; 
-          else if (contributions <= 5) level = 3;
-          else level = 4;
-        }
-        
-        weekData.push({
-          date: date.toISOString().split('T')[0],
-          count: contributions,
-          level: level
-        });
-      }
-      weeks.push(weekData);
-    }
-    return weeks;
-  };
-
-  const commitWeeks = generateCommitData();
-  const totalCommits = commitWeeks.flat().reduce((sum, day) => sum + day.count, 0);
-  const publicRepos = githubData?.user?.public_repos || 0;
-
-  const getIntensityColor = (level: number) => {
-    const colors = [
-      'bg-muted', // 0 commits
-      'bg-green-200', // 1-2 commits
-      'bg-green-400', // 3-4 commits  
-      'bg-green-600', // 5-6 commits
-      'bg-green-800'  // 7+ commits
-    ];
-    return colors[level];
-  };
-
-  if (loading) {
-    return (
-      <Widget
-        icon={
-          <div className="w-4 h-4 bg-black rounded flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 fill-white">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-          </div>
-        }
-        title="GitHub"
-        description="Loading..."
-        isExpanded={isExpanded}
-        onToggleExpand={onToggleExpand}
-      >
-        <div className="flex items-center justify-center p-4">
-          <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full"></div>
-        </div>
-      </Widget>
-    );
-  }
-
+const GitHubWidget = () => {
   return (
-    <Widget
-      icon={
-        <div className="w-4 h-4 bg-black rounded flex items-center justify-center">
-          <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 fill-white">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-          </svg>
-        </div>
-      }
-      title="GitHub"
-      description={`${totalCommits} recent contributions • ${publicRepos} repos`}
-      isExpanded={isExpanded}
-      onToggleExpand={onToggleExpand}
-    >
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">12 weeks ago</span>
-          <span className="text-muted-foreground">Today</span>
-        </div>
-        <div className="grid grid-cols-12 gap-0.5">
-          {commitWeeks.map((week, weekIndex) => (
-            <div key={weekIndex} className="grid grid-rows-7 gap-0.5">
-              {week.map((day, dayIndex) => (
-                <div
-                  key={dayIndex}
-                  className={`w-2 h-2 rounded-sm ${getIntensityColor(day.level)}`}
-                  title={`${day.count} commits on ${day.date}`}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Less</span>
-          <div className="flex space-x-0.5">
-            {[0, 1, 2, 3, 4].map(level => (
-              <div key={level} className={`w-2 h-2 rounded-sm ${getIntensityColor(level)}`} />
-            ))}
-          </div>
-          <span>More</span>
-        </div>
-        <div className="space-y-2 text-xs">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Followers:</span>
-            <span>{githubData?.user?.followers || 0}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Following:</span>
-            <span>{githubData?.user?.following || 0}</span>
-          </div>
-          {githubData?.repos && githubData.repos.length > 0 && (
-            <div className="mt-2">
-              <div className="text-muted-foreground mb-1">Recent repos:</div>
-              {githubData.repos.slice(0, 3).map((repo: any, index: number) => (
-                <div key={index} className="text-xs text-foreground hover:text-primary cursor-pointer" 
-                     onClick={(e) => { e.stopPropagation(); window.open(repo.html_url, '_blank'); }}>
-                  • {repo.name}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <button 
-          className="mt-2 text-xs text-foreground hover:text-primary" 
-          onClick={handleExternalClick}
-        >
-          View GitHub Profile
-        </button>
-      </div>
-    </Widget>
+    <div className="rounded-xl overflow-hidden bg-card border border-border col-span-2">
+      <iframe
+        src="https://github-readme-stats.vercel.app/api?username=SentientPlatypus&show_icons=true&theme=dark&hide_border=true&bg_color=00000000"
+        width="100%"
+        height="152"
+        frameBorder="0"
+        className="w-full"
+        title="GitHub stats"
+      />
+    </div>
   );
 };
 
@@ -698,11 +427,35 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
   );
 };
 
-export const InteractiveInfo = () => {
-  const [expandedWidget, setExpandedWidget] = useState<string | null>(null);
+const ChessWidget = () => {
+  return (
+    <div className="rounded-xl overflow-hidden bg-card border border-border col-span-2">
+      <iframe
+        src="https://www.chess.com/member/sentientplatypus"
+        width="100%"
+        height="152"
+        frameBorder="0"
+        className="w-full"
+        title="Chess.com profile"
+      />
+    </div>
+  );
+};
 
-  const toggleWidget = (widgetId: string) => {
-    setExpandedWidget(expandedWidget === widgetId ? null : widgetId);
+export const InteractiveWidgets = () => {
+  const [expandedWidgets, setExpandedWidgets] = useState({
+    spotify: false,
+    youtube: false,
+    github: false,
+    leetcode: false,
+    chess: false
+  });
+
+  const toggleWidget = (widgetId: keyof typeof expandedWidgets) => {
+    setExpandedWidgets(prev => ({
+      ...prev,
+      [widgetId]: !prev[widgetId]
+    }));
   };
 
   return (
@@ -714,27 +467,12 @@ export const InteractiveInfo = () => {
         </p>
       </div>
       
-      <div className="grid grid-cols-2 gap-3">
-        <SpotifyWidget 
-          isExpanded={expandedWidget === 'spotify'} 
-          onToggleExpand={() => toggleWidget('spotify')} 
-        />
-        <YouTubeWidget 
-          isExpanded={expandedWidget === 'youtube'} 
-          onToggleExpand={() => toggleWidget('youtube')} 
-        />
-        <GitHubWidget 
-          isExpanded={expandedWidget === 'github'} 
-          onToggleExpand={() => toggleWidget('github')} 
-        />
-        <LeetCodeWidget 
-          isExpanded={expandedWidget === 'leetcode'} 
-          onToggleExpand={() => toggleWidget('leetcode')} 
-        />
-        <ClashRoyaleWidget 
-          isExpanded={expandedWidget === 'clash'} 
-          onToggleExpand={() => toggleWidget('clash')} 
-        />
+      <div className="grid grid-cols-4 gap-3">
+        <SpotifyWidget />
+        <YouTubeWidget />
+        <GitHubWidget />
+        <LeetCodeWidget isExpanded={expandedWidgets.leetcode} onToggleExpand={() => toggleWidget('leetcode')} />
+        <ChessWidget />
       </div>
     </div>
   );
