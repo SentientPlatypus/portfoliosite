@@ -12,7 +12,8 @@ const projects = [
     githubUrl: "https://github.com/gene/ecommerce",
     liveUrl: "https://ecommerce-demo.com",
     date: "2024-01",
-    status: "completed"
+    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250&fit=crop",
+    award: "winner"
   },
   {
     id: 2,
@@ -22,7 +23,8 @@ const projects = [
     githubUrl: "https://github.com/gene/taskapp",
     liveUrl: "https://taskapp-demo.com",
     date: "2023-11",
-    status: "completed"
+    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop",
+    award: "finalist"
   },
   {
     id: 3,
@@ -32,7 +34,8 @@ const projects = [
     githubUrl: "https://github.com/gene/weather",
     liveUrl: "https://weather-dashboard-demo.com",
     date: "2023-08",
-    status: "completed"
+    image: "https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=400&h=250&fit=crop",
+    award: null
   },
   {
     id: 4,
@@ -41,7 +44,8 @@ const projects = [
     technologies: ["React", "Python", "FastAPI", "Redis", "Docker"],
     githubUrl: "https://github.com/gene/analytics",
     date: "2024-03",
-    status: "in-progress"
+    image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=250&fit=crop",
+    award: "winner"
   },
   {
     id: 5,
@@ -51,7 +55,8 @@ const projects = [
     githubUrl: "https://github.com/gene/crypto-tracker",
     liveUrl: "https://crypto-tracker-demo.com",
     date: "2023-06",
-    status: "completed"
+    image: "https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=400&h=250&fit=crop",
+    award: null
   },
   {
     id: 6,
@@ -60,7 +65,8 @@ const projects = [
     technologies: ["TypeScript", "VS Code API", "Node.js"],
     githubUrl: "https://github.com/gene/vscode-extension",
     date: "2024-02",
-    status: "in-progress"
+    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250&fit=crop",
+    award: "finalist"
   }
 ];
 
@@ -78,11 +84,20 @@ export const PortfolioContent = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {projects.map((project) => (
             <Card key={project.id} className="hover:shadow-lg transition-shadow duration-200">
+              <div className="aspect-video w-full overflow-hidden rounded-t-lg">
+                <img 
+                  src={project.image} 
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <Badge variant={project.status === 'completed' ? 'default' : 'secondary'}>
-                    {project.status === 'completed' ? 'Completed' : 'In Progress'}
-                  </Badge>
+                  {project.award && (
+                    <Badge variant={project.award === 'winner' ? 'default' : 'secondary'}>
+                      {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
+                    </Badge>
+                  )}
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Calendar className="w-3 h-3 mr-1" />
                     {project.date}
