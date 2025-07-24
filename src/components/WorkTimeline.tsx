@@ -90,20 +90,26 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
     }
   }, [activeIndex, isInWorkMode]);
 
+  // Sync work mode with selection state
+  useEffect(() => {
+    if (isSelected && !isInWorkMode) {
+      setIsInWorkMode(true);
+      setActiveIndex(0);
+    } else if (!isSelected && isInWorkMode) {
+      setIsInWorkMode(false);
+    }
+  }, [isSelected]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Only handle keys when this component is selected
-      if (!isSelected) return;
+      // Only handle keys when this component is selected and in work mode
+      if (!isSelected || !isInWorkMode) return;
 
-      if (e.key === 'ArrowRight' && !isInWorkMode) {
-        e.preventDefault();
-        setIsInWorkMode(true);
-        setActiveIndex(0);
-      } else if (e.key === 'ArrowLeft' && isInWorkMode) {
+      if (e.key === 'ArrowLeft') {
         e.preventDefault();
         setIsInWorkMode(false);
         onNavigationRequest?.('left');
-      } else if (isInWorkMode && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault();
         if (e.key === 'ArrowDown') {
           setActiveIndex(prev => (prev + 1) % workExperiences.length);
