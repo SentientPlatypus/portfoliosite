@@ -123,7 +123,7 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
         <h2 className="text-2xl font-bold mb-12 text-center">Professional Experience</h2>
         
         {/* Vertical timeline */}
-        <div className="relative" ref={containerRef}>
+        <div className="relative" ref={containerRef} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
           {/* Vertical timeline line */}
           <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
           
