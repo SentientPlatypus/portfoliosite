@@ -60,8 +60,41 @@ const workExperiences: WorkExperience[] = [
   }
 ];
 
-export const WorkTimeline = () => {
+interface WorkTimelineProps {
+  isSelected?: boolean;
+  onNavigationRequest?: (direction: 'left' | 'right') => void;
+}
+
+export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTimelineProps = {}) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isInWorkMode, setIsInWorkMode] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle keys when this component is selected
+      if (!isSelected) return;
+
+      if (e.key === 'ArrowRight' && !isInWorkMode) {
+        e.preventDefault();
+        setIsInWorkMode(true);
+        setActiveIndex(0);
+      } else if (e.key === 'ArrowLeft' && isInWorkMode) {
+        e.preventDefault();
+        setIsInWorkMode(false);
+        onNavigationRequest?.('left');
+      } else if (isInWorkMode && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        e.preventDefault();
+        if (e.key === 'ArrowDown') {
+          setActiveIndex(prev => (prev + 1) % workExperiences.length);
+        } else {
+          setActiveIndex(prev => (prev - 1 + workExperiences.length) % workExperiences.length);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSelected, isInWorkMode, onNavigationRequest]);
 
   return (
     <div className="relative py-8">
@@ -80,7 +113,7 @@ export const WorkTimeline = () => {
             >
               {/* Timeline dot */}
               <div className={`w-4 h-4 rounded-full border-2 bg-background flex-shrink-0 mt-2 z-10 ${
-                activeIndex === index ? 'border-primary bg-primary' : 'border-border'
+                (isInWorkMode && activeIndex === index) ? 'border-primary bg-primary' : 'border-border'
               }`}></div>
               
               {/* Experience content */}

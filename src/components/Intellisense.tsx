@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 interface IntellisenseOption {
@@ -12,9 +12,18 @@ interface IntellisenseProps {
   onSelectionChange?: (option: IntellisenseOption) => void;
   onHoverChange?: (option: IntellisenseOption | null) => void;
   className?: string;
+  isWorkComponentActive?: boolean;
+  onSetWorkComponentActive?: (active: boolean) => void;
 }
 
-export const Intellisense = ({ options, onSelectionChange, onHoverChange, className }: IntellisenseProps) => {
+export const Intellisense = ({ 
+  options, 
+  onSelectionChange, 
+  onHoverChange, 
+  className,
+  isWorkComponentActive = false,
+  onSetWorkComponentActive
+}: IntellisenseProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
@@ -25,18 +34,30 @@ export const Intellisense = ({ options, onSelectionChange, onHoverChange, classN
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't handle navigation if work component is active
+      if (isWorkComponentActive) return;
+      
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         setSelectedIndex(prev => (prev + 1) % options.length);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSelectedIndex(prev => (prev - 1 + options.length) % options.length);
+      } else if (e.key === 'ArrowRight' && options[selectedIndex]?.id === 'work') {
+        e.preventDefault();
+        onSetWorkComponentActive?.(true);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [options.length]);
+  }, [options.length, isWorkComponentActive, selectedIndex, onSetWorkComponentActive]);
+
+  const handleWorkNavigationRequest = (direction: 'left' | 'right') => {
+    if (direction === 'left') {
+      onSetWorkComponentActive?.(false);
+    }
+  };
 
   const handleOptionClick = (index: number) => {
     setSelectedIndex(index);
@@ -71,6 +92,8 @@ export const Intellisense = ({ options, onSelectionChange, onHoverChange, classN
 interface IntellisenseContentProps {
   content: string | React.ReactNode;
   className?: string;
+  isWorkSelected?: boolean;
+  onWorkNavigationRequest?: (direction: 'left' | 'right') => void;
 }
 
 const parseMarkdown = (text: string) => {
@@ -93,11 +116,27 @@ const parseMarkdown = (text: string) => {
   });
 };
 
-export const IntellisenseContent = ({ content, className }: IntellisenseContentProps) => {
+export const IntellisenseContent = ({ content, className, isWorkSelected, onWorkNavigationRequest }: IntellisenseContentProps) => {
+  const renderContent = () => {
+    if (typeof content === 'string') {
+      return parseMarkdown(content);
+    }
+    
+    // If it's a React component and it's the WorkTimeline, pass the props
+    if (React.isValidElement(content) && typeof content.type === 'function' && content.type.name === 'WorkTimeline') {
+      return React.cloneElement(content as React.ReactElement<any>, {
+        isSelected: isWorkSelected,
+        onNavigationRequest: onWorkNavigationRequest
+      });
+    }
+    
+    return content;
+  };
+
   return (
     <div className={cn('intellisense-bg rounded shadow-lg p-3 ml-2', className)}>
       <div className="text-sm">
-        {typeof content === 'string' ? parseMarkdown(content) : content}
+        {renderContent()}
       </div>
     </div>
   );

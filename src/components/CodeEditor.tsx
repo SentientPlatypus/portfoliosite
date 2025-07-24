@@ -67,6 +67,7 @@ export const CodeEditor = () => {
   const [hoveredOption, setHoveredOption] = useState<typeof intellisenseOptions[0] | null>(null);
   const [activeTab, setActiveTab] = useState<'me.rs' | 'portfolio.ts'>('me.rs');
   const [artifactsGenerated, setArtifactsGenerated] = useState(false);
+  const [isWorkComponentActive, setIsWorkComponentActive] = useState(false);
 
   const intellisenseOptionsWithProjects = [
     ...intellisenseOptions.slice(0, -1), // All except contact
@@ -246,10 +247,18 @@ export const CodeEditor = () => {
                             options={intellisenseOptionsWithProjects}
                             onSelectionChange={handleSelectionChange}
                             onHoverChange={handleHoverChange}
+                            isWorkComponentActive={isWorkComponentActive}
+                            onSetWorkComponentActive={setIsWorkComponentActive}
                           />
                           <IntellisenseContent
                             content={selectedOption.content}
                             className="w-[60vw] min-w-96 max-h-[calc(100vh-300px)] overflow-y-auto"
+                            isWorkSelected={selectedOption.id === 'work' && isWorkComponentActive}
+                            onWorkNavigationRequest={(direction) => {
+                              if (direction === 'left') {
+                                setIsWorkComponentActive(false);
+                              }
+                            }}
                           />
                         </div>
                       )}
@@ -281,7 +290,10 @@ export const CodeEditor = () => {
       {/* Footer with instructions */}
       {showIntellisense && (
         <div className="absolute bottom-8 left-16 text-sm text-muted-foreground">
-          Use ↑↓ arrow keys or click to navigate • Press tab to select
+          {isWorkComponentActive ? 
+            'Use ↑↓ to navigate work experiences • ← to return to methods' : 
+            'Use ↑↓ arrow keys to navigate • → to enter work mode'
+          }
         </div>
       )}
     </div>
