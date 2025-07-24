@@ -252,7 +252,7 @@ export const CodeEditor = () => {
                           />
                           <IntellisenseContent
                             content={selectedOption.content}
-                            className="w-[60vw] min-w-96 max-h-[calc(100vh-300px)] overflow-y-auto"
+                            className="w-[60vw] min-w-96"
                             isWorkSelected={selectedOption.id === 'work' && isWorkComponentActive}
                             onWorkNavigationRequest={(direction) => {
                               if (direction === 'left') {
