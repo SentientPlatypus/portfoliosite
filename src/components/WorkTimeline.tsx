@@ -68,6 +68,27 @@ interface WorkTimelineProps {
 export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTimelineProps = {}) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isInWorkMode, setIsInWorkMode] = useState(false);
+  const experienceRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to active experience
+  useEffect(() => {
+    if (isInWorkMode && experienceRefs.current[activeIndex] && containerRef.current) {
+      const experienceElement = experienceRefs.current[activeIndex];
+      const container = containerRef.current;
+      
+      const containerRect = container.getBoundingClientRect();
+      const experienceRect = experienceElement.getBoundingClientRect();
+      
+      // Calculate scroll position to center the experience
+      const scrollTop = experienceElement.offsetTop - container.offsetTop - (containerRect.height / 2) + (experienceRect.height / 2);
+      
+      container.scrollTo({
+        top: scrollTop,
+        behavior: 'smooth'
+      });
+    }
+  }, [activeIndex, isInWorkMode]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -102,13 +123,14 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
         <h2 className="text-2xl font-bold mb-12 text-center">Professional Experience</h2>
         
         {/* Vertical timeline */}
-        <div className="relative">
+        <div className="relative" ref={containerRef} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
           {/* Vertical timeline line */}
           <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
           
           {workExperiences.map((experience, index) => (
             <div
               key={experience.id}
+              ref={el => experienceRefs.current[index] = el}
               className="relative flex items-start mb-12 last:mb-0"
             >
               {/* Timeline dot */}
