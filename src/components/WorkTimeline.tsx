@@ -124,7 +124,7 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
   }, [isSelected, isInWorkMode, onNavigationRequest]);
 
   return (
-    <div className="relative py-8">
+    <div className="relative pt-4 pb-8">
       <div className="w-full max-w-4xl mx-auto">
         <h2 className="text-lg font-semibold mb-2 text-left">Professional Experience</h2>
         <p className="text-sm text-green-400 mb-12 font-mono">"Ain't no rest for the wicked, money don't grow on trees"</p>
