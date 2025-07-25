@@ -75,7 +75,7 @@ export const AwardsSection = () => {
           <p className="text-sm text-green-400 font-mono">"Excellence recognized"</p>
         </div>
         
-        <div className="relative" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+        <div className="relative pr-4" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
           <div className="space-y-4">
             {awards.map((award) => (
               <div key={award.id} className="border border-border rounded-lg p-4 bg-card hover:border-primary/50 transition-colors">
