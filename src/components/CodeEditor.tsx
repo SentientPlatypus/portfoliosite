@@ -7,6 +7,7 @@ import { PortfolioContent } from './PortfolioContent';
 import { WorkTimeline } from './WorkTimeline';
 import { PicturesSection } from './PicturesSection';
 import { AwardsSection } from './AwardsSection';
+import { FileText, Image, Settings } from 'lucide-react';
 
 interface PictureTab {
   id: string;
@@ -21,8 +22,28 @@ export const CodeEditor = () => {
   const [hoveredOption, setHoveredOption] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<string>('me.rs');
   const [artifactsGenerated, setArtifactsGenerated] = useState(false);
+  const [showPortfolioTab, setShowPortfolioTab] = useState(false);
   const [isWorkComponentActive, setIsWorkComponentActive] = useState(false);
   const [pictureTabs, setPictureTabs] = useState<PictureTab[]>([]);
+
+  const getFileIcon = (filename: string) => {
+    const extension = filename.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'rs':
+        return <Settings className="w-4 h-4 text-orange-500" />;
+      case 'ts':
+      case 'tsx':
+        return <FileText className="w-4 h-4 text-blue-400" />;
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+      case 'gif':
+      case 'svg':
+        return <Image className="w-4 h-4 text-green-400" />;
+      default:
+        return <FileText className="w-4 h-4 text-muted-foreground" />;
+    }
+  };
 
   const handlePictureClick = (picture: { id: string; title: string; imageUrl: string }) => {
     const existingTab = pictureTabs.find(tab => tab.id === picture.id);
@@ -92,10 +113,14 @@ Let's build something amazing together!`
         <ProjectsError 
           onGenerateArtifacts={() => {
             setArtifactsGenerated(true);
+            setShowPortfolioTab(true);
             setActiveTab('portfolio.ts');
           }}
           artifactsGenerated={artifactsGenerated}
-          onGoToPortfolio={() => setActiveTab('portfolio.ts')}
+          onGoToPortfolio={() => {
+            setShowPortfolioTab(true);
+            setActiveTab('portfolio.ts');
+          }}
         />
       )
     },
@@ -165,18 +190,31 @@ Let's build something amazing together!`
           }`}
           onClick={() => setActiveTab('me.rs')}
         >
+          {getFileIcon('me.rs')}
           <span>me.rs</span>
           <span className="text-muted-foreground hover:text-foreground cursor-pointer">×</span>
         </div>
-        {artifactsGenerated && (
+        {showPortfolioTab && (
           <div 
             className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors shrink-0 ${
               activeTab === 'portfolio.ts' ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
             }`}
             onClick={() => setActiveTab('portfolio.ts')}
           >
+            {getFileIcon('portfolio.ts')}
             <span>portfolio.ts</span>
-            <span className="text-muted-foreground hover:text-foreground cursor-pointer">×</span>
+            <span 
+              className="text-muted-foreground hover:text-foreground cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowPortfolioTab(false);
+                if (activeTab === 'portfolio.ts') {
+                  setActiveTab('me.rs');
+                }
+              }}
+            >
+              ×
+            </span>
           </div>
         )}
         {pictureTabs.map((pictureTab) => (
@@ -187,6 +225,7 @@ Let's build something amazing together!`
             }`}
             onClick={() => setActiveTab(pictureTab.id)}
           >
+            {getFileIcon(pictureTab.title)}
             <span>{pictureTab.title}</span>
             <span 
               className="text-muted-foreground hover:text-foreground cursor-pointer"
@@ -313,13 +352,15 @@ Let's build something amazing together!`
             (() => {
               const pictureTab = pictureTabs.find(tab => tab.id === activeTab);
               return pictureTab ? (
-                <div className="flex flex-col items-center justify-center h-full">
+                <div className="flex flex-col h-full p-4">
                   <h2 className="text-xl font-semibold mb-4 text-foreground">{pictureTab.title}</h2>
-                  <img 
-                    src={pictureTab.imageUrl} 
-                    alt={pictureTab.title}
-                    className="max-w-full max-h-[70vh] object-contain rounded-lg border border-border"
-                  />
+                  <div className="flex-1 flex items-center justify-center">
+                    <img 
+                      src={pictureTab.imageUrl} 
+                      alt={pictureTab.title}
+                      className="max-w-full max-h-full object-contain rounded-lg border border-border"
+                    />
+                  </div>
                 </div>
               ) : null;
             })()
