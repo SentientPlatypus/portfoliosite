@@ -45,11 +45,11 @@ export const PicturesSection = ({ onPictureClick }: PicturesSectionProps) => {
           <p className="text-sm text-green-400 font-mono">"Capturing moments in time"</p>
         </div>
         
-        <div className="flex space-x-4 overflow-x-auto pb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {pictures.map((picture) => (
             <div 
               key={picture.id} 
-              className="group cursor-pointer w-80 shrink-0"
+              className="group cursor-pointer"
               onClick={() => onPictureClick?.(picture)}
             >
               <div className="relative overflow-hidden rounded-lg border border-border bg-card hover:border-primary/50 transition-colors">
