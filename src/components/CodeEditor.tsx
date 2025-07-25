@@ -7,7 +7,8 @@ import { PortfolioContent } from './PortfolioContent';
 import { WorkTimeline } from './WorkTimeline';
 import { PicturesSection } from './PicturesSection';
 import { AwardsSection } from './AwardsSection';
-import { FileText, Image, Wrench, FileCode } from 'lucide-react';
+import { FileText, Image, FileCode } from 'lucide-react';
+import { RustIcon } from './RustIcon';
 
 interface PictureTab {
   id: string;
@@ -30,7 +31,7 @@ export const CodeEditor = () => {
     const extension = filename.split('.').pop()?.toLowerCase();
     switch (extension) {
       case 'rs':
-        return <Wrench className="w-4 h-4 text-orange-500" />;
+        return <RustIcon className="w-4 h-4 text-orange-500" />;
       case 'ts':
       case 'tsx':
         return <FileCode className="w-4 h-4 text-blue-400" />;
