@@ -12,6 +12,14 @@ interface Award {
 const awards: Award[] = [
   {
     id: '1',
+    title: 'Amazon Future Engineer 2024',
+    organization: 'Amazon',
+    year: '2024',
+    description: 'Selected for the prestigious Future Engineer program recognizing excellence in computer science',
+    icon: 'trophy'
+  },
+  {
+    id: '2',
     title: 'Best Developer Award',
     organization: 'TechCorp',
     year: '2023',
@@ -19,7 +27,7 @@ const awards: Award[] = [
     icon: 'trophy'
   },
   {
-    id: '2',
+    id: '3',
     title: 'Hackathon Winner',
     organization: 'CodeJam 2023',
     year: '2023',
@@ -27,7 +35,7 @@ const awards: Award[] = [
     icon: 'medal'
   },
   {
-    id: '3',
+    id: '4',
     title: 'Employee of the Month',
     organization: 'StartupXYZ',
     year: '2022',
@@ -35,7 +43,7 @@ const awards: Award[] = [
     icon: 'star'
   },
   {
-    id: '4',
+    id: '5',
     title: 'Open Source Contributor',
     organization: 'GitHub',
     year: '2022',
