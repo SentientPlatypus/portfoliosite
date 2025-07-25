@@ -5,6 +5,8 @@ import { InteractiveInfo } from './InteractiveWidgets';
 import { ProjectsError } from './ProjectsError';
 import { PortfolioContent } from './PortfolioContent';
 import { WorkTimeline } from './WorkTimeline';
+import { PicturesSection } from './PicturesSection';
+import { AwardsSection } from './AwardsSection';
 
 const intellisenseOptions = [
   {
@@ -18,25 +20,14 @@ const intellisenseOptions = [
     content: <WorkTimeline />
   },
   {
-    id: 'fun',
-    label: 'fun',
-    content: `Personal Projects & Hobbies
-
-🎮 Game Development
-  - Built indie games with Unity
-  - Participated in game jams
-
-📸 Photography
-  - Landscape and street photography
-  - Digital art and photo manipulation
-
-🎵 Music Production
-  - Electronic music composition
-  - Sound design for games
-
-🏃‍♂️ Running & Fitness
-  - Marathon runner
-  - Outdoor enthusiast`
+    id: 'pictures',
+    label: 'pictures',
+    content: <PicturesSection />
+  },
+  {
+    id: 'awards',
+    label: 'awards',
+    content: <AwardsSection />
   },
   {
     id: 'contact',
