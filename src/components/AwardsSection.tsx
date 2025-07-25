@@ -75,24 +75,26 @@ export const AwardsSection = () => {
           <p className="text-sm text-green-400 font-mono">"Excellence recognized"</p>
         </div>
         
-        <div className="space-y-4">
-          {awards.map((award) => (
-            <div key={award.id} className="border border-border rounded-lg p-4 bg-card hover:border-primary/50 transition-colors">
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 mt-1">
-                  {getIcon(award.icon)}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <h3 className="font-semibold text-yellow-400">{award.title}</h3>
-                    <span className="text-sm text-purple-400 font-medium">{award.year}</span>
+        <div className="relative" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+          <div className="space-y-4">
+            {awards.map((award) => (
+              <div key={award.id} className="border border-border rounded-lg p-4 bg-card hover:border-primary/50 transition-colors">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 mt-1">
+                    {getIcon(award.icon)}
                   </div>
-                  <p className="text-sm text-primary font-medium mb-2">{award.organization}</p>
-                  <p className="text-sm text-muted-foreground">{award.description}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="font-semibold text-yellow-400">{award.title}</h3>
+                      <span className="text-sm text-purple-400 font-medium">{award.year}</span>
+                    </div>
+                    <p className="text-sm text-primary font-medium mb-2">{award.organization}</p>
+                    <p className="text-sm text-muted-foreground">{award.description}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
