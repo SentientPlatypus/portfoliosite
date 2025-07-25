@@ -707,11 +707,24 @@ export const InteractiveInfo = () => {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-semibold mb-2">Hey! I'm Gene</h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          A passionate developer who loves creating beautiful and functional web applications.
-        </p>
+      <div className="flex items-start space-x-4">
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold mb-2">Hey! I'm Gene</h2>
+          <p className="text-sm text-muted-foreground mb-2">
+            A passionate 18-year-old developer with a love for creating beautiful and functional web applications.
+          </p>
+          <p className="text-sm text-muted-foreground mb-2">
+            Currently focused on full-stack development with React, TypeScript, and modern web technologies. 
+            I enjoy building user-friendly interfaces and solving complex problems through clean, efficient code.
+          </p>
+          <p className="text-sm text-muted-foreground mb-4">
+            When I'm not coding, you'll find me exploring new technologies, contributing to open source, 
+            or working on personal projects that challenge my creativity and technical skills.
+          </p>
+        </div>
+        <div className="w-24 h-24 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs text-center flex-shrink-0">
+          Portrait Photo
+        </div>
       </div>
       
       <div className="grid grid-cols-2 gap-3">
