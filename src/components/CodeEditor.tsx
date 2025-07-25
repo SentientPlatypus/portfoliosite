@@ -13,6 +13,7 @@ import { RustIcon } from './RustIcon';
 interface PictureTab {
   id: string;
   title: string;
+  description: string;
   imageUrl: string;
 }
 
@@ -46,7 +47,7 @@ export const CodeEditor = () => {
     }
   };
 
-  const handlePictureClick = (picture: { id: string; title: string; imageUrl: string }) => {
+  const handlePictureClick = (picture: { id: string; title: string; description: string; imageUrl: string }) => {
     const existingTab = pictureTabs.find(tab => tab.id === picture.id);
     if (!existingTab) {
       setPictureTabs(prev => [...prev, picture]);
@@ -354,7 +355,10 @@ Let's build something amazing together!`
               const pictureTab = pictureTabs.find(tab => tab.id === activeTab);
               return pictureTab ? (
                 <div className="flex flex-col h-full p-4">
-                  <h2 className="text-xl font-semibold mb-4 text-foreground">{pictureTab.title}</h2>
+                  <div className="mb-4">
+                    <h2 className="text-xl font-semibold mb-2 text-foreground">{pictureTab.title}</h2>
+                    <p className="text-sm text-muted-foreground">{pictureTab.description}</p>
+                  </div>
                   <div className="flex-1 flex items-center justify-center">
                     <img 
                       src={pictureTab.imageUrl} 
