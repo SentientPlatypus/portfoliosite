@@ -41,24 +41,22 @@ export const PicturesSection = () => {
           <p className="text-sm text-green-400 font-mono">"Capturing moments in time"</p>
         </div>
         
-        <div className="relative" style={{ maxHeight: '60vh', overflowY: 'hidden' }}>
-          <div className="flex space-x-4 overflow-x-auto pb-4" style={{ scrollbarWidth: 'thin' }}>
-            {pictures.map((picture) => (
-              <div key={picture.id} className="flex-shrink-0 w-80 group cursor-pointer">
-                <div className="relative overflow-hidden rounded-lg border border-border bg-card hover:border-primary/50 transition-colors h-full">
-                  <img
-                    src={picture.imageUrl}
-                    alt={picture.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="p-4">
-                    <h3 className="font-medium text-base mb-2">{picture.title}</h3>
-                    <p className="text-sm text-muted-foreground">{picture.description}</p>
-                  </div>
+        <div className="grid grid-cols-2 gap-4">
+          {pictures.map((picture) => (
+            <div key={picture.id} className="group cursor-pointer">
+              <div className="relative overflow-hidden rounded-lg border border-border bg-card hover:border-primary/50 transition-colors">
+                <img
+                  src={picture.imageUrl}
+                  alt={picture.title}
+                  className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="p-3">
+                  <h3 className="font-medium text-sm mb-1">{picture.title}</h3>
+                  <p className="text-xs text-muted-foreground">{picture.description}</p>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
