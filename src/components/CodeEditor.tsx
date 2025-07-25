@@ -61,7 +61,8 @@ export const CodeEditor = () => {
   const [isWorkComponentActive, setIsWorkComponentActive] = useState(false);
 
   const intellisenseOptionsWithProjects = [
-    ...intellisenseOptions.slice(0, -1), // All except contact
+    intellisenseOptions[0], // info
+    intellisenseOptions[1], // work
     {
       id: 'projects',
       label: 'projects',
@@ -76,7 +77,7 @@ export const CodeEditor = () => {
         />
       )
     },
-    intellisenseOptions[intellisenseOptions.length - 1] // contact
+    ...intellisenseOptions.slice(2) // pictures, awards, contact
   ];
 
   const handleDevComplete = () => {
