@@ -32,7 +32,11 @@ const pictures: Picture[] = [
   }
 ];
 
-export const PicturesSection = () => {
+interface PicturesSectionProps {
+  onPictureClick?: (picture: { id: string; title: string; imageUrl: string }) => void;
+}
+
+export const PicturesSection = ({ onPictureClick }: PicturesSectionProps) => {
   return (
     <div className="p-4 h-full overflow-y-auto">
       <div className="max-w-4xl">
@@ -41,14 +45,18 @@ export const PicturesSection = () => {
           <p className="text-sm text-green-400 font-mono">"Capturing moments in time"</p>
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex space-x-4 overflow-x-auto pb-4">
           {pictures.map((picture) => (
-            <div key={picture.id} className="group cursor-pointer">
+            <div 
+              key={picture.id} 
+              className="group cursor-pointer w-80 shrink-0"
+              onClick={() => onPictureClick?.(picture)}
+            >
               <div className="relative overflow-hidden rounded-lg border border-border bg-card hover:border-primary/50 transition-colors">
                 <img
                   src={picture.imageUrl}
                   alt={picture.title}
-                  className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="p-3">
                   <h3 className="font-medium text-sm mb-1">{picture.title}</h3>

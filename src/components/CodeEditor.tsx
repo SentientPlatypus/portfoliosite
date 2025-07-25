@@ -8,31 +8,62 @@ import { WorkTimeline } from './WorkTimeline';
 import { PicturesSection } from './PicturesSection';
 import { AwardsSection } from './AwardsSection';
 
-const intellisenseOptions = [
-  {
-    id: 'info',
-    label: 'info',
-    content: <InteractiveInfo />
-  },
-  {
-    id: 'work',
-    label: 'work',
-    content: <WorkTimeline />
-  },
-  {
-    id: 'pictures',
-    label: 'pictures',
-    content: <PicturesSection />
-  },
-  {
-    id: 'awards',
-    label: 'awards',
-    content: <AwardsSection />
-  },
-  {
-    id: 'contact',
-    label: 'contact',
-    content: `Get In Touch
+interface PictureTab {
+  id: string;
+  title: string;
+  imageUrl: string;
+}
+
+export const CodeEditor = () => {
+  const [step, setStep] = useState<'typing-dev' | 'typing-me' | 'showing-intellisense'>('typing-dev');
+  const [showIntellisense, setShowIntellisense] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<any>(null);
+  const [hoveredOption, setHoveredOption] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<string>('me.rs');
+  const [artifactsGenerated, setArtifactsGenerated] = useState(false);
+  const [isWorkComponentActive, setIsWorkComponentActive] = useState(false);
+  const [pictureTabs, setPictureTabs] = useState<PictureTab[]>([]);
+
+  const handlePictureClick = (picture: { id: string; title: string; imageUrl: string }) => {
+    const existingTab = pictureTabs.find(tab => tab.id === picture.id);
+    if (!existingTab) {
+      setPictureTabs(prev => [...prev, picture]);
+    }
+    setActiveTab(picture.id);
+  };
+
+  const closePictureTab = (pictureId: string) => {
+    setPictureTabs(prev => prev.filter(tab => tab.id !== pictureId));
+    if (activeTab === pictureId) {
+      setActiveTab('me.rs');
+    }
+  };
+
+  const intellisenseOptions = [
+    {
+      id: 'info',
+      label: 'info',
+      content: <InteractiveInfo />
+    },
+    {
+      id: 'work',
+      label: 'work',
+      content: <WorkTimeline />
+    },
+    {
+      id: 'pictures',
+      label: 'pictures',
+      content: <PicturesSection onPictureClick={handlePictureClick} />
+    },
+    {
+      id: 'awards',
+      label: 'awards',
+      content: <AwardsSection />
+    },
+    {
+      id: 'contact',
+      label: 'contact',
+      content: `Get In Touch
 
 📧 Email: gene@example.com
 🐦 Twitter: @gene_codes
@@ -48,17 +79,8 @@ Available for:
 • Speaking at events
 
 Let's build something amazing together!`
-  }
-];
-
-export const CodeEditor = () => {
-  const [step, setStep] = useState<'typing-dev' | 'typing-me' | 'showing-intellisense'>('typing-dev');
-  const [showIntellisense, setShowIntellisense] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(intellisenseOptions[0]);
-  const [hoveredOption, setHoveredOption] = useState<typeof intellisenseOptions[0] | null>(null);
-  const [activeTab, setActiveTab] = useState<'me.rs' | 'portfolio.ts'>('me.rs');
-  const [artifactsGenerated, setArtifactsGenerated] = useState(false);
-  const [isWorkComponentActive, setIsWorkComponentActive] = useState(false);
+    }
+  ];
 
   const intellisenseOptionsWithProjects = [
     intellisenseOptions[0], // info
@@ -79,6 +101,11 @@ export const CodeEditor = () => {
     },
     ...intellisenseOptions.slice(2) // pictures, awards, contact
   ];
+
+  // Set initial selected option
+  useState(() => {
+    setSelectedOption(intellisenseOptions[0]);
+  });
 
   const handleDevComplete = () => {
     // Immediately shift up, then wait 500ms before starting next animation
@@ -131,9 +158,9 @@ export const CodeEditor = () => {
       </div>
 
       {/* File Tabs */}
-      <div className="h-9 bg-[#252526] border-b border-border flex items-center">
+      <div className="h-9 bg-[#252526] border-b border-border flex items-center overflow-x-auto">
         <div 
-          className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors ${
+          className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors shrink-0 ${
             activeTab === 'me.rs' ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
           }`}
           onClick={() => setActiveTab('me.rs')}
@@ -143,7 +170,7 @@ export const CodeEditor = () => {
         </div>
         {artifactsGenerated && (
           <div 
-            className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors ${
+            className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors shrink-0 ${
               activeTab === 'portfolio.ts' ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
             }`}
             onClick={() => setActiveTab('portfolio.ts')}
@@ -152,6 +179,26 @@ export const CodeEditor = () => {
             <span className="text-muted-foreground hover:text-foreground cursor-pointer">×</span>
           </div>
         )}
+        {pictureTabs.map((pictureTab) => (
+          <div 
+            key={pictureTab.id}
+            className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors shrink-0 ${
+              activeTab === pictureTab.id ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
+            }`}
+            onClick={() => setActiveTab(pictureTab.id)}
+          >
+            <span>{pictureTab.title}</span>
+            <span 
+              className="text-muted-foreground hover:text-foreground cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                closePictureTab(pictureTab.id);
+              }}
+            >
+              ×
+            </span>
+          </div>
+        ))}
       </div>
 
       {/* Main Editor Area */}
@@ -224,7 +271,7 @@ export const CodeEditor = () => {
                       className="syntax-variable"
                     />
                   )}
-                  {step === 'showing-intellisense' && (
+                  {step === 'showing-intellisense' && selectedOption && (
                     <div className="relative">
                       <span className="syntax-variable">me</span>
                       <span className="text-white">.</span>
@@ -259,8 +306,23 @@ export const CodeEditor = () => {
                 </div>
               )}
             </>
-          ) : (
+          ) : activeTab === 'portfolio.ts' ? (
             <PortfolioContent />
+          ) : (
+            // Picture tab content
+            (() => {
+              const pictureTab = pictureTabs.find(tab => tab.id === activeTab);
+              return pictureTab ? (
+                <div className="flex flex-col items-center justify-center h-full">
+                  <h2 className="text-xl font-semibold mb-4 text-foreground">{pictureTab.title}</h2>
+                  <img 
+                    src={pictureTab.imageUrl} 
+                    alt={pictureTab.title}
+                    className="max-w-full max-h-[70vh] object-contain rounded-lg border border-border"
+                  />
+                </div>
+              ) : null;
+            })()
           )}
         </div>
       </div>
