@@ -722,7 +722,7 @@ export const InteractiveInfo = () => {
             or working on personal projects that challenge my creativity and technical skills.
           </p>
         </div>
-        <div className="w-24 h-24 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs text-center flex-shrink-0">
+        <div className="w-28 h-36 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs text-center flex-shrink-0">
           Portrait Photo
         </div>
       </div>
