@@ -126,7 +126,7 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
   return (
     <div className="relative py-8">
       <div className="w-full max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-12 text-center">Professional Experience</h2>
+        <h2 className="text-2xl font-bold mb-12 text-right">Professional Experience</h2>
         
         {/* Vertical timeline */}
         <div className="relative" ref={containerRef} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
