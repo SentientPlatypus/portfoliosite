@@ -734,15 +734,14 @@ export const InteractiveInfo = () => {
         <div className="flex-1">
           <h2 className="text-lg font-semibold mb-2">Hey! I'm Gene</h2>
           <p className="text-sm text-muted-foreground mb-2">
-            A passionate 18-year-old developer with a love for creating beautiful and functional web applications.
+            An electrical and computer engineering student at Cornell University.
           </p>
           <p className="text-sm text-muted-foreground mb-2">
-            Currently focused on full-stack development with React, TypeScript, and modern web technologies. 
-            I enjoy building user-friendly interfaces and solving complex problems through clean, efficient code.
+              Im from Jakarta, but I lived most of my life in Ithaca NY. I moved back for a family thing, but I hope to stay in the States! 
+              Be it teaching me or working side by side, all the worthwhile things I do have been influenced by amazing people.
           </p>
           <p className="text-sm text-muted-foreground mb-4">
-            When I'm not coding, you'll find me exploring new technologies, contributing to open source, 
-            or working on personal projects that challenge my creativity and technical skills.
+            If you have a good idea and need some people to run with it, contact me! I hope to spread the love and learn something new in the process.
           </p>
           <p className="text-sm font-medium text-yellow-400 mb-4">
             Currently @ Cornell
