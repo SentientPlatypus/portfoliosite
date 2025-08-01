@@ -748,8 +748,12 @@ export const InteractiveInfo = () => {
             Currently @ Cornell
           </p>
         </div>
-        <div className="w-28 h-36 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs text-center flex-shrink-0">
-          Portrait Photo
+        <div className="w-28 h-36 rounded-lg overflow-hidden flex-shrink-0">
+          <img 
+            src="/lovable-uploads/4df64f57-d54d-441a-9514-c9c8aed3594e.png" 
+            alt="Portrait" 
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
       
