@@ -127,9 +127,11 @@ Let's build something amazing together!`
   ];
 
   // Set initial selected option
-  useState(() => {
-    setSelectedOption(intellisenseOptions[0]);
-  });
+  useEffect(() => {
+    if (!selectedOption) {
+      setSelectedOption(intellisenseOptions[0]);
+    }
+  }, [selectedOption]);
 
   const handleDevComplete = () => {
     // Immediately shift up, then wait 500ms before starting next animation
