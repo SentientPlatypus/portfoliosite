@@ -12,45 +12,50 @@ interface WorkExperience {
 const workExperiences: WorkExperience[] = [
   {
     id: '1',
-    title: 'Senior Frontend Developer',
-    company: 'TechCorp',
-    duration: '2023 - Present',
+    title: 'Amazon Future Engineer Intern',
+    company: 'AWS Cryptography',
+    duration: '4/27/2025 - 8/15/2025',
     description: [
-      'Led development of React applications',
-      'Improved performance by 40%',
-      'Mentored junior developers'
+      'Implemented Dynamic Throttling for Certificate Authority',
+      'Improved throttling performance for over 54 regions',
     ],
-    skills: ['React', 'TypeScript', 'Next.js', 'GraphQL']
+    skills: ['Java', 'TypeScript', 'Cloudwatch', 'EC2']
   },
   {
     id: '2',
-    title: 'Full Stack Developer',
-    company: 'StartupXYZ',
-    duration: '2021 - 2023',
+    title: 'Intern',
+    company: 'Cornell SonicMEMS Lab',
+    duration: '2024 - Present',
     description: [
-      'Built scalable web applications',
-      'Implemented CI/CD pipelines',
-      'Worked with Node.js and PostgreSQL'
+      'Print and image PCBs for GAN network. In SonicMEMS lab under Prof. Amit Lal.',
     ],
-    skills: ['Node.js', 'PostgreSQL', 'Docker', 'AWS']
+    skills: ['Volterra', 'BotFactory']
   },
   {
     id: '3',
-    title: 'Frontend Developer',
-    company: 'WebAgency',
-    duration: '2020 - 2021',
+    title: 'Experiment Developer',
+    company: 'Cornell SC Johnson',
+    duration: '2024',
     description: [
-      'Developed responsive websites',
-      'Collaborated with design team',
-      'Optimized for mobile performance'
+      'Created website to study how "nudging" affects B2B consumer behavior',
     ],
-    skills: ['Vue.js', 'SCSS', 'Webpack', 'Figma']
+    skills: ['Python', 'Flask']
+  },
+  {
+    id: '3',
+    title: 'Research Intern',
+    company: 'Cornell Autonommous Systems Lab',
+    duration: '2023',
+    description: [
+      'Study determining whether human-initiated/robot-initiated evactuations are more effective.',
+    ],
+    skills: ['ROS', 'MatLab', 'Python']
   },
   {
     id: '4',
-    title: 'Junior Developer',
-    company: 'DevCorp',
-    duration: '2019 - 2020',
+    title: 'Systems Intern',
+    company: 'Lockheed Martin',
+    duration: '2023',
     description: [
       'Maintained legacy applications',
       'Learned modern web technologies',
