@@ -27,6 +27,7 @@ export const CodeEditor = () => {
   const [showPortfolioTab, setShowPortfolioTab] = useState(false);
   const [isWorkComponentActive, setIsWorkComponentActive] = useState(false);
   const [pictureTabs, setPictureTabs] = useState<PictureTab[]>([]);
+  const [showMobileMethodSelector, setShowMobileMethodSelector] = useState(false);
 
   const getFileIcon = (filename: string) => {
     const extension = filename.split('.').pop()?.toLowerCase();
@@ -316,27 +317,79 @@ Let's build something amazing together!`
                         {selectedOption.label}()
                       </span>
                       
-                      {/* Intellisense tooltips */}
+                      {/* Desktop Intellisense tooltips */}
                       {showIntellisense && (
-                        <div className="absolute top-6 left-4 flex z-10">
-                          <Intellisense
-                            options={intellisenseOptionsWithProjects}
-                            onSelectionChange={handleSelectionChange}
-                            onHoverChange={handleHoverChange}
-                            isWorkComponentActive={isWorkComponentActive}
-                            onSetWorkComponentActive={setIsWorkComponentActive}
-                          />
-                          <IntellisenseContent
-                            content={selectedOption.content}
-                            className="w-[90vw] sm:w-[60vw] min-w-80 sm:min-w-96"
-                            isWorkSelected={selectedOption.id === 'work' && isWorkComponentActive}
-                            onWorkNavigationRequest={(direction) => {
-                              if (direction === 'left') {
-                                setIsWorkComponentActive(false);
-                              }
-                            }}
-                          />
-                        </div>
+                        <>
+                          {/* Desktop Layout */}
+                          <div className="absolute top-6 left-4 hidden sm:flex z-10">
+                            <Intellisense
+                              options={intellisenseOptionsWithProjects}
+                              onSelectionChange={handleSelectionChange}
+                              onHoverChange={handleHoverChange}
+                              isWorkComponentActive={isWorkComponentActive}
+                              onSetWorkComponentActive={setIsWorkComponentActive}
+                            />
+                            <IntellisenseContent
+                              content={selectedOption.content}
+                              className="w-[60vw] min-w-96"
+                              isWorkSelected={selectedOption.id === 'work' && isWorkComponentActive}
+                              onWorkNavigationRequest={(direction) => {
+                                if (direction === 'left') {
+                                  setIsWorkComponentActive(false);
+                                }
+                              }}
+                            />
+                          </div>
+
+                          {/* Mobile Layout */}
+                          <div className="sm:hidden">
+                            {/* Mobile Method Selector Button */}
+                            <button
+                              onClick={() => setShowMobileMethodSelector(!showMobileMethodSelector)}
+                              className="absolute top-6 right-4 bg-[#2d2d30] border border-border rounded px-3 py-1 text-xs text-foreground hover:bg-[#3c3c3c] z-20"
+                            >
+                              {selectedOption.label}() ▼
+                            </button>
+
+                            {/* Mobile Method Selector Overlay */}
+                            {showMobileMethodSelector && (
+                              <div className="absolute top-6 left-4 right-4 z-30">
+                                <div className="bg-[#2d2d30] border border-border rounded-lg overflow-hidden">
+                                  {intellisenseOptionsWithProjects.map((option, index) => (
+                                    <button
+                                      key={option.id}
+                                      onClick={() => {
+                                        handleSelectionChange(option);
+                                        setShowMobileMethodSelector(false);
+                                      }}
+                                      className={`w-full text-left px-4 py-2 text-sm hover:bg-[#3c3c3c] transition-colors ${
+                                        selectedOption.id === option.id ? 'bg-[#094771] text-white' : 'text-muted-foreground'
+                                      }`}
+                                    >
+                                      {option.label}()
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Mobile Content Display */}
+                            {!showMobileMethodSelector && (
+                              <div className="absolute top-12 left-4 right-4 z-10">
+                                <IntellisenseContent
+                                  content={selectedOption.content}
+                                  className="w-full"
+                                  isWorkSelected={selectedOption.id === 'work' && isWorkComponentActive}
+                                  onWorkNavigationRequest={(direction) => {
+                                    if (direction === 'left') {
+                                      setIsWorkComponentActive(false);
+                                    }
+                                  }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </>
                       )}
                     </div>
                   )}
