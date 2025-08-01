@@ -80,7 +80,7 @@ export const Intellisense = ({
           onMouseEnter={() => onHoverChange?.(option)}
           onMouseLeave={() => onHoverChange?.(null)}
         >
-          <Box className="w-3 h-3 mr-2 text-blue-400" />
+          <Box className="w-4 h-4 mr-2 text-blue-400" />
           <span className="text-[13px]">{option.label}</span>
         </div>
       ))}
