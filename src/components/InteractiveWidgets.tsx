@@ -744,7 +744,7 @@ export const InteractiveInfo = () => {
             If you have a good idea and need some people to run with it, contact me! I hope to spread the love and learn something new in the process.
           </p>
           <p className="text-sm font-medium text-yellow-400 mb-4">
-            Currently @ Cornell
+            Currently @ Amazon Cryptography
           </p>
         </div>
         <div className="w-48 h-64 rounded-lg overflow-hidden flex-shrink-0">
