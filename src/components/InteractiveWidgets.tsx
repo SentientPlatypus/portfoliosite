@@ -748,9 +748,14 @@ export const InteractiveInfo = () => {
             Currently @ Cornell
           </p>
         </div>
-        <div className="w-28 h-36 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs text-center flex-shrink-0">
-          Portrait Photo
-        </div>
+        <a 
+          href="https://www.instagram.com/genewicaks/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="w-28 h-36 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs text-center flex-shrink-0 hover:bg-muted/50 transition-colors cursor-pointer"
+        >
+          Instagram Profile
+        </a>
       </div>
       
       <div className="grid grid-cols-2 gap-3">
