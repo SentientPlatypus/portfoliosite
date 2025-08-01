@@ -345,8 +345,17 @@ Let's build something amazing together!`
                           <div className="sm:hidden">
                             {/* Mobile Method Selector Button */}
                             <button
-                              onClick={() => setShowMobileMethodSelector(!showMobileMethodSelector)}
-                              className="absolute top-6 right-4 bg-[#2d2d30] border border-border rounded px-3 py-1 text-xs text-foreground hover:bg-[#3c3c3c] z-20"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setShowMobileMethodSelector(!showMobileMethodSelector);
+                              }}
+                              onTouchEnd={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setShowMobileMethodSelector(!showMobileMethodSelector);
+                              }}
+                              className="absolute top-6 right-4 bg-[#2d2d30] border border-border rounded px-3 py-2 text-xs text-foreground hover:bg-[#3c3c3c] active:bg-[#3c3c3c] transition-colors touch-manipulation z-20"
                             >
                               {selectedOption.label}() ▼
                             </button>
@@ -354,20 +363,28 @@ Let's build something amazing together!`
                             {/* Mobile Method Selector Overlay */}
                             {showMobileMethodSelector && (
                               <div className="absolute top-6 left-4 right-4 z-30">
-                                <div className="bg-[#2d2d30] border border-border rounded-lg overflow-hidden">
-                                  {intellisenseOptionsWithProjects.map((option, index) => (
-                                    <button
-                                      key={option.id}
-                                      onClick={() => {
-                                        handleSelectionChange(option);
-                                        setShowMobileMethodSelector(false);
-                                      }}
-                                      className={`w-full text-left px-4 py-2 text-sm hover:bg-[#3c3c3c] transition-colors ${
-                                        selectedOption.id === option.id ? 'bg-[#094771] text-white' : 'text-muted-foreground'
-                                      }`}
-                                    >
-                                      {option.label}()
-                                    </button>
+                                 <div className="bg-[#2d2d30] border border-border rounded-lg overflow-hidden shadow-lg">
+                                   {intellisenseOptionsWithProjects.map((option, index) => (
+                                     <button
+                                       key={option.id}
+                                       onClick={(e) => {
+                                         e.preventDefault();
+                                         e.stopPropagation();
+                                         handleSelectionChange(option);
+                                         setShowMobileMethodSelector(false);
+                                       }}
+                                       onTouchEnd={(e) => {
+                                         e.preventDefault();
+                                         e.stopPropagation();
+                                         handleSelectionChange(option);
+                                         setShowMobileMethodSelector(false);
+                                       }}
+                                       className={`w-full text-left px-4 py-3 text-sm hover:bg-[#3c3c3c] active:bg-[#3c3c3c] transition-colors touch-manipulation ${
+                                         selectedOption.id === option.id ? 'bg-[#094771] text-white' : 'text-muted-foreground'
+                                       }`}
+                                     >
+                                       {option.label}()
+                                     </button>
                                   ))}
                                 </div>
                               </div>

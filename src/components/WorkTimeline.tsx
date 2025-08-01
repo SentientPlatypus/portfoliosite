@@ -42,7 +42,7 @@ const workExperiences: WorkExperience[] = [
     skills: ['Python', 'Flask']
   },
   {
-    id: '3',
+    id: '4',
     title: 'Research Intern',
     company: 'Cornell Autonommous Systems Lab',
     duration: '2023',
@@ -52,7 +52,7 @@ const workExperiences: WorkExperience[] = [
     skills: ['ROS', 'MatLab', 'Python']
   },
   {
-    id: '4',
+    id: '5',
     title: 'Systems Intern',
     company: 'Lockheed Martin',
     duration: '2023',
