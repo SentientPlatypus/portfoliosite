@@ -7,7 +7,7 @@ import { PortfolioContent } from './PortfolioContent';
 import { WorkTimeline } from './WorkTimeline';
 import { PicturesSection } from './PicturesSection';
 import { AwardsSection } from './AwardsSection';
-import { FileText, Image, FileCode } from 'lucide-react';
+import { FileText, Image, FileCode, Box } from 'lucide-react';
 import { RustIcon } from './RustIcon';
 
 interface PictureTab {
@@ -363,28 +363,32 @@ Let's build something amazing together!`
                             {/* Mobile Method Selector Overlay */}
                             {showMobileMethodSelector && (
                               <div className="absolute top-6 left-4 right-4 z-30">
-                                 <div className="bg-[#2d2d30] border border-border rounded-lg overflow-hidden shadow-lg">
-                                   {intellisenseOptionsWithProjects.map((option, index) => (
-                                     <button
-                                       key={option.id}
-                                       onClick={(e) => {
-                                         e.preventDefault();
-                                         e.stopPropagation();
-                                         handleSelectionChange(option);
-                                         setShowMobileMethodSelector(false);
-                                       }}
-                                       onTouchEnd={(e) => {
-                                         e.preventDefault();
-                                         e.stopPropagation();
-                                         handleSelectionChange(option);
-                                         setShowMobileMethodSelector(false);
-                                       }}
-                                       className={`w-full text-left px-4 py-3 text-sm hover:bg-[#3c3c3c] active:bg-[#3c3c3c] transition-colors touch-manipulation ${
-                                         selectedOption.id === option.id ? 'bg-[#094771] text-white' : 'text-muted-foreground'
-                                       }`}
-                                     >
-                                       {option.label}()
-                                     </button>
+                                <div className="intellisense-bg rounded shadow-lg p-1 min-w-48">
+                                  <div className="text-xs text-muted-foreground px-2 py-1 border-b border-border">
+                                    methods
+                                  </div>
+                                  {intellisenseOptionsWithProjects.map((option, index) => (
+                                    <div
+                                      key={option.id}
+                                      className={`flex items-center px-2 py-1 cursor-pointer text-sm ${
+                                        selectedOption.id === option.id ? 'intellisense-selected' : 'hover:bg-muted/50'
+                                      }`}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleSelectionChange(option);
+                                        setShowMobileMethodSelector(false);
+                                      }}
+                                      onTouchEnd={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleSelectionChange(option);
+                                        setShowMobileMethodSelector(false);
+                                      }}
+                                    >
+                                      <Box className="w-4 h-4 mr-2 text-blue-400" />
+                                      <span className="text-[13px]">{option.label}</span>
+                                    </div>
                                   ))}
                                 </div>
                               </div>
