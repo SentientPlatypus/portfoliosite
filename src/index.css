@@ -37,14 +37,14 @@
     /* VS Code specific colors matching the image */
     --editor-bg: 220 13% 18%;
     --editor-line-number: 220 14% 45%;
-    --keyword: 197 100% 75%;  /* Light blue for 'let' */
-    --string: 114 100% 60%;   /* Green for string literals */
+    --keyword: 195 100% 70%;  /* Light blue/cyan for 'let' */
+    --string: 45 100% 65%;    /* Yellow for string literals like "Gene" */
     --comment: 220 14% 45%;
-    --variable: 220 14% 85%;  /* Light text for variables */
-    --method: 60 100% 65%;    /* Yellow-green for methods/types */
-    --type: 60 100% 65%;      /* Yellow-green for Dev, String */
-    --number: 280 100% 75%;   /* Purple-pink for numbers */
-    --mut-keyword: 15 100% 70%; /* Orange-red for 'mut' */
+    --variable: 20 100% 60%;  /* Orange for variables like name, age */
+    --method: 90 100% 60%;    /* Yellow-green for methods like 'from' */
+    --type: 90 100% 60%;      /* Yellow-green for types like Dev, String */
+    --number: 300 100% 65%;   /* Purple/magenta for numbers like 18 */
+    --mut-keyword: 340 100% 70%; /* Red/pink for 'mut' */
     
     /* Intellisense colors - matching the provided image */
     --intellisense-bg: 46 6% 15%; /* #272823 equivalent */
