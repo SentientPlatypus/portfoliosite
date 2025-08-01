@@ -156,19 +156,19 @@ Let's build something amazing together!`
   return (
     <div className="min-h-screen bg-background text-foreground font-mono flex flex-col">
       {/* VS Code Title Bar */}
-      <div className="h-8 bg-[#323233] border-b border-[#2d2d30] flex items-center px-2">
+      <div className="h-6 sm:h-8 bg-[#323233] border-b border-[#2d2d30] flex items-center px-2">
         <div className="flex items-center space-x-2">
           <div className="flex space-x-1">
-            <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-            <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-            <div className="w-3 h-3 rounded-full bg-[#27ca3f]"></div>
+            <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#ff5f56]"></div>
+            <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#ffbd2e]"></div>
+            <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#27ca3f]"></div>
           </div>
-          <span className="text-xs text-muted-foreground ml-4">Visual Studio Code</span>
+          <span className="text-xs text-muted-foreground ml-2 sm:ml-4 hidden sm:inline">Visual Studio Code</span>
         </div>
       </div>
 
       {/* Menu Bar */}
-      <div className="h-8 bg-[#2d2d30] border-b border-[#2d2d30] flex items-center px-2">
+      <div className="h-6 sm:h-8 bg-[#2d2d30] border-b border-[#2d2d30] flex items-center px-2 hidden sm:flex">
         <div className="flex items-center space-x-4 text-xs text-muted-foreground">
           <span className="hover:text-foreground cursor-pointer">File</span>
           <span className="hover:text-foreground cursor-pointer">Edit</span>
@@ -181,20 +181,20 @@ Let's build something amazing together!`
       </div>
 
       {/* File Tabs */}
-      <div className="h-9 bg-[#252526] border-b border-border flex items-center overflow-x-auto">
+      <div className="h-8 sm:h-9 bg-[#252526] border-b border-border flex items-center overflow-x-auto">
         <div 
-          className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors shrink-0 ${
+          className={`border-r border-border px-2 sm:px-4 py-2 text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2 cursor-pointer transition-colors shrink-0 ${
             activeTab === 'me.rs' ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
           }`}
           onClick={() => setActiveTab('me.rs')}
         >
           {getFileIcon('me.rs')}
           <span>me.rs</span>
-          <span className="text-muted-foreground hover:text-foreground cursor-pointer">×</span>
+          <span className="text-muted-foreground hover:text-foreground cursor-pointer hidden sm:inline">×</span>
         </div>
         {showPortfolioTab && (
           <div 
-            className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors shrink-0 ${
+            className={`border-r border-border px-2 sm:px-4 py-2 text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2 cursor-pointer transition-colors shrink-0 ${
               activeTab === 'portfolio.ts' ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
             }`}
             onClick={() => setActiveTab('portfolio.ts')}
@@ -202,7 +202,7 @@ Let's build something amazing together!`
             {getFileIcon('portfolio.ts')}
             <span>portfolio.ts</span>
             <span 
-              className="text-muted-foreground hover:text-foreground cursor-pointer"
+              className="text-muted-foreground hover:text-foreground cursor-pointer hidden sm:inline"
               onClick={(e) => {
                 e.stopPropagation();
                 setShowPortfolioTab(false);
@@ -218,7 +218,7 @@ Let's build something amazing together!`
         {pictureTabs.map((pictureTab) => (
           <div 
             key={pictureTab.id}
-            className={`border-r border-border px-4 py-2 text-sm flex items-center space-x-2 cursor-pointer transition-colors shrink-0 ${
+            className={`border-r border-border px-2 sm:px-4 py-2 text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2 cursor-pointer transition-colors shrink-0 ${
               activeTab === pictureTab.id ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
             }`}
             onClick={() => setActiveTab(pictureTab.id)}
@@ -226,7 +226,7 @@ Let's build something amazing together!`
             {getFileIcon(pictureTab.title)}
             <span>{pictureTab.title}</span>
             <span 
-              className="text-muted-foreground hover:text-foreground cursor-pointer"
+              className="text-muted-foreground hover:text-foreground cursor-pointer hidden sm:inline"
               onClick={(e) => {
                 e.stopPropagation();
                 closePictureTab(pictureTab.id);
@@ -241,7 +241,7 @@ Let's build something amazing together!`
       {/* Main Editor Area */}
       <div className="flex-1 flex">
         {/* Line numbers */}
-        <div className="w-12 bg-[#1e1e1e] border-r border-border">
+        <div className="w-8 sm:w-12 bg-[#1e1e1e] border-r border-border">
           <div className="text-editor-line-number text-sm p-2" style={{ lineHeight: '1.75rem' }}>
             {/* Line numbers transition based on animation step */}
             <div className={`transition-all duration-300 ${step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''}`}>
@@ -256,13 +256,13 @@ Let's build something amazing together!`
         </div>
 
         {/* Editor Content */}
-        <div className="flex-1 bg-[#1e1e1e] p-4 relative">
+        <div className="flex-1 bg-[#1e1e1e] p-2 sm:p-4 relative">
           {activeTab === 'me.rs' ? (
             <>
               {/* Dev declaration typing animation - starts in middle of screen */}
-              <div className={`text-lg transition-all duration-300 ${
-                step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''
-              }`} style={{ lineHeight: '1.75rem' }}>
+              <div className={`text-sm sm:text-lg transition-all duration-300 ${
+                step === 'typing-dev' ? 'mt-[30vh] sm:mt-[35vh] -translate-y-6' : ''
+              }`} style={{ lineHeight: '1.5rem sm:1.75rem' }}>
                 {step === 'typing-dev' && (
                   <TypewriterAnimation
                     text='let mut me = Dev{name: String::from("Gene"), age: 18};'
@@ -299,7 +299,7 @@ Let's build something amazing together!`
 
               {/* Me typing animation - appears on next line after delay */}
               {(step === 'typing-me' || step === 'showing-intellisense') && (
-                <div className="text-lg" style={{ lineHeight: '1.75rem' }}>
+                <div className="text-sm sm:text-lg" style={{ lineHeight: '1.5rem sm:1.75rem' }}>
                   {step === 'typing-me' && (
                     <TypewriterAnimation
                       text="me."
@@ -328,7 +328,7 @@ Let's build something amazing together!`
                           />
                           <IntellisenseContent
                             content={selectedOption.content}
-                            className="w-[60vw] min-w-96"
+                            className="w-[90vw] sm:w-[60vw] min-w-80 sm:min-w-96"
                             isWorkSelected={selectedOption.id === 'work' && isWorkComponentActive}
                             onWorkNavigationRequest={(direction) => {
                               if (direction === 'left') {
@@ -350,9 +350,9 @@ Let's build something amazing together!`
             (() => {
               const pictureTab = pictureTabs.find(tab => tab.id === activeTab);
               return pictureTab ? (
-                <div className="flex flex-col h-full p-4">
+                <div className="flex flex-col h-full p-2 sm:p-4">
                   <div className="mb-4">
-                    <h2 className="text-xl font-semibold mb-2 text-foreground">{pictureTab.title}</h2>
+                    <h2 className="text-lg sm:text-xl font-semibold mb-2 text-foreground">{pictureTab.title}</h2>
                     <p className="text-sm text-muted-foreground">{pictureTab.description}</p>
                   </div>
                   <div className="flex-1 flex items-center justify-center">
@@ -385,7 +385,7 @@ Let's build something amazing together!`
 
       {/* Footer with instructions */}
       {showIntellisense && (
-        <div className="absolute bottom-8 left-16 text-sm text-muted-foreground">
+        <div className="absolute bottom-4 sm:bottom-8 left-2 sm:left-16 text-xs sm:text-sm text-muted-foreground">
           {isWorkComponentActive ? 
             'Use ↑↓ to navigate work experiences • ← to return to methods' : 
             'Use ↑↓ arrow keys to navigate • → to enter work mode'
