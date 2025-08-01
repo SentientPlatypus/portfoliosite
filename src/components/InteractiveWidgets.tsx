@@ -730,8 +730,8 @@ export const InteractiveInfo = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start space-x-4">
-        <div className="flex-1">
+      <div className="flex flex-col md:flex-row items-start md:items-start space-y-4 md:space-y-0 md:space-x-4">
+        <div className="flex-1 order-2 md:order-1">
           <h2 className="text-lg font-semibold mb-2">Hey! I'm Gene</h2>
           <p className="text-sm text-muted-foreground mb-2">
             An electrical and computer engineering student at Cornell University.
@@ -747,7 +747,7 @@ export const InteractiveInfo = () => {
             Currently @ Amazon Cryptography
           </p>
         </div>
-        <div className="w-48 h-64 rounded-lg overflow-hidden flex-shrink-0">
+        <div className="w-32 h-40 md:w-48 md:h-64 rounded-lg overflow-hidden flex-shrink-0 mx-auto md:mx-0 order-1 md:order-2">
           <img 
             src="/lovable-uploads/4df64f57-d54d-441a-9514-c9c8aed3594e.png" 
             alt="Portrait" 
@@ -756,7 +756,7 @@ export const InteractiveInfo = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <SpotifyWidget 
           isExpanded={expandedWidget === 'spotify'} 
           onToggleExpand={() => toggleWidget('spotify')} 
