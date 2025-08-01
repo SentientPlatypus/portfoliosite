@@ -744,6 +744,9 @@ export const InteractiveInfo = () => {
             When I'm not coding, you'll find me exploring new technologies, contributing to open source, 
             or working on personal projects that challenge my creativity and technical skills.
           </p>
+          <p className="text-sm font-medium text-yellow-400 mb-4">
+            Currently @ Cornell
+          </p>
         </div>
         <div className="w-28 h-36 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs text-center flex-shrink-0">
           Portrait Photo
