@@ -135,7 +135,7 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
         <p className="text-sm text-green-400 mb-6 font-mono">"Ain't no rest for the wicked, money don't grow on trees"</p>
         
         {/* Vertical timeline */}
-        <div className="relative" ref={containerRef} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+        <div className="relative" ref={containerRef} style={{ maxHeight: '45vh', overflowY: 'auto' }}>
           {/* Vertical timeline line */}
           <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
           
