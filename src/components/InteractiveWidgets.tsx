@@ -172,7 +172,7 @@ const GitHubWidget = ({
 
   // Generate commit activity based on real GitHub events  
   const generateCommitData = () => {
-    if (!githubData?.events) return [];
+    if (!githubData?.events || !Array.isArray(githubData.events)) return [];
     const weeks = [];
     const today = new Date();
 
