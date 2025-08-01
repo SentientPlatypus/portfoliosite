@@ -88,12 +88,8 @@ export const CodeEditor = () => {
       label: 'contact',
       content: `Get In Touch
 
-📧 Email: gene@example.com
-🐦 Twitter: @gene_codes
-💼 LinkedIn: linkedin.com/in/gene
-🐙 GitHub: github.com/gene
-
-📍 Location: San Francisco, CA
+📧 Email: gjw62@cornell.edu
+📍 Location: Ithaca, NY
 
 Available for:
 • Freelance projects
