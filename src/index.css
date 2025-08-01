@@ -40,7 +40,7 @@
     --keyword: 180 100% 67%;  /* Light blue/cyan for 'let' */
     --string: 54 100% 62%;    /* Yellow for string literals like "Gene" */
     --comment: 220 14% 45%;
-    --variable: 25 85% 55%;   /* Orange for variables like name, age, me */
+    --variable: 0 0% 100%;   /* White for variables like name, age, me */
     --method: 85 60% 55%;     /* Yellow-green for methods like 'from' */
     --type: 85 60% 55%;       /* Yellow-green for types like Dev, String */
     --number: 290 80% 60%;    /* Purple/magenta for numbers like 18 */
