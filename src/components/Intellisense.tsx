@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { Box } from 'lucide-react';
 
 interface IntellisenseOption {
   id: string;
@@ -79,9 +80,7 @@ export const Intellisense = ({
           onMouseEnter={() => onHoverChange?.(option)}
           onMouseLeave={() => onHoverChange?.(null)}
         >
-          <div className="w-3 h-3 bg-blue-500 mr-2 flex items-center justify-center text-[10px] font-mono" style={{ backgroundColor: '#569cd6' }}>
-            □
-          </div>
+          <Box className="w-3 h-3 mr-2 text-blue-400" />
           <span className="text-[13px]">{option.label}</span>
         </div>
       ))}
