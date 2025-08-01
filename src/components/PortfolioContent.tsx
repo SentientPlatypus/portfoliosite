@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Github, ExternalLink, Calendar } from "lucide-react";
+import { Github, ExternalLink, Calendar, FileText } from "lucide-react";
 
 const projects = [
   {
@@ -11,6 +11,7 @@ const projects = [
     technologies: ["React", "TypeScript", "Node.js", "PostgreSQL", "Tailwind CSS"],
     githubUrl: "https://github.com/gene/ecommerce",
     liveUrl: "https://ecommerce-demo.com",
+    paperUrl: "https://arxiv.org/pdf/example-paper.pdf",
     date: "2024-01",
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250&fit=crop",
     award: "winner"
@@ -22,6 +23,7 @@ const projects = [
     technologies: ["React", "Socket.io", "Express", "MongoDB", "Material-UI"],
     githubUrl: "https://github.com/gene/taskapp",
     liveUrl: "https://taskapp-demo.com",
+    paperUrl: null,
     date: "2023-11",
     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop",
     award: "finalist"
@@ -33,6 +35,7 @@ const projects = [
     technologies: ["React", "D3.js", "OpenWeather API", "Chart.js"],
     githubUrl: "https://github.com/gene/weather",
     liveUrl: "https://weather-dashboard-demo.com",
+    paperUrl: null,
     date: "2023-08",
     image: "https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=400&h=250&fit=crop",
     award: null
@@ -43,6 +46,7 @@ const projects = [
     description: "Analytics dashboard for social media platforms with real-time data",
     technologies: ["React", "Python", "FastAPI", "Redis", "Docker"],
     githubUrl: "https://github.com/gene/analytics",
+    paperUrl: "https://example.com/research-paper.pdf",
     date: "2024-03",
     image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=250&fit=crop",
     award: "winner"
@@ -54,6 +58,7 @@ const projects = [
     technologies: ["Vue.js", "TypeScript", "CoinGecko API", "Firebase"],
     githubUrl: "https://github.com/gene/crypto-tracker",
     liveUrl: "https://crypto-tracker-demo.com",
+    paperUrl: null,
     date: "2023-06",
     image: "https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=400&h=250&fit=crop",
     award: null
@@ -64,6 +69,7 @@ const projects = [
     description: "VS Code extension for enhanced productivity with custom snippets",
     technologies: ["TypeScript", "VS Code API", "Node.js"],
     githubUrl: "https://github.com/gene/vscode-extension",
+    paperUrl: null,
     date: "2024-02",
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250&fit=crop",
     award: "finalist"
@@ -116,7 +122,7 @@ export const PortfolioContent = () => {
                     ))}
                   </div>
                   
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button size="sm" variant="outline" asChild>
                       <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                         <Github className="w-3 h-3 mr-1" />
@@ -128,6 +134,14 @@ export const PortfolioContent = () => {
                         <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="w-3 h-3 mr-1" />
                           Live Demo
+                        </a>
+                      </Button>
+                    )}
+                    {project.paperUrl && (
+                      <Button size="sm" variant="outline" asChild>
+                        <a href={project.paperUrl} target="_blank" rel="noopener noreferrer">
+                          <FileText className="w-3 h-3 mr-1" />
+                          Paper
                         </a>
                       </Button>
                     )}
