@@ -698,59 +698,26 @@ const ClashRoyaleWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean
   );
 };
 
-const LinkedInWidget = ({ isExpanded, onToggleExpand }: { isExpanded: boolean; onToggleExpand: () => void }) => {
-  const handleExternalClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+const LinkedInWidget = () => {
+  const handleClick = () => {
     window.open('https://www.linkedin.com/in/geneustace-wicaksono-923410287/', '_blank');
   };
 
   return (
-    <Widget
-      icon={
+    <div 
+      className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-4 cursor-pointer hover:bg-card/70 transition-all duration-200"
+      onClick={handleClick}
+    >
+      <div className="flex items-center space-x-3">
         <div className="w-4 h-4 bg-[#0077B5] rounded flex items-center justify-center">
           <Linkedin className="w-2.5 h-2.5 text-white" />
         </div>
-      }
-      title="LinkedIn"
-      description="Professional network & connections"
-      isExpanded={isExpanded}
-      onToggleExpand={onToggleExpand}
-    >
-      <div className="space-y-3">
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-            <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-lg">
-              G
-            </div>
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium">Geneustace Wicaksono</p>
-            <p className="text-xs text-muted-foreground">Full-Stack Developer</p>
-            <p className="text-xs text-muted-foreground">Jakarta, Indonesia</p>
-          </div>
+        <div className="flex-1">
+          <h4 className="text-sm font-medium">LinkedIn</h4>
+          <p className="text-xs text-muted-foreground">Professional network & connections</p>
         </div>
-        <div className="space-y-2 text-xs">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Industry:</span>
-            <span>Technology</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Experience:</span>
-            <span>2+ years</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Skills:</span>
-            <span>React, TypeScript, Node.js</span>
-          </div>
-        </div>
-        <button 
-          className="mt-2 text-xs text-[#0077B5] hover:text-blue-600 font-medium" 
-          onClick={handleExternalClick}
-        >
-          View LinkedIn Profile
-        </button>
       </div>
-    </Widget>
+    </div>
   );
 };
 
@@ -804,10 +771,7 @@ export const InteractiveInfo = () => {
           isExpanded={expandedWidget === 'clash'} 
           onToggleExpand={() => toggleWidget('clash')} 
         />
-        <LinkedInWidget 
-          isExpanded={expandedWidget === 'linkedin'} 
-          onToggleExpand={() => toggleWidget('linkedin')} 
-        />
+        <LinkedInWidget />
       </div>
     </div>
   );
