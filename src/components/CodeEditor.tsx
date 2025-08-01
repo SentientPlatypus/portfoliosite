@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { TypewriterAnimation } from './TypewriterAnimation';
 import { Intellisense, IntellisenseContent } from './Intellisense';
 import { InteractiveInfo } from './InteractiveWidgets';
@@ -146,13 +146,13 @@ Let's build something amazing together!`
     }, 300);
   };
 
-  const handleSelectionChange = (option: typeof intellisenseOptionsWithProjects[0]) => {
+  const handleSelectionChange = useCallback((option: typeof intellisenseOptionsWithProjects[0]) => {
     setSelectedOption(option);
-  };
+  }, []);
 
-  const handleHoverChange = (option: typeof intellisenseOptionsWithProjects[0] | null) => {
+  const handleHoverChange = useCallback((option: typeof intellisenseOptionsWithProjects[0] | null) => {
     setHoveredOption(option);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-mono flex flex-col">
