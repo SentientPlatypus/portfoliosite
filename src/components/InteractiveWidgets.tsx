@@ -586,9 +586,12 @@ export const InteractiveInfo = () => {
     setExpandedWidget(expandedWidget === widgetId ? null : widgetId);
   };
   return <div className="space-y-4">
-      <div className="flex items-start space-x-4">
-        <div className="flex-1">
+      <div className="md:flex md:items-start md:space-x-4">
+        <div className="md:flex-1">
           <h2 className="text-lg font-semibold mb-2">Hey! I'm Gene</h2>
+          <div className="md:hidden w-32 h-40 rounded-lg overflow-hidden mx-auto mb-4">
+            <img src="/lovable-uploads/4df64f57-d54d-441a-9514-c9c8aed3594e.png" alt="Portrait" className="w-full h-full object-cover" />
+          </div>
           <p className="text-sm text-muted-foreground mb-2">
             An electrical and computer engineering student at Cornell University.
           </p>
@@ -601,7 +604,7 @@ export const InteractiveInfo = () => {
           </p>
           <p className="text-sm font-medium text-yellow-400 mb-4">Currently @ AWS Cryptography</p>
         </div>
-        <div className="w-48 h-64 rounded-lg overflow-hidden flex-shrink-0">
+        <div className="hidden md:block w-48 h-64 rounded-lg overflow-hidden flex-shrink-0">
           <img src="/lovable-uploads/4df64f57-d54d-441a-9514-c9c8aed3594e.png" alt="Portrait" className="w-full h-full object-cover" />
         </div>
       </div>
