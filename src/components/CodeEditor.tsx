@@ -259,7 +259,8 @@ Let's build something amazing together!`
         </div>
 
         {/* Editor Content */}
-        <div className="flex-1 bg-[#1e1e1e] p-2 sm:p-4 relative">
+        <div className="flex-1 bg-[#1e1e1e] relative overflow-hidden">
+          <div className={`h-full ${activeTab === 'portfolio.ts' ? '' : 'p-2 sm:p-4'}`}>
           {activeTab === 'me.rs' ? (
             <>
               {/* Dev declaration typing animation - starts in middle of screen */}
@@ -442,6 +443,7 @@ Let's build something amazing together!`
               ) : null;
             })()
           )}
+          </div>
         </div>
       </div>
 
