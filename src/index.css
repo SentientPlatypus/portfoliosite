@@ -34,6 +34,12 @@
     --input: 220 13% 28%;
     --ring: 207 100% 68%;
 
+    /* Portfolio shadow theme */
+    --portfolio-shadow: 220 13% 8%;  /* Very dark background */
+    --portfolio-card-shadow: 220 13% 12%; /* Card shadow color */
+    --portfolio-hover-glow: 207 100% 68%; /* Bright glow color */
+    --portfolio-card-dark: 220 13% 6%; /* Even darker for cards */
+
     /* VS Code specific colors matching the image */
     --editor-bg: 220 13% 18%;
     --editor-line-number: 220 14% 45%;
