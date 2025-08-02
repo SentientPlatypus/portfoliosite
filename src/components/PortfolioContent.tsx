@@ -277,12 +277,19 @@ export const PortfolioContent = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    // Trigger the drop-down animation shortly after component mounts
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleProjectClick = (project: Project) => {
@@ -309,10 +316,17 @@ export const PortfolioContent = () => {
           /* Mobile: Simple Grid Layout */
           <div className="px-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
+              {projects.map((project, index) => (
                 <div 
                   key={project.id} 
-                  className="cursor-pointer" 
+                  className={`cursor-pointer transition-all duration-700 ease-out ${
+                    isVisible 
+                      ? 'transform translate-y-0 opacity-100' 
+                      : 'transform -translate-y-16 opacity-0'
+                  }`}
+                  style={{ 
+                    transitionDelay: `${index * 100}ms` 
+                  }}
                   onClick={() => handleProjectClick(project)}
                 >
                   <div className="bg-card rounded-lg overflow-hidden shadow-lg">
@@ -361,12 +375,17 @@ export const PortfolioContent = () => {
               {extendedProjects.map((project, index) => (
                 <div 
                   key={project.id} 
-                  className="group relative cursor-pointer transition-all duration-500 hover:scale-105 hover:z-20 transform-gpu" 
+                  className={`group relative cursor-pointer transition-all duration-700 ease-out hover:scale-105 hover:z-20 transform-gpu ${
+                    isVisible 
+                      ? 'transform translate-y-0 opacity-100' 
+                      : 'transform -translate-y-20 opacity-0'
+                  }`}
                   onClick={() => handleProjectClick(project)} 
                   style={{
                     gridColumn: `span ${getGridSpan(index)}`,
                     transformOrigin: 'center center',
-                    backfaceVisibility: 'hidden'
+                    backfaceVisibility: 'hidden',
+                    transitionDelay: `${Math.min(index * 80, 2000)}ms`
                   }}
                 >
                   <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
