@@ -462,7 +462,7 @@ Let's build something amazing together!`
       </div>
 
       {/* Footer with instructions */}
-      {showIntellisense && (
+      {showIntellisense && activeTab === 'me.rs' && (
         <div className="absolute bottom-4 sm:bottom-8 left-2 sm:left-16 text-xs sm:text-sm text-muted-foreground">
           {isWorkComponentActive ? 
             'Use ↑↓ to navigate work experiences • ← to return to methods' : 
