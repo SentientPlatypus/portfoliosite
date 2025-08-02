@@ -111,46 +111,64 @@ export const PortfolioContent = () => {
           </p>
         </div>
 
-        {/* Netflix-style Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className="group relative cursor-pointer transition-all duration-300 hover:scale-110 hover:z-10"
-              onClick={() => handleProjectClick(project)}
-            >
-              <div className="aspect-video overflow-hidden rounded-md bg-muted">
-                <img 
-                  src={project.image} 
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-all duration-300 group-hover:brightness-110"
-                />
-                
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <div className="text-center p-2">
-                    <h3 className="text-white font-semibold text-xs sm:text-sm mb-1 line-clamp-2">
-                      {project.title}
-                    </h3>
-                    {project.award && (
-                      <div className="text-yellow-400 text-xs">
-                        {project.award === 'winner' ? '🏆' : '🥈'}
+        {/* Netflix-style Angled Grid */}
+        <div 
+          className="perspective-container"
+          style={{
+            perspective: '1200px',
+            perspectiveOrigin: '50% 50%'
+          }}
+        >
+          <div 
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 transform-gpu"
+            style={{
+              transform: 'rotateX(25deg) rotateY(-15deg)',
+              transformStyle: 'preserve-3d'
+            }}
+          >
+            {projects.map((project) => (
+              <div
+                key={project.id}
+                className="group relative cursor-pointer transition-all duration-500 hover:scale-125 hover:z-20 transform-gpu"
+                onClick={() => handleProjectClick(project)}
+                style={{
+                  transformOrigin: 'center center',
+                  backfaceVisibility: 'hidden'
+                }}
+              >
+                <div className="aspect-video overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
+                  <img 
+                    src={project.image} 
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-150 group-hover:contrast-110 group-hover:saturate-110"
+                  />
+                  
+                  {/* Glow Effect on Hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
+                  
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
+                    <div className="text-center p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                      <h3 className="text-white font-bold text-sm sm:text-base mb-2 line-clamp-2 drop-shadow-lg">
+                        {project.title}
+                      </h3>
+                      <div className="text-primary font-semibold text-xs">
+                        Click to explore
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Award Badge */}
-                {project.award && (
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="bg-black/80 text-yellow-400 text-xs px-2 py-1 rounded">
-                      {project.award === 'winner' ? 'Winner' : 'Finalist'}
+                      {project.award && (
+                        <div className="text-yellow-300 text-sm mt-1 animate-pulse">
+                          {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
+                        </div>
+                      )}
                     </div>
                   </div>
-                )}
+
+                  {/* Border Glow */}
+                  <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Show more projects message */}
