@@ -312,10 +312,10 @@ export const PortfolioContent = () => {
               {projects.map((project) => (
                 <div 
                   key={project.id} 
-                  className="group relative cursor-pointer transition-all duration-300 hover:scale-105" 
+                  className="cursor-pointer" 
                   onClick={() => handleProjectClick(project)}
                 >
-                  <div className="bg-card rounded-lg overflow-hidden shadow-lg group-hover:shadow-xl">
+                  <div className="bg-card rounded-lg overflow-hidden shadow-lg">
                     <img 
                       src={project.image} 
                       alt={project.title} 
