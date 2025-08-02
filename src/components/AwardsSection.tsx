@@ -1,6 +1,4 @@
 import { Award, Trophy, Medal, Star } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { useState } from 'react';
 interface Award {
   id: string;
   title: string;
@@ -82,15 +80,12 @@ const getIcon = (iconType: string) => {
   }
 };
 export const AwardsSection = () => {
-  const [selectedAward, setSelectedAward] = useState<Award | null>(null);
-
   return <div className="p-4 h-full overflow-y-auto">
       <div className="max-w-4xl">
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-2 text-left">Awards & Recognition</h2>
           <p className="text-sm text-green-400 font-mono">
-            Click on any award to view details
-          </p>
+        </p>
         </div>
         
         <div className="relative pr-4" style={{
@@ -98,42 +93,21 @@ export const AwardsSection = () => {
         overflowY: 'auto'
       }}>
           <div className="space-y-4">
-            {awards.map(award => 
-              <Dialog key={award.id}>
-                <DialogTrigger asChild>
-                  <div className="border border-border rounded-lg p-4 bg-card hover:border-primary/50 hover:bg-card/80 transition-all cursor-pointer transform hover:scale-[1.02]">
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 mt-1">
-                        {getIcon(award.icon)}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <h3 className="font-semibold text-yellow-400">{award.title}</h3>
-                          <span className="text-sm text-purple-400 font-medium">{award.year}</span>
-                        </div>
-                        <p className="text-sm text-primary font-medium mb-2">{award.organization}</p>
-                        <p className="text-sm text-muted-foreground line-clamp-2">{award.description}</p>
-                      </div>
-                    </div>
+            {awards.map(award => <div key={award.id} className="border border-border rounded-lg p-4 bg-card hover:border-primary/50 transition-colors">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 mt-1">
+                    {getIcon(award.icon)}
                   </div>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle className="flex items-center gap-3">
-                      {getIcon(award.icon)}
-                      <span className="text-yellow-400">{award.title}</span>
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-primary">{award.organization}</span>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="font-semibold text-yellow-400">{award.title}</h3>
                       <span className="text-sm text-purple-400 font-medium">{award.year}</span>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{award.description}</p>
+                    <p className="text-sm text-primary font-medium mb-2">{award.organization}</p>
+                    <p className="text-sm text-muted-foreground">{award.description}</p>
                   </div>
-                </DialogContent>
-              </Dialog>
-            )}
+                </div>
+              </div>)}
           </div>
         </div>
       </div>
