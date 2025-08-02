@@ -1,13 +1,24 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Github, ExternalLink, Calendar, FileText } from "lucide-react";
+import { useState } from "react";
+import { ProjectModal } from "./ProjectModal";
 
-const projects = [
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  technologies: string[];
+  githubUrl: string;
+  liveUrl?: string;
+  paperUrl?: string | null;
+  date: string;
+  image: string;
+  award?: string | null;
+}
+
+const projects: Project[] = [
   {
     id: 1,
     title: "E-Commerce Platform",
-    description: "A full-stack e-commerce platform with React, Node.js, and PostgreSQL",
+    description: "A full-stack e-commerce platform with React, Node.js, and PostgreSQL. Features include user authentication, shopping cart, payment processing, order management, and admin dashboard.",
     technologies: ["React", "TypeScript", "Node.js", "PostgreSQL", "Tailwind CSS"],
     githubUrl: "https://github.com/gene/ecommerce",
     liveUrl: "https://ecommerce-demo.com",
@@ -19,7 +30,7 @@ const projects = [
   {
     id: 2,
     title: "Task Management App",
-    description: "Real-time collaborative task management with drag-and-drop functionality",
+    description: "Real-time collaborative task management with drag-and-drop functionality. Built with Socket.io for real-time updates and Material-UI for modern design.",
     technologies: ["React", "Socket.io", "Express", "MongoDB", "Material-UI"],
     githubUrl: "https://github.com/gene/taskapp",
     liveUrl: "https://taskapp-demo.com",
@@ -31,7 +42,7 @@ const projects = [
   {
     id: 3,
     title: "Weather Dashboard",
-    description: "Interactive weather dashboard with charts and location-based forecasts",
+    description: "Interactive weather dashboard with charts and location-based forecasts. Integrates with OpenWeather API for real-time data visualization.",
     technologies: ["React", "D3.js", "OpenWeather API", "Chart.js"],
     githubUrl: "https://github.com/gene/weather",
     liveUrl: "https://weather-dashboard-demo.com",
@@ -43,7 +54,7 @@ const projects = [
   {
     id: 4,
     title: "Social Media Analytics",
-    description: "Analytics dashboard for social media platforms with real-time data",
+    description: "Analytics dashboard for social media platforms with real-time data processing. Features sentiment analysis and engagement metrics.",
     technologies: ["React", "Python", "FastAPI", "Redis", "Docker"],
     githubUrl: "https://github.com/gene/analytics",
     paperUrl: "https://example.com/research-paper.pdf",
@@ -54,7 +65,7 @@ const projects = [
   {
     id: 5,
     title: "Cryptocurrency Tracker",
-    description: "Real-time cryptocurrency price tracker with portfolio management",
+    description: "Real-time cryptocurrency price tracker with portfolio management. Built with Vue.js and Firebase for seamless user experience.",
     technologies: ["Vue.js", "TypeScript", "CoinGecko API", "Firebase"],
     githubUrl: "https://github.com/gene/crypto-tracker",
     liveUrl: "https://crypto-tracker-demo.com",
@@ -66,7 +77,7 @@ const projects = [
   {
     id: 6,
     title: "Code Editor Extension",
-    description: "VS Code extension for enhanced productivity with custom snippets",
+    description: "VS Code extension for enhanced productivity with custom snippets and intelligent code completion features.",
     technologies: ["TypeScript", "VS Code API", "Node.js"],
     githubUrl: "https://github.com/gene/vscode-extension",
     paperUrl: null,
@@ -77,81 +88,85 @@ const projects = [
 ];
 
 export const PortfolioContent = () => {
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleProjectClick = (project: Project) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedProject(null);
+  };
+
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-6xl">
+      <div className="p-6">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2">My Projects</h1>
-          <p className="text-muted-foreground">
-            A collection of projects showcasing my development skills
+          <h1 className="text-3xl font-bold mb-3">My Projects</h1>
+          <p className="text-muted-foreground text-lg">
+            Hover to preview • Click to explore
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Netflix-style Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
           {projects.map((project) => (
-            <Card key={project.id} className="hover:shadow-lg transition-shadow duration-200">
-              <div className="aspect-video w-full overflow-hidden rounded-t-lg">
+            <div
+              key={project.id}
+              className="group relative cursor-pointer transition-all duration-300 hover:scale-110 hover:z-10"
+              onClick={() => handleProjectClick(project)}
+            >
+              <div className="aspect-video overflow-hidden rounded-md bg-muted">
                 <img 
                   src={project.image} 
                   alt={project.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-all duration-300 group-hover:brightness-110"
                 />
+                
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className="text-center p-2">
+                    <h3 className="text-white font-semibold text-xs sm:text-sm mb-1 line-clamp-2">
+                      {project.title}
+                    </h3>
+                    {project.award && (
+                      <div className="text-yellow-400 text-xs">
+                        {project.award === 'winner' ? '🏆' : '🥈'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Award Badge */}
+                {project.award && (
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="bg-black/80 text-yellow-400 text-xs px-2 py-1 rounded">
+                      {project.award === 'winner' ? 'Winner' : 'Finalist'}
+                    </div>
+                  </div>
+                )}
               </div>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  {project.award && (
-                    <Badge variant={project.award === 'winner' ? 'default' : 'secondary'}>
-                      {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
-                    </Badge>
-                  )}
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Calendar className="w-3 h-3 mr-1" />
-                    {project.date}
-                  </div>
-                </div>
-                <CardTitle className="text-lg">{project.title}</CardTitle>
-                <CardDescription className="text-sm">{project.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-1">
-                    {project.technologies.map((tech) => (
-                      <Badge key={tech} variant="outline" className="text-xs">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-                  
-                  <div className="flex gap-2 flex-wrap">
-                    <Button size="sm" variant="outline" asChild>
-                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                        <Github className="w-3 h-3 mr-1" />
-                        Code
-                      </a>
-                    </Button>
-                    {project.liveUrl && (
-                      <Button size="sm" asChild>
-                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="w-3 h-3 mr-1" />
-                          Live Demo
-                        </a>
-                      </Button>
-                    )}
-                    {project.paperUrl && (
-                      <Button size="sm" variant="outline" asChild>
-                        <a href={project.paperUrl} target="_blank" rel="noopener noreferrer">
-                          <FileText className="w-3 h-3 mr-1" />
-                          Paper
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            </div>
           ))}
         </div>
+
+        {/* Show more projects message */}
+        <div className="mt-8 text-center">
+          <p className="text-muted-foreground">
+            Showing 6 of 32+ projects • More coming soon
+          </p>
+        </div>
       </div>
+
+      {/* Project Details Modal */}
+      <ProjectModal 
+        project={selectedProject}
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+      />
     </div>
   );
 };
