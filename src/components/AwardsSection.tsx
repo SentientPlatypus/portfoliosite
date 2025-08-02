@@ -8,41 +8,61 @@ interface Award {
   icon: 'award' | 'trophy' | 'medal' | 'star';
 }
 const awards: Award[] = [{
-  id: '1',
+  id: '2',
   title: 'Amazon Future Engineer 2024',
   organization: 'Amazon',
   year: '2024',
-  description: 'Selected for the prestigious Future Engineer program recognizing excellence in computer science',
+  description: 'One of 400 students selected nationwide for the Amazon Future Engineer program',
   icon: 'trophy'
 }, {
-  id: '2',
-  title: 'Best Developer Award',
-  organization: 'TechCorp',
-  year: '2023',
-  description: 'Recognized for outstanding performance and innovation',
+  id: '1',
+  title: 'Best Hardware Hack',
+  organization: 'Cornell Makeathon',
+  year: '2025',
+  description: 'Proceeded to final presentation round and won best use of Hardware with AuraHat',
   icon: 'trophy'
 }, {
   id: '3',
-  title: 'Hackathon Winner',
-  organization: 'CodeJam 2023',
-  year: '2023',
-  description: 'First place in the 48-hour coding competition',
+  title: 'Best Beginner Hack & Finalist',
+  organization: 'Big Red Hacks',
+  year: '2024',
+  description: 'Proceeded to final presentation round and won best beginner hack with Lockd',
   icon: 'medal'
 }, {
   id: '4',
-  title: 'Employee of the Month',
-  organization: 'StartupXYZ',
-  year: '2022',
-  description: 'Delivered exceptional results and mentored team members',
+  title: 'Semifinalist',
+  organization: 'NASA Grabcad',
+  year: '2024',
+  description: 'Semifinalist in the NASA Lunar Gateway Cargo Storing design challenge',
   icon: 'star'
 }, {
   id: '5',
-  title: 'Open Source Contributor',
-  organization: 'GitHub',
-  year: '2022',
-  description: 'Significant contributions to popular open source projects',
+  title: 'Deans List Semifinalist',
+  organization: 'First Robotics Competition',
+  year: '2023',
+  description: 'Selected to represent Code Red Robotics at the Finger Lakes Regional ',
+  icon: 'medal'
+}, {
+  id: '6',
+  title: 'Cornell University Dept of CS Award',
+  organization: 'Ithaca High School',
+  year: '2024',
+  description: 'Recognized for excellence in CS',
   icon: 'award'
-}];
+}, {
+  id: '7',
+  title: 'Ruth E Polson Academic Achievement Award',
+  organization: 'Ithaca High School',
+  year: '2024',
+  description: 'I think this was a top 10 a GPA award (?)',
+  icon: 'award'
+}, { id: '8',
+  title: 'RIT Computing Medalist',
+  organization: 'Rochester Institute of Technology',
+  year: '2023',
+  description: 'Scholarship',
+  icon: 'award'}];
+
 const getIcon = (iconType: string) => {
   const iconProps = {
     size: 20,
