@@ -227,6 +227,77 @@ const projects: Project[] = [
     date: "2024-09",
     image: "https://images.unsplash.com/photo-1558618666-d9d0c5518ad0?w=400&h=250&fit=crop",
     award: "finalist"
+  },
+  {
+    id: 19,
+    title: "AI Code Generator",
+    description: "Machine learning powered code generation tool that converts natural language descriptions into functional code snippets.",
+    technologies: ["Python", "OpenAI GPT", "React", "FastAPI", "Docker"],
+    githubUrl: "https://github.com/gene/ai-codegen",
+    liveUrl: "https://codegen-demo.com",
+    paperUrl: null,
+    date: "2024-10",
+    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&h=250&fit=crop",
+    award: "winner"
+  },
+  {
+    id: 20,
+    title: "Drone Mapping System",
+    description: "Aerial mapping and surveying platform using drone imagery with AI-powered analysis for construction and agriculture.",
+    technologies: ["React", "Python", "OpenCV", "PostGIS", "Leaflet"],
+    githubUrl: "https://github.com/gene/drone-mapping",
+    liveUrl: "https://drone-demo.com",
+    paperUrl: null,
+    date: "2023-03",
+    image: "https://images.unsplash.com/photo-1473091534298-04dcbce3278c?w=400&h=250&fit=crop",
+    award: null
+  },
+  {
+    id: 21,
+    title: "Quantum Computing Simulator",
+    description: "Educational quantum computing simulator with visual circuit builder and quantum algorithm implementations.",
+    technologies: ["React", "Python", "Qiskit", "WebGL", "D3.js"],
+    githubUrl: "https://github.com/gene/quantum-sim",
+    paperUrl: "https://example.com/quantum-paper.pdf",
+    date: "2024-11",
+    image: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=400&h=250&fit=crop",
+    award: "finalist"
+  },
+  {
+    id: 22,
+    title: "Video Streaming Platform",
+    description: "Netflix-like video streaming service with adaptive bitrate streaming, content recommendations, and offline viewing.",
+    technologies: ["React", "Node.js", "FFmpeg", "Redis", "AWS CloudFront"],
+    githubUrl: "https://github.com/gene/video-stream",
+    liveUrl: "https://video-demo.com",
+    paperUrl: null,
+    date: "2023-01",
+    image: "https://images.unsplash.com/photo-1489599735734-79b4625ba913?w=400&h=250&fit=crop",
+    award: "winner"
+  },
+  {
+    id: 23,
+    title: "Supply Chain Tracker",
+    description: "Blockchain-based supply chain management system with real-time tracking and transparency for logistics companies.",
+    technologies: ["Solidity", "React", "Node.js", "MongoDB", "RFID Integration"],
+    githubUrl: "https://github.com/gene/supply-chain",
+    liveUrl: "https://supply-demo.com",
+    paperUrl: null,
+    date: "2024-12",
+    image: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400&h=250&fit=crop",
+    award: "finalist"
+  },
+  {
+    id: 24,
+    title: "Neural Network Visualizer",
+    description: "Interactive tool for visualizing and understanding neural network architectures with real-time training visualization.",
+    technologies: ["React", "D3.js", "TensorFlow.js", "WebGL", "Python"],
+    githubUrl: "https://github.com/gene/nn-visualizer",
+    liveUrl: "https://neural-demo.com",
+    paperUrl: "https://example.com/neural-paper.pdf",
+    date: "2023-02",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=250&fit=crop",
+    award: "winner"
   }
 ];
 
@@ -260,72 +331,60 @@ export const PortfolioContent = () => {
           </p>
         </div>
 
-        {/* Netflix-style Angled Grid */}
+        {/* Full-width Grid Layout */}
         <div 
-          className="perspective-container"
+          className="grid auto-rows-fr gap-2 sm:gap-3"
           style={{
-            perspective: '1200px',
-            perspectiveOrigin: '50% 50%'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))'
           }}
         >
-          <div 
-            className="grid gap-3 sm:gap-4 transform-gpu"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              transform: 'rotateX(25deg) rotateY(-25deg)',
-              transformStyle: 'preserve-3d'
-            }}
-          >
-            {projects.map((project, index) => (
-              <div
-                key={project.id}
-                className={`group relative cursor-pointer transition-all duration-500 hover:scale-125 hover:z-20 transform-gpu col-span-${getGridSpan(index)}`}
-                onClick={() => handleProjectClick(project)}
-                style={{
-                  transformOrigin: 'center center',
-                  backfaceVisibility: 'hidden',
-                  gridColumn: `span ${getGridSpan(index)}`
-                }}
-              >
-                <div className="aspect-video overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
-                  <img 
-                    src={project.image} 
-                    alt={project.title}
-                    className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-150 group-hover:contrast-110 group-hover:saturate-110"
-                  />
-                  
-                  {/* Glow Effect on Hover */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
-                  
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
-                    <div className="text-center p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                      <h3 className="text-white font-bold text-sm sm:text-base mb-2 line-clamp-2 drop-shadow-lg">
-                        {project.title}
-                      </h3>
-                      <div className="text-primary font-semibold text-xs">
-                        Click to explore
-                      </div>
-                      {project.award && (
-                        <div className="text-yellow-300 text-sm mt-1 animate-pulse">
-                          {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
-                        </div>
-                      )}
+          {projects.map((project, index) => (
+            <div
+              key={project.id}
+              className="group relative cursor-pointer transition-all duration-500 hover:scale-105 hover:z-20"
+              onClick={() => handleProjectClick(project)}
+              style={{
+                gridColumn: `span ${getGridSpan(index)}`
+              }}
+            >
+              <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
+                <img 
+                  src={project.image} 
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-150 group-hover:contrast-110 group-hover:saturate-110"
+                />
+                
+                {/* Glow Effect on Hover */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
+                
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
+                  <div className="text-center p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                    <h3 className="text-white font-bold text-sm sm:text-base mb-2 line-clamp-2 drop-shadow-lg">
+                      {project.title}
+                    </h3>
+                    <div className="text-primary font-semibold text-xs">
+                      Click to explore
                     </div>
+                    {project.award && (
+                      <div className="text-yellow-300 text-sm mt-1 animate-pulse">
+                        {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
+                      </div>
+                    )}
                   </div>
-
-                  {/* Border Glow */}
-                  <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
                 </div>
+
+                {/* Border Glow */}
+                <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
         {/* Show more projects message */}
         <div className="mt-8 text-center">
           <p className="text-muted-foreground">
-            Showing 18 of 32+ projects • More coming soon
+            Showing 24 of 32+ projects • More coming soon
           </p>
         </div>
       </div>
