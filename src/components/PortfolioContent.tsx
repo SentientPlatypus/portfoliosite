@@ -294,7 +294,7 @@ export const PortfolioContent = () => {
   // Extend projects array to go beyond edges and duplicate edge projects lower
   const extendedProjects = [...projects, ...projects.slice(0, 12) // Duplicate first 12 projects to ensure edge ones appear fully later
   ];
-  return <div className="h-full overflow-y-auto overflow-x-hidden" style={{backgroundColor: 'hsl(var(--portfolio-shadow))'}}>
+  return <div className="h-full overflow-y-auto overflow-x-hidden">
       <div className="pt-2 pb-6 -mx-8">
         
 
@@ -311,29 +311,24 @@ export const PortfolioContent = () => {
           // Extend beyond viewport
           marginLeft: '-8rem' // Center the extended grid
         }}>
-          {extendedProjects.map((project, index) => <div key={project.id} className="group relative cursor-pointer transition-all duration-700 hover:scale-110 hover:z-20 transform-gpu" onClick={() => handleProjectClick(project)} style={{
+          {extendedProjects.map((project, index) => <div key={project.id} className="group relative cursor-pointer transition-all duration-500 hover:scale-105 hover:z-20 transform-gpu" onClick={() => handleProjectClick(project)} style={{
             gridColumn: `span ${getGridSpan(index)}`,
             transformOrigin: 'center center',
             backfaceVisibility: 'hidden'
           }}>
-              <div className="h-full overflow-hidden rounded-lg transition-all duration-700 shadow-[0_8px_30px_hsl(var(--portfolio-card-shadow))] group-hover:shadow-[0_20px_60px_hsl(var(--portfolio-hover-glow)/0.6)]" 
-                   style={{backgroundColor: 'hsl(var(--portfolio-card-dark))'}}>
-                <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-all duration-700 brightness-[0.3] contrast-75 saturate-50 group-hover:brightness-110 group-hover:contrast-125 group-hover:saturate-125" />
+              <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
+                <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-150 group-hover:contrast-110 group-hover:saturate-110" />
                 
-                {/* Subtle Dark Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/40 transition-opacity duration-700 group-hover:opacity-0"></div>
-                
-                {/* Light-up Glow Effect on Hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700 bg-gradient-radial from-transparent via-transparent to-transparent" 
-                     style={{background: 'radial-gradient(circle at center, hsl(var(--portfolio-hover-glow)/0.2) 0%, transparent 70%)'}}></div>
+                {/* Glow Effect on Hover */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
                 
                 {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-all duration-700 flex items-center justify-center rounded-lg backdrop-blur-sm">
-                  <div className="text-center p-3 transform translate-y-6 group-hover:translate-y-0 transition-transform duration-700">
+                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
+                  <div className="text-center p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     <h3 className="text-white font-bold text-sm sm:text-base mb-2 line-clamp-2 drop-shadow-lg">
                       {project.title}
                     </h3>
-                    <div className="font-semibold text-xs transition-colors duration-300" style={{color: 'hsl(var(--portfolio-hover-glow))'}}>
+                    <div className="text-primary font-semibold text-xs">
                       Click to explore
                     </div>
                     {project.award && <div className="text-yellow-300 text-sm mt-1 animate-pulse">
@@ -342,8 +337,8 @@ export const PortfolioContent = () => {
                   </div>
                 </div>
 
-                {/* Illuminated Border */}
-                <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-700 border-2 border-transparent group-hover:border-[hsl(var(--portfolio-hover-glow)/0.8)] group-hover:shadow-[0_0_30px_hsl(var(--portfolio-hover-glow)/0.5),inset_0_0_20px_hsl(var(--portfolio-hover-glow)/0.1)]"></div>
+                {/* Border Glow */}
+                <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
               </div>
             </div>)}
           </div>
