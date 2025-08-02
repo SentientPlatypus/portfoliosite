@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProjectModal } from "./ProjectModal";
 interface Project {
   id: number;
@@ -276,6 +276,15 @@ const projects: Project[] = [{
 export const PortfolioContent = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleProjectClick = (project: Project) => {
     setSelectedProject(project);
     setIsModalOpen(true);
@@ -305,7 +314,7 @@ export const PortfolioContent = () => {
       }}>
           <div className="grid auto-rows-fr gap-2 sm:gap-3 transform-gpu" style={{
           gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-          transform: 'rotateX(15deg) rotateY(-15deg)',
+          transform: isMobile ? 'none' : 'rotateX(15deg) rotateY(-15deg)',
           transformStyle: 'preserve-3d',
           width: 'calc(100% + 16rem)',
           // Extend beyond viewport
