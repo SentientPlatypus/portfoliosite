@@ -1,11 +1,11 @@
-import { Award, Trophy, Medal, Star, Smile } from 'lucide-react';
+import { Award, Trophy, Medal, Star } from 'lucide-react';
 interface Award {
   id: string;
   title: string;
   organization: string;
   year: string;
   description: string;
-  icon: 'award' | 'trophy' | 'medal' | 'star' | 'amazon' | 'aws-smile';
+  icon: 'award' | 'trophy' | 'medal' | 'star';
 }
 const awards: Award[] = [{
   id: '2',
@@ -13,7 +13,7 @@ const awards: Award[] = [{
   organization: 'Amazon',
   year: '2024',
   description: 'One of 400 students selected nationwide for the Amazon Future Engineer program',
-  icon: 'amazon'
+  icon: 'trophy'
 }, {
   id: '1',
   title: 'Best Hardware Hack',
@@ -75,18 +75,6 @@ const getIcon = (iconType: string) => {
       return <Medal {...iconProps} />;
     case 'star':
       return <Star {...iconProps} />;
-    case 'amazon':
-      return (
-        <svg viewBox="0 0 24 24" className="w-5 h-5 fill-yellow-400">
-          <path d="M.045 18.02c.072-.116.187-.124.348-.022 3.636 2.11 7.594 3.166 11.87 3.166 2.852 0 5.668-.533 8.447-1.595.161-.102.276-.094.348.022.071.116.029.23-.126.344-3.744 2.166-7.785 3.25-12.092 3.25-2.938 0-5.84-.55-8.708-1.649-2.868 1.099-5.77 1.649-8.708 1.649-4.307 0-8.348-1.084-12.092-3.25-.155-.114-.197-.228-.126-.344zm8.31-10.96c0-1.224.995-2.219 2.219-2.219 1.224 0 2.219.995 2.219 2.219 0 1.224-.995 2.219-2.219 2.219-1.224 0-2.219-.995-2.219-2.219zm6.64 0c0-1.224.995-2.219 2.219-2.219 1.224 0 2.219.995 2.219 2.219 0 1.224-.995 2.219-2.219 2.219-1.224 0-2.219-.995-2.219-2.219z"/>
-        </svg>
-      );
-    case 'aws-smile':
-      return (
-        <svg viewBox="0 0 24 24" className="w-5 h-5 fill-yellow-400">
-          <path d="M.045 18.02c.072-.116.187-.124.348-.022 3.636 2.11 7.594 3.166 11.87 3.166 2.852 0 5.668-.533 8.447-1.595.161-.102.276-.094.348.022.071.116.029.23-.126.344-3.744 2.166-7.785 3.25-12.092 3.25-2.938 0-5.84-.55-8.708-1.649-2.868 1.099-5.77 1.649-8.708 1.649-4.307 0-8.348-1.084-12.092-3.25-.155-.114-.197-.228-.126-.344z"/>
-        </svg>
-      );
     default:
       return <Award {...iconProps} />;
   }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Github, Music, Play, Trophy, Swords, Linkedin, Smile } from 'lucide-react';
+import { Github, Music, Play, Trophy, Swords, Linkedin } from 'lucide-react';
 interface WidgetProps {
   icon: React.ReactNode;
   title: string;
@@ -602,12 +602,7 @@ export const InteractiveInfo = () => {
           <p className="text-sm text-muted-foreground mb-4">
             If you have a good idea and need some people to run with it, contact me! I hope to spread the love and learn something new in the process.
           </p>
-          <div className="flex items-center space-x-2 mb-4">
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-yellow-400">
-              <path d="M.045 18.02c.072-.116.187-.124.348-.022 3.636 2.11 7.594 3.166 11.87 3.166 2.852 0 5.668-.533 8.447-1.595.161-.102.276-.094.348.022.071.116.029.23-.126.344-3.744 2.166-7.785 3.25-12.092 3.25-2.938 0-5.84-.55-8.708-1.649-2.868 1.099-5.77 1.649-8.708 1.649-4.307 0-8.348-1.084-12.092-3.25-.155-.114-.197-.228-.126-.344z"/>
-            </svg>
-            <p className="text-sm font-medium text-yellow-400">Currently @ AWS Cryptography</p>
-          </div>
+          <p className="text-sm font-medium text-yellow-400 mb-4">Currently @ AWS Cryptography</p>
         </div>
         <div className="hidden md:block w-48 h-64 rounded-lg overflow-hidden flex-shrink-0">
           <img src="/lovable-uploads/4df64f57-d54d-441a-9514-c9c8aed3594e.png" alt="Portrait" className="w-full h-full object-cover" />
