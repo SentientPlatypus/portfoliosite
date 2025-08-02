@@ -320,8 +320,7 @@ const LeetCodeWidget = ({
                 }]
               },
               profile: {
-                ranking: Math.max(1000000 - data.solvedProblem * 4000, 50000),
-                // Estimate ranking based on problems solved
+                ranking: 622037, // Your actual LeetCode ranking
                 reputation: 0
               }
             }
