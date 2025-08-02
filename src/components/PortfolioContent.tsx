@@ -324,8 +324,8 @@ export const PortfolioContent = () => {
   return (
     <div className="h-full overflow-y-auto">
       <div className="p-6">
-        <div className="mb-2">
-          <h1 className="text-3xl font-bold mb-3">My Projects</h1>
+        <div>
+          <h1 className="text-3xl font-bold">My Projects</h1>
           <p className="text-muted-foreground text-lg">
             Hover to preview • Click to explore
           </p>
