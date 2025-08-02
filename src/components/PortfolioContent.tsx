@@ -122,7 +122,7 @@ export const PortfolioContent = () => {
           <div 
             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 transform-gpu"
             style={{
-              transform: 'rotateX(25deg) rotateY(-45deg)',
+              transform: 'rotateX(25deg) rotateY(-25deg)',
               transformStyle: 'preserve-3d'
             }}
           >
