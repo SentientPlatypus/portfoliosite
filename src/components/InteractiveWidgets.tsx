@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Github, Music, Play, Trophy, Swords, Linkedin } from 'lucide-react';
+import { Github, Music, Play, Trophy, Swords, Linkedin, Smile } from 'lucide-react';
 interface WidgetProps {
   icon: React.ReactNode;
   title: string;
@@ -602,7 +602,12 @@ export const InteractiveInfo = () => {
           <p className="text-sm text-muted-foreground mb-4">
             If you have a good idea and need some people to run with it, contact me! I hope to spread the love and learn something new in the process.
           </p>
-          <p className="text-sm font-medium text-yellow-400 mb-4">Currently @ AWS Cryptography</p>
+          <div className="flex items-center space-x-2 mb-4">
+            <div className="w-6 h-6 bg-gradient-to-r from-orange-400 to-yellow-500 rounded flex items-center justify-center">
+              <Smile className="w-4 h-4 text-white" />
+            </div>
+            <p className="text-sm font-medium text-yellow-400">Currently @ AWS Cryptography</p>
+          </div>
         </div>
         <div className="hidden md:block w-48 h-64 rounded-lg overflow-hidden flex-shrink-0">
           <img src="/lovable-uploads/4df64f57-d54d-441a-9514-c9c8aed3594e.png" alt="Portrait" className="w-full h-full object-cover" />
