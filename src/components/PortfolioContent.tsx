@@ -321,9 +321,15 @@ export const PortfolioContent = () => {
     return patterns[index % patterns.length];
   };
 
+  // Extend projects array to go beyond edges and duplicate edge projects lower
+  const extendedProjects = [
+    ...projects,
+    ...projects.slice(0, 12), // Duplicate first 12 projects to ensure edge ones appear fully later
+  ];
+
   return (
     <div className="h-full overflow-y-auto overflow-x-hidden">
-      <div className="px-6 pt-2 pb-6">
+      <div className="pt-2 pb-6 -mx-8">
         <div>
           <h1 className="text-3xl font-bold">My Projects</h1>
           <p className="text-muted-foreground text-lg">
@@ -342,12 +348,14 @@ export const PortfolioContent = () => {
           <div 
             className="grid auto-rows-fr gap-2 sm:gap-3 transform-gpu"
             style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
               transform: 'rotateX(15deg) rotateY(-15deg)',
-              transformStyle: 'preserve-3d'
+              transformStyle: 'preserve-3d',
+              width: 'calc(100% + 16rem)', // Extend beyond viewport
+              marginLeft: '-8rem' // Center the extended grid
             }}
           >
-          {projects.map((project, index) => (
+          {extendedProjects.map((project, index) => (
             <div
               key={project.id}
               className="group relative cursor-pointer transition-all duration-500 hover:scale-105 hover:z-20 transform-gpu"
@@ -396,7 +404,7 @@ export const PortfolioContent = () => {
         {/* Show more projects message */}
         <div className="mt-8 text-center">
           <p className="text-muted-foreground">
-            Showing 24 of 32+ projects • More coming soon
+            Showing 36 of 50+ projects • More coming soon
           </p>
         </div>
       </div>
