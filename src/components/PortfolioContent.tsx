@@ -348,13 +348,6 @@ export const PortfolioContent = () => {
             </div>)}
           </div>
         </div>
-
-        {/* Show more projects message */}
-        <div className="mt-8 text-center">
-          <p className="text-muted-foreground">
-            Showing 36 of 50+ projects • More coming soon
-          </p>
-        </div>
       </div>
 
       {/* Project Details Modal */}
