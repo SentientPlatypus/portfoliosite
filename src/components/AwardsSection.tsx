@@ -1,4 +1,4 @@
-import { Award, Trophy, Medal, Star } from 'lucide-react';
+import { Award, Trophy, Medal, Star, ExternalLink } from 'lucide-react';
 interface Award {
   id: string;
   title: string;
@@ -6,6 +6,7 @@ interface Award {
   year: string;
   description: string;
   icon: 'award' | 'trophy' | 'medal' | 'star';
+  link: string;
 }
 const awards: Award[] = [{
   id: '2',
@@ -13,55 +14,65 @@ const awards: Award[] = [{
   organization: 'Amazon',
   year: '2024',
   description: 'One of 400 students selected nationwide for the Amazon Future Engineer program',
-  icon: 'trophy'
+  icon: 'trophy',
+  link: 'https://amazon.jobs/en/teams/university-programs/future-engineer'
 }, {
   id: '1',
   title: 'Best Hardware Hack',
   organization: 'Cornell Makeathon',
   year: '2025',
   description: 'Proceeded to final presentation round and won best use of Hardware with AuraHat',
-  icon: 'trophy'
+  icon: 'trophy',
+  link: 'https://makeathon.org/'
 }, {
   id: '3',
   title: 'Best Beginner Hack & Finalist',
   organization: 'Big Red Hacks',
   year: '2024',
   description: 'Proceeded to final presentation round and won best beginner hack with Lockd',
-  icon: 'medal'
+  icon: 'medal',
+  link: 'https://bigredhacks.com/'
 }, {
   id: '4',
   title: 'Semifinalist',
   organization: 'NASA Grabcad',
   year: '2024',
   description: 'Semifinalist in the NASA Lunar Gateway Cargo Storing design challenge',
-  icon: 'star'
+  icon: 'star',
+  link: 'https://grabcad.com/challenges'
 }, {
   id: '5',
   title: 'Deans List Semifinalist',
   organization: 'First Robotics Competition',
   year: '2023',
   description: 'Selected to represent Code Red Robotics at the Finger Lakes Regional ',
-  icon: 'medal'
+  icon: 'medal',
+  link: 'https://www.firstinspires.org/robotics/frc'
 }, {
   id: '6',
   title: 'Cornell University Dept of CS Award',
   organization: 'Ithaca High School',
   year: '2024',
   description: 'Recognized for excellence in CS',
-  icon: 'award'
+  icon: 'award',
+  link: 'https://www.cs.cornell.edu/'
 }, {
   id: '7',
   title: 'Ruth E Polson Academic Achievement Award',
   organization: 'Ithaca High School',
   year: '2024',
   description: 'I think this was a top 10 a GPA award (?)',
-  icon: 'award'
-}, { id: '8',
+  icon: 'award',
+  link: 'https://www.icsd.k12.ny.us/ihs'
+}, {
+  id: '8',
   title: 'RIT Computing Medalist',
   organization: 'Rochester Institute of Technology',
   year: '2023',
   description: 'Scholarship',
-  icon: 'award'}];
+  icon: 'award',
+  link: 'https://www.rit.edu/study/computing-exploration'
+}];
 
 const getIcon = (iconType: string) => {
   const iconProps = {
@@ -93,21 +104,32 @@ export const AwardsSection = () => {
         overflowY: 'auto'
       }}>
           <div className="space-y-4">
-            {awards.map(award => <div key={award.id} className="border border-border rounded-lg p-4 bg-card hover:border-primary/50 transition-colors">
+            {awards.map(award => (
+              <a 
+                key={award.id} 
+                href={award.link} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block border border-border rounded-lg p-4 bg-card hover:border-primary/50 hover:bg-card/80 transition-all duration-200 cursor-pointer group"
+              >
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0 mt-1">
                     {getIcon(award.icon)}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-semibold text-yellow-400">{award.title}</h3>
-                      <span className="text-sm text-purple-400 font-medium">{award.year}</span>
+                      <h3 className="font-semibold text-yellow-400 group-hover:text-yellow-300 transition-colors">{award.title}</h3>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-purple-400 font-medium">{award.year}</span>
+                        <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </div>
                     </div>
                     <p className="text-sm text-primary font-medium mb-2">{award.organization}</p>
                     <p className="text-sm text-muted-foreground">{award.description}</p>
                   </div>
                 </div>
-              </div>)}
+              </a>
+            ))}
           </div>
         </div>
       </div>
