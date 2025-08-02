@@ -603,9 +603,7 @@ export const InteractiveInfo = () => {
             If you have a good idea and need some people to run with it, contact me! I hope to spread the love and learn something new in the process.
           </p>
           <div className="flex items-center space-x-2 mb-4">
-            <div className="w-6 h-6 bg-gradient-to-r from-orange-400 to-yellow-500 rounded flex items-center justify-center">
-              <Smile className="w-4 h-4 text-white" />
-            </div>
+            <Smile className="w-5 h-5 text-yellow-400" />
             <p className="text-sm font-medium text-yellow-400">Currently @ AWS Cryptography</p>
           </div>
         </div>
