@@ -184,7 +184,7 @@ Let's build something amazing together!`
       </div>
 
       {/* File Tabs */}
-      <div className="h-8 sm:h-9 bg-[#252526] border-b border-border flex items-center overflow-x-auto">
+      <div className="h-8 sm:h-9 bg-[#252526] border-b border-border flex items-center overflow-x-auto overflow-y-hidden">
         <div 
           className={`border-r border-border px-2 sm:px-4 py-2 text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2 cursor-pointer transition-colors shrink-0 ${
             activeTab === 'me.rs' ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
