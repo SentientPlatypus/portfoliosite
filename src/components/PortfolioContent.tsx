@@ -323,7 +323,7 @@ export const PortfolioContent = () => {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="p-6">
+      <div className="px-6 pt-2 pb-6">
         <div>
           <h1 className="text-3xl font-bold">My Projects</h1>
           <p className="text-muted-foreground text-lg">
