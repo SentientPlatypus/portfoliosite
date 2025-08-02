@@ -260,7 +260,7 @@ Let's build something amazing together!`
 
         {/* Editor Content */}
         <div className="flex-1 bg-[#1e1e1e] relative overflow-hidden">
-          <div className={`h-full ${activeTab === 'portfolio.ts' ? '' : 'p-2 sm:p-4'}`}>
+          <div className="h-full overflow-y-auto p-2 sm:p-4">
           {activeTab === 'me.rs' ? (
             <>
               {/* Dev declaration typing animation - starts in middle of screen */}
