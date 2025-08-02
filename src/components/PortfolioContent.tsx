@@ -305,53 +305,99 @@ export const PortfolioContent = () => {
   ];
   return <div className="h-full overflow-y-auto overflow-x-hidden">
       <div className="pt-2 pb-6 -mx-8">
-        
-
-        {/* Full-width Grid Layout with Subtle Angle */}
-        <div className="perspective-container" style={{
-        perspective: '2000px',
-        perspectiveOrigin: '50% 50%'
-      }}>
-          <div className="grid auto-rows-fr gap-2 sm:gap-3 transform-gpu" style={{
-          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-          transform: isMobile ? 'none' : 'rotateX(15deg) rotateY(-15deg)',
-          transformStyle: 'preserve-3d',
-          width: 'calc(100% + 16rem)',
-          // Extend beyond viewport
-          marginLeft: '-8rem' // Center the extended grid
-        }}>
-          {extendedProjects.map((project, index) => <div key={project.id} className="group relative cursor-pointer transition-all duration-500 hover:scale-105 hover:z-20 transform-gpu" onClick={() => handleProjectClick(project)} style={{
-            gridColumn: `span ${getGridSpan(index)}`,
-            transformOrigin: 'center center',
-            backfaceVisibility: 'hidden'
-          }}>
-              <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
-                <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-150 group-hover:contrast-110 group-hover:saturate-110" />
-                
-                {/* Glow Effect on Hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
-                
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
-                  <div className="text-center p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3 className="text-white font-bold text-sm sm:text-base mb-2 line-clamp-2 drop-shadow-lg">
-                      {project.title}
-                    </h3>
-                    <div className="text-primary font-semibold text-xs">
-                      Click to explore
+        {isMobile ? (
+          /* Mobile: Simple Grid Layout */
+          <div className="px-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.map((project) => (
+                <div 
+                  key={project.id} 
+                  className="group relative cursor-pointer transition-all duration-300 hover:scale-105" 
+                  onClick={() => handleProjectClick(project)}
+                >
+                  <div className="bg-card rounded-lg overflow-hidden shadow-lg group-hover:shadow-xl">
+                    <img 
+                      src={project.image} 
+                      alt={project.title} 
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-4">
+                      <h3 className="font-semibold text-lg mb-2 line-clamp-2">{project.title}</h3>
+                      <p className="text-muted-foreground text-sm mb-3 line-clamp-3">{project.description}</p>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {project.technologies.slice(0, 3).map((tech) => (
+                          <span key={tech} className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
+                            {tech}
+                          </span>
+                        ))}
+                        {project.technologies.length > 3 && (
+                          <span className="text-muted-foreground text-xs">+{project.technologies.length - 3} more</span>
+                        )}
+                      </div>
+                      {project.award && (
+                        <div className="text-yellow-600 text-sm font-medium">
+                          {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
+                        </div>
+                      )}
                     </div>
-                    {project.award && <div className="text-yellow-300 text-sm mt-1 animate-pulse">
-                        {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
-                      </div>}
                   </div>
                 </div>
-
-                {/* Border Glow */}
-                <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
-              </div>
-            </div>)}
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          /* Desktop: Gallery Layout */
+          <div className="perspective-container" style={{
+            perspective: '2000px',
+            perspectiveOrigin: '50% 50%'
+          }}>
+            <div className="grid auto-rows-fr gap-2 sm:gap-3 transform-gpu" style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+              transform: 'rotateX(15deg) rotateY(-15deg)',
+              transformStyle: 'preserve-3d',
+              width: 'calc(100% + 16rem)',
+              marginLeft: '-8rem'
+            }}>
+              {extendedProjects.map((project, index) => (
+                <div 
+                  key={project.id} 
+                  className="group relative cursor-pointer transition-all duration-500 hover:scale-105 hover:z-20 transform-gpu" 
+                  onClick={() => handleProjectClick(project)} 
+                  style={{
+                    gridColumn: `span ${getGridSpan(index)}`,
+                    transformOrigin: 'center center',
+                    backfaceVisibility: 'hidden'
+                  }}
+                >
+                  <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
+                    <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-150 group-hover:contrast-110 group-hover:saturate-110" />
+                    
+                    {/* Glow Effect on Hover */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
+                    
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
+                      <div className="text-center p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        <h3 className="text-white font-bold text-sm sm:text-base mb-2 line-clamp-2 drop-shadow-lg">
+                          {project.title}
+                        </h3>
+                        <div className="text-primary font-semibold text-xs">
+                          Click to explore
+                        </div>
+                        {project.award && <div className="text-yellow-300 text-sm mt-1 animate-pulse">
+                            {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
+                          </div>}
+                      </div>
+                    </div>
+
+                    {/* Border Glow */}
+                    <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Project Details Modal */}
