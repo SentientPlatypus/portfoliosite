@@ -331,20 +331,31 @@ export const PortfolioContent = () => {
           </p>
         </div>
 
-        {/* Full-width Grid Layout */}
+        {/* Full-width Grid Layout with Subtle Angle */}
         <div 
-          className="grid auto-rows-fr gap-2 sm:gap-3"
+          className="perspective-container"
           style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))'
+            perspective: '2000px',
+            perspectiveOrigin: '50% 50%'
           }}
         >
+          <div 
+            className="grid auto-rows-fr gap-2 sm:gap-3 transform-gpu"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              transform: 'rotateX(15deg) rotateY(-15deg)',
+              transformStyle: 'preserve-3d'
+            }}
+          >
           {projects.map((project, index) => (
             <div
               key={project.id}
-              className="group relative cursor-pointer transition-all duration-500 hover:scale-105 hover:z-20"
+              className="group relative cursor-pointer transition-all duration-500 hover:scale-105 hover:z-20 transform-gpu"
               onClick={() => handleProjectClick(project)}
               style={{
-                gridColumn: `span ${getGridSpan(index)}`
+                gridColumn: `span ${getGridSpan(index)}`,
+                transformOrigin: 'center center',
+                backfaceVisibility: 'hidden'
               }}
             >
               <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
@@ -379,6 +390,7 @@ export const PortfolioContent = () => {
               </div>
             </div>
           ))}
+          </div>
         </div>
 
         {/* Show more projects message */}
