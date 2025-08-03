@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ProjectModal } from "./ProjectModal";
 interface Project {
-  id: number;
+  id: number | string;
   title: string;
   description: string;
   technologies: string[];
@@ -10,6 +10,7 @@ interface Project {
   paperUrl?: string | null;
   date: string;
   image: string;
+  images?: string[];
   award?: string | null;
 }
 const projects: Project[] = [{
@@ -22,6 +23,7 @@ const projects: Project[] = [{
   paperUrl: null,
   date: "2024",
   image: "images/gbm_path_full.png",
+  images: ["https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=250&fit=crop", "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop"],
   award: null
 }, {
   id: 2,
@@ -54,6 +56,7 @@ const projects: Project[] = [{
   paperUrl: "https://example.com/research-paper.pdf",
   date: "2024-03",
   image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=250&fit=crop",
+  images: ["https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop", "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop", "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=250&fit=crop"],
   award: "winner"
 }, {
   id: 5,
@@ -307,9 +310,31 @@ export const PortfolioContent = () => {
     return patterns[index % patterns.length];
   };
 
-  // Extend projects array to go beyond edges and duplicate edge projects lower
-  const extendedProjects = [...projects, ...projects.slice(0, 12) // Duplicate first 12 projects to ensure edge ones appear fully later
-  ];
+  // Calculate rows for rotation effect
+  const getRowIndex = (index: number) => {
+    const gridMinWidth = 160;
+    const containerWidth = window.innerWidth - 160;
+    const maxColumns = Math.floor(containerWidth / gridMinWidth);
+    
+    let currentIndex = 0;
+    let rowIndex = 0;
+    
+    while (currentIndex < index) {
+      let currentRowSpan = 0;
+      while (currentRowSpan < maxColumns && currentIndex < projects.length) {
+        const span = getGridSpan(currentIndex);
+        if (currentRowSpan + span <= maxColumns) {
+          currentRowSpan += span;
+          currentIndex++;
+        } else {
+          break;
+        }
+      }
+      if (currentIndex <= index) rowIndex++;
+    }
+    
+    return rowIndex;
+  };
   return <div className="h-full overflow-y-auto overflow-x-hidden">
       <div className="pt-2 pb-6 -mx-8">
         {isMobile ? (
@@ -360,84 +385,63 @@ export const PortfolioContent = () => {
             </div>
           </div>
         ) : (
-          /* Desktop: Rotating Gallery Layout with 3D Perspective */
-          <div className="perspective-container" style={{
+          /* Desktop: Gallery Layout with Row Rotation */
+          <div className="perspective-container overflow-hidden" style={{
             perspective: '2000px',
             perspectiveOrigin: '50% 50%'
           }}>
-            <div 
-              className="gallery-container transform-gpu"
-              style={{
-                transform: 'rotateX(15deg) rotateY(-15deg)',
-                transformStyle: 'preserve-3d',
-                width: 'calc(100% + 16rem)',
-                marginLeft: '-8rem'
-              }}
-            >
-              {Array.from({ length: 6 }, (_, rowIndex) => {
-                const isLeftRow = rowIndex % 2 === 0;
-                const startIndex = rowIndex * 4;
-                const rowProjects = [...projects, ...projects].slice(startIndex, startIndex + 8);
+            <div className="grid auto-rows-fr gap-2 sm:gap-3 transform-gpu rotating-gallery" style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+              transform: 'rotateX(15deg) rotateY(-15deg)',
+              transformStyle: 'preserve-3d',
+              width: 'calc(100% + 16rem)',
+              marginLeft: '-8rem'
+            }}>
+              {projects.map((project, index) => {
+                const rowIndex = getRowIndex(index);
+                const rotationDirection = rowIndex % 2 === 0 ? 'rotate-left' : 'rotate-right';
                 
                 return (
-                  <div
-                    key={rowIndex}
-                    className={`flex gap-4 mb-4 ${isLeftRow ? 'gallery-row-left' : 'gallery-row-right'} ${
+                  <div 
+                    key={project.id} 
+                    className={`group relative transition-all duration-700 ease-out transform-gpu cursor-pointer hover:scale-105 hover:z-20 ${rotationDirection} ${
                       isVisible 
                         ? 'transform translate-y-0 opacity-100' 
                         : 'transform -translate-y-20 opacity-0'
-                    } transition-all duration-700 ease-out`}
+                    }`}
+                    onClick={() => handleProjectClick(project)} 
                     style={{
-                      width: '200%',
-                      transitionDelay: `${rowIndex * 200}ms`,
+                      gridColumn: `span ${getGridSpan(index)}`,
                       transformOrigin: 'center center',
-                      backfaceVisibility: 'hidden'
+                      backfaceVisibility: 'hidden',
+                      transitionDelay: `${Math.min(index * 80, 2000)}ms`,
+                      animationDelay: `${rowIndex * 0.5}s`
                     }}
                   >
-                    {rowProjects.map((project, projectIndex) => (
-                      <div
-                        key={`${project.id}-${projectIndex}`}
-                        className="group relative cursor-pointer transition-all duration-500 ease-out hover:scale-105 hover:z-20 flex-shrink-0 transform-gpu"
-                        onClick={() => handleProjectClick(project)}
-                        style={{
-                          width: '200px',
-                          height: '120px',
-                          transformOrigin: 'center center',
-                          backfaceVisibility: 'hidden'
-                        }}
-                      >
-                        <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
-                          <img 
-                            src={project.image} 
-                            alt={project.title} 
-                            className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-150 group-hover:contrast-110 group-hover:saturate-110" 
-                          />
-                          
-                          {/* Glow Effect on Hover */}
-                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
-                          
-                          {/* Hover Overlay */}
-                          <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
-                            <div className="text-center p-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                              <h3 className="text-white font-bold text-xs mb-1 line-clamp-1 drop-shadow-lg">
-                                {project.title}
-                              </h3>
-                              <div className="text-primary font-semibold text-xs">
-                                Click to explore
-                              </div>
-                              {project.award && (
-                                <div className="text-yellow-300 text-xs mt-1 animate-pulse">
-                                  {project.award === 'winner' ? '🏆' : '🥈'}
-                                </div>
-                              )}
-                            </div>
+                    <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
+                      <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-150 group-hover:contrast-110 group-hover:saturate-110" />
+                      
+                      {/* Glow Effect on Hover */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
+                      
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
+                        <div className="text-center p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                          <h3 className="text-white font-bold text-sm sm:text-base mb-2 line-clamp-2 drop-shadow-lg">
+                            {project.title}
+                          </h3>
+                          <div className="text-primary font-semibold text-xs">
+                            Click to explore
                           </div>
-
-                          {/* Border Glow */}
-                          <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
+                          {project.award && <div className="text-yellow-300 text-sm mt-1 animate-pulse">
+                              {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
+                            </div>}
                         </div>
                       </div>
-                    ))}
+
+                      {/* Border Glow */}
+                      <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
+                    </div>
                   </div>
                 );
               })}

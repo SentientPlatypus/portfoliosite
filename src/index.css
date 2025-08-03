@@ -205,35 +205,43 @@
     background-color: hsl(var(--intellisense-selected));
     color: hsl(var(--intellisense-text));
   }
-
-  /* Gallery rotation animations */
-  @keyframes rotate-left {
+  
+  /* Row rotation animations for gallery */
+  .rotate-left {
+    animation: rotateLeft 20s linear infinite;
+  }
+  
+  .rotate-right {
+    animation: rotateRight 20s linear infinite;
+  }
+  
+  @keyframes rotateLeft {
     from {
       transform: translateX(0);
     }
     to {
-      transform: translateX(-100%);
+      transform: translateX(-2px);
     }
   }
-
-  @keyframes rotate-right {
+  
+  @keyframes rotateRight {
     from {
-      transform: translateX(-100%);
-    }
-    to {
       transform: translateX(0);
     }
+    to {
+      transform: translateX(2px);
+    }
   }
-
-  .gallery-row-left {
-    animation: rotate-left 120s linear infinite;
-  }
-
-  .gallery-row-right {
-    animation: rotate-right 120s linear infinite;
-  }
-
-  .gallery-container {
-    overflow: hidden;
+  
+  /* Fix mobile overflow issue */
+  @media (max-width: 640px) {
+    body {
+      overflow: auto;
+    }
+    
+    .h-full {
+      height: auto;
+      min-height: 100vh;
+    }
   }
 }
