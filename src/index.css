@@ -226,11 +226,11 @@
   }
 
   .gallery-row-left {
-    animation: rotate-left 60s linear infinite;
+    animation: rotate-left 120s linear infinite;
   }
 
   .gallery-row-right {
-    animation: rotate-right 60s linear infinite;
+    animation: rotate-right 120s linear infinite;
   }
 
   .gallery-container {
