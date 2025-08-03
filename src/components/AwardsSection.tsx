@@ -10,7 +10,7 @@ interface Award {
 }
 const awards: Award[] = [{
   id: '2',
-  title: 'Amazon Future Engineer 2024',
+  title: 'Amazon Future Engineer',
   organization: 'Amazon',
   year: '2024',
   description: 'One of 400 students selected nationwide for the Amazon Future Engineer program',
