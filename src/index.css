@@ -205,4 +205,35 @@
     background-color: hsl(var(--intellisense-selected));
     color: hsl(var(--intellisense-text));
   }
+
+  /* Gallery rotation animations */
+  @keyframes rotate-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes rotate-right {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .gallery-row-left {
+    animation: rotate-left 60s linear infinite;
+  }
+
+  .gallery-row-right {
+    animation: rotate-right 60s linear infinite;
+  }
+
+  .gallery-container {
+    overflow: hidden;
+  }
 }
