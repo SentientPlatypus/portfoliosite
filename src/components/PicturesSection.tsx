@@ -6,9 +6,9 @@ interface Picture {
 }
 const pictures: Picture[] = [{
   id: '1',
-  title: 'Mountain Adventure',
-  description: 'Hiking through the Rocky Mountains',
-  imageUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=300&h=200&fit=crop'
+  title: 'Tabling for CRU at Binghampton University',
+  description: 'Tabling for CRU at Binghampton University as part of a two day event with some guys from the Cornell CRU',
+  imageUrl: 'images/CRU.jpg'
 }, {
   id: '2',
   title: 'Code & Coffee',
