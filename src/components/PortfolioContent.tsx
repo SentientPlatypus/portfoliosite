@@ -398,24 +398,20 @@ export const PortfolioContent = () => {
               marginLeft: '-8rem'
             }}>
               {projects.map((project, index) => {
-                const rowIndex = getRowIndex(index);
-                const rotationDirection = rowIndex % 2 === 0 ? 'rotate-left' : 'rotate-right';
-                
                 return (
                   <div 
                     key={project.id} 
-                    className={`group relative transition-all duration-700 ease-out transform-gpu cursor-pointer hover:scale-105 hover:z-20 ${rotationDirection} ${
+                    className={`group relative transition-all duration-700 ease-out transform-gpu cursor-pointer hover:scale-105 hover:z-20 ${
                       isVisible 
                         ? 'transform translate-y-0 opacity-100' 
                         : 'transform -translate-y-20 opacity-0'
                     }`}
                     onClick={() => handleProjectClick(project)} 
-                    style={{
+                     style={{
                       gridColumn: `span ${getGridSpan(index)}`,
                       transformOrigin: 'center center',
                       backfaceVisibility: 'hidden',
-                      transitionDelay: `${Math.min(index * 80, 2000)}ms`,
-                      animationDelay: `${rowIndex * 0.5}s`
+                      transitionDelay: `${Math.min(index * 80, 2000)}ms`
                     }}
                   >
                     <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
