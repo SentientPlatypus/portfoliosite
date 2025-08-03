@@ -120,7 +120,7 @@ const YouTubeWidget = ({
             </div>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium">{youtubeData?.latestVideo?.title}</p>
+            <p className="text-sm font-medium">SentientPlatypus</p>
             <p className="text-xs text-muted-foreground">{youtubeData?.latestVideo?.views} views • {youtubeData?.latestVideo?.publishedTime}</p>
           </div>
         </div>
