@@ -588,8 +588,8 @@ export const InteractiveInfo = () => {
       <div className="md:flex md:items-start md:space-x-4">
         <div className="md:flex-1">
           <h2 className="text-lg font-semibold mb-2">Hey! I'm Gene</h2>
-          <div className="md:hidden w-32 h-40 rounded-lg overflow-hidden mx-auto mb-4 bg-muted/10">
-            <img src="/lovable-uploads/4df64f57-d54d-441a-9514-c9c8aed3594e.png" alt="Portrait" className="w-full h-full object-contain" />
+          <div className="md:hidden w-32 h-40 rounded-lg overflow-hidden mx-auto mb-4">
+            <img src="/lovable-uploads/4df64f57-d54d-441a-9514-c9c8aed3594e.png" alt="Portrait" className="w-full h-full object-cover" />
           </div>
           <p className="text-sm text-muted-foreground mb-2">
             An electrical and computer engineering student at Cornell University.

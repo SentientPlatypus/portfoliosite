@@ -205,17 +205,4 @@
     background-color: hsl(var(--intellisense-selected));
     color: hsl(var(--intellisense-text));
   }
-  
-  
-  /* Fix mobile overflow issue */
-  @media (max-width: 640px) {
-    body {
-      overflow: auto;
-    }
-    
-    .h-full {
-      height: auto;
-      min-height: 100vh;
-    }
-  }
 }
