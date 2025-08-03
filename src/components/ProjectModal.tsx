@@ -1,10 +1,11 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Github, ExternalLink, Calendar, FileText, X } from "lucide-react";
+import { Github, ExternalLink, Calendar, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 interface Project {
-  id: number;
+  id: number | string;
   title: string;
   description: string;
   technologies: string[];
@@ -13,6 +14,7 @@ interface Project {
   paperUrl?: string | null;
   date: string;
   image: string;
+  images?: string[];
   award?: string | null;
 }
 
@@ -23,7 +25,24 @@ interface ProjectModalProps {
 }
 
 export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
   if (!project) return null;
+
+  // Get all available images (main image + additional images)
+  const allImages = project.images && project.images.length > 0 
+    ? [project.image, ...project.images] 
+    : [project.image];
+  
+  const hasMultipleImages = allImages.length > 1;
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -33,13 +52,47 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Project Image */}
-          <div className="aspect-video w-full overflow-hidden rounded-lg">
+          {/* Project Image Slideshow */}
+          <div className="aspect-video w-full overflow-hidden rounded-lg relative group">
             <img 
-              src={project.image} 
-              alt={project.title}
-              className="w-full h-full object-cover"
+              src={allImages[currentImageIndex]} 
+              alt={`${project.title} - Image ${currentImageIndex + 1}`}
+              className="w-full h-full object-cover transition-opacity duration-300"
             />
+            
+            {/* Navigation Arrows */}
+            {hasMultipleImages && (
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={nextImage}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+                
+                {/* Image Indicators */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                  {allImages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                        index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                      }`}
+                      aria-label={`Go to image ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Project Info */}
