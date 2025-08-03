@@ -360,66 +360,88 @@ export const PortfolioContent = () => {
             </div>
           </div>
         ) : (
-          /* Desktop: Rotating Gallery Layout */
-          <div className="gallery-container h-full overflow-hidden">
-            {Array.from({ length: 6 }, (_, rowIndex) => {
-              const isLeftRow = rowIndex % 2 === 0;
-              const startIndex = rowIndex * 4;
-              const rowProjects = [...projects, ...projects].slice(startIndex, startIndex + 8); // Duplicate to create seamless loop
-              
-              return (
-                <div
-                  key={rowIndex}
-                  className={`flex gap-4 mb-4 ${isLeftRow ? 'gallery-row-left' : 'gallery-row-right'}`}
-                  style={{
-                    width: '200%', // Double width to create seamless scrolling
-                  }}
-                >
-                  {rowProjects.map((project, projectIndex) => (
-                    <div
-                      key={`${project.id}-${projectIndex}`}
-                      className="group relative cursor-pointer transition-all duration-500 ease-out hover:scale-105 hover:z-20 flex-shrink-0"
-                      onClick={() => handleProjectClick(project)}
-                      style={{
-                        width: '200px',
-                        height: '120px',
-                      }}
-                    >
-                      <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
-                        <img 
-                          src={project.image} 
-                          alt={project.title} 
-                          className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-150 group-hover:contrast-110 group-hover:saturate-110" 
-                        />
-                        
-                        {/* Glow Effect on Hover */}
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
-                        
-                        {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
-                          <div className="text-center p-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                            <h3 className="text-white font-bold text-xs mb-1 line-clamp-1 drop-shadow-lg">
-                              {project.title}
-                            </h3>
-                            <div className="text-primary font-semibold text-xs">
-                              Click to explore
-                            </div>
-                            {project.award && (
-                              <div className="text-yellow-300 text-xs mt-1 animate-pulse">
-                                {project.award === 'winner' ? '🏆' : '🥈'}
+          /* Desktop: Rotating Gallery Layout with 3D Perspective */
+          <div className="perspective-container" style={{
+            perspective: '2000px',
+            perspectiveOrigin: '50% 50%'
+          }}>
+            <div 
+              className="gallery-container transform-gpu"
+              style={{
+                transform: 'rotateX(15deg) rotateY(-15deg)',
+                transformStyle: 'preserve-3d',
+                width: 'calc(100% + 16rem)',
+                marginLeft: '-8rem'
+              }}
+            >
+              {Array.from({ length: 6 }, (_, rowIndex) => {
+                const isLeftRow = rowIndex % 2 === 0;
+                const startIndex = rowIndex * 4;
+                const rowProjects = [...projects, ...projects].slice(startIndex, startIndex + 8);
+                
+                return (
+                  <div
+                    key={rowIndex}
+                    className={`flex gap-4 mb-4 ${isLeftRow ? 'gallery-row-left' : 'gallery-row-right'} ${
+                      isVisible 
+                        ? 'transform translate-y-0 opacity-100' 
+                        : 'transform -translate-y-20 opacity-0'
+                    } transition-all duration-700 ease-out`}
+                    style={{
+                      width: '200%',
+                      transitionDelay: `${rowIndex * 200}ms`,
+                      transformOrigin: 'center center',
+                      backfaceVisibility: 'hidden'
+                    }}
+                  >
+                    {rowProjects.map((project, projectIndex) => (
+                      <div
+                        key={`${project.id}-${projectIndex}`}
+                        className="group relative cursor-pointer transition-all duration-500 ease-out hover:scale-105 hover:z-20 flex-shrink-0 transform-gpu"
+                        onClick={() => handleProjectClick(project)}
+                        style={{
+                          width: '200px',
+                          height: '120px',
+                          transformOrigin: 'center center',
+                          backfaceVisibility: 'hidden'
+                        }}
+                      >
+                        <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
+                          <img 
+                            src={project.image} 
+                            alt={project.title} 
+                            className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-150 group-hover:contrast-110 group-hover:saturate-110" 
+                          />
+                          
+                          {/* Glow Effect on Hover */}
+                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
+                          
+                          {/* Hover Overlay */}
+                          <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
+                            <div className="text-center p-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                              <h3 className="text-white font-bold text-xs mb-1 line-clamp-1 drop-shadow-lg">
+                                {project.title}
+                              </h3>
+                              <div className="text-primary font-semibold text-xs">
+                                Click to explore
                               </div>
-                            )}
+                              {project.award && (
+                                <div className="text-yellow-300 text-xs mt-1 animate-pulse">
+                                  {project.award === 'winner' ? '🏆' : '🥈'}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Border Glow */}
-                        <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
+                          {/* Border Glow */}
+                          <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
