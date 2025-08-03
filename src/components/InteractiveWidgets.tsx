@@ -108,7 +108,7 @@ const YouTubeWidget = ({
       <div className="space-y-2">
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 rounded-full overflow-hidden bg-muted">
-            <img src="https://yt3.ggpht.com/ytc/AIdro_n3KrlEQnR8i64nWxPu0rYzBcnqKaK8Qj8z3qNVdA=s88-c-k-c0x00ffffff-no-rj" alt="Channel avatar" className="w-full h-full object-cover" onError={e => {
+            <img src="https://yt3.googleusercontent.com/Rbdr2P6hLEE8jZNwKrO4rMxXzvWdEe184hLvm2TlVnTrD-OZN8xkkg5WXzxc3eM8PPDa03OXMg=s160-c-k-c0x00ffffff-no-rj" alt="Channel avatar" className="w-full h-full object-cover" onError={e => {
             // Fallback to colored placeholder if image fails
             const target = e.target as HTMLImageElement;
             target.style.display = 'none';
