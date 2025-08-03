@@ -5,7 +5,7 @@ import { Github, ExternalLink, Calendar, FileText, ChevronLeft, ChevronRight } f
 import { useState } from "react";
 
 interface Project {
-  id: number;
+  id: number | string;
   title: string;
   description: string;
   technologies: string[];
