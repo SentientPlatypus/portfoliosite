@@ -335,7 +335,7 @@ export const PortfolioContent = () => {
     
     return rowIndex;
   };
-  return <div className="h-full overflow-y-auto overflow-x-hidden">
+  return <div className="h-full overflow-x-hidden sm:overflow-y-auto">
       <div className="pt-2 pb-6 -mx-8">
         {isMobile ? (
           /* Mobile: Simple Grid Layout */
