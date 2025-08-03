@@ -310,9 +310,67 @@ export const PortfolioContent = () => {
     return patterns[index % patterns.length];
   };
 
-  // Extend projects array to go beyond edges and duplicate edge projects lower
-  const extendedProjects = [...projects, ...projects.slice(-12) // Duplicate last 12 projects to ensure edge ones appear fully later
-  ];
+  // Calculate how many items fit per row based on the grid patterns
+  const calculateItemsPerRow = () => {
+    let totalSpan = 0;
+    let itemsInRow = 0;
+    const gridMinWidth = 160; // minmax(160px, 1fr) from CSS
+    const containerWidth = window.innerWidth - 160; // Accounting for margins
+    const maxColumns = Math.floor(containerWidth / gridMinWidth);
+    
+    for (let i = 0; totalSpan < maxColumns; i++) {
+      const span = getGridSpan(i);
+      if (totalSpan + span <= maxColumns) {
+        totalSpan += span;
+        itemsInRow++;
+      } else {
+        break;
+      }
+    }
+    return itemsInRow;
+  };
+
+  // Generate extended projects with row-end formula
+  const generateExtendedProjects = () => {
+    const itemsPerRow = calculateItemsPerRow();
+    const totalProjects = projects.length;
+    const extendedArray = [...projects];
+    
+    // Calculate approximately how many rows we have
+    let currentIndex = 0;
+    let currentRow = 0;
+    
+    // Add extra projects for rows that need them
+    while (currentIndex < projects.length) {
+      let currentRowSpan = 0;
+      let itemsInCurrentRow = 0;
+      
+      // Calculate how many items fit in current row
+      while (currentRowSpan < itemsPerRow && currentIndex + itemsInCurrentRow < projects.length) {
+        const span = getGridSpan(currentIndex + itemsInCurrentRow);
+        if (currentRowSpan + span <= itemsPerRow) {
+          currentRowSpan += span;
+          itemsInCurrentRow++;
+        } else {
+          break;
+        }
+      }
+      
+      // Add two projects at the end of each row using the formula
+      const project1Index = (currentRow + 7) % totalProjects;
+      const project2Index = (currentRow + 8) % totalProjects;
+      
+      extendedArray.push(projects[project1Index]);
+      extendedArray.push(projects[project2Index]);
+      
+      currentIndex += itemsInCurrentRow;
+      currentRow++;
+    }
+    
+    return extendedArray;
+  };
+
+  const extendedProjects = generateExtendedProjects();
   return <div className="h-full overflow-y-auto overflow-x-hidden">
       <div className="pt-2 pb-6 -mx-8">
         {isMobile ? (
