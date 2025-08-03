@@ -310,61 +310,31 @@ export const PortfolioContent = () => {
     return patterns[index % patterns.length];
   };
 
-  // Create fake project for filling row ends
-  const createFakeProject = (id: number): Project => ({
-    id: `fake-${id}` as any,
-    title: "",
-    description: "",
-    technologies: [],
-    githubUrl: "",
-    date: "",
-    image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDQwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjUwIiBmaWxsPSJoc2wodmFyKC0tbXV0ZWQpKSIgb3BhY2l0eT0iMC4zIi8+Cjwvc3ZnPgo=", // Transparent muted background
-    award: null
-  });
-
-  // Generate extended projects with fake projects filling row ends
-  const generateExtendedProjects = () => {
+  // Calculate rows for rotation effect
+  const getRowIndex = (index: number) => {
     const gridMinWidth = 160;
-    const containerWidth = window.innerWidth - 160; // Account for margins
+    const containerWidth = window.innerWidth - 160;
     const maxColumns = Math.floor(containerWidth / gridMinWidth);
     
-    const extendedArray: Project[] = [];
-    let fakeId = 1;
-    let projectIndex = 0;
+    let currentIndex = 0;
+    let rowIndex = 0;
     
-    // Process projects row by row
-    while (projectIndex < projects.length) {
+    while (currentIndex < index) {
       let currentRowSpan = 0;
-      const rowStartIndex = extendedArray.length;
-      
-      // Add real projects to current row
-      while (currentRowSpan < maxColumns && projectIndex < projects.length) {
-        const span = getGridSpan(extendedArray.length);
+      while (currentRowSpan < maxColumns && currentIndex < projects.length) {
+        const span = getGridSpan(currentIndex);
         if (currentRowSpan + span <= maxColumns) {
-          extendedArray.push(projects[projectIndex]);
           currentRowSpan += span;
-          projectIndex++;
+          currentIndex++;
         } else {
           break;
         }
       }
-      
-      // Fill remaining space in row with fake projects
-      while (currentRowSpan < maxColumns) {
-        const fakeSpan = getGridSpan(extendedArray.length);
-        if (currentRowSpan + fakeSpan <= maxColumns) {
-          extendedArray.push(createFakeProject(fakeId++));
-          currentRowSpan += fakeSpan;
-        } else {
-          break;
-        }
-      }
+      if (currentIndex <= index) rowIndex++;
     }
     
-    return extendedArray;
+    return rowIndex;
   };
-
-  const extendedProjects = generateExtendedProjects();
   return <div className="h-full overflow-y-auto overflow-x-hidden">
       <div className="pt-2 pb-6 -mx-8">
         {isMobile ? (
@@ -415,38 +385,37 @@ export const PortfolioContent = () => {
             </div>
           </div>
         ) : (
-          /* Desktop: Gallery Layout */
-          <div className="perspective-container" style={{
+          /* Desktop: Gallery Layout with Row Rotation */
+          <div className="perspective-container overflow-hidden" style={{
             perspective: '2000px',
             perspectiveOrigin: '50% 50%'
           }}>
-            <div className="grid auto-rows-fr gap-2 sm:gap-3 transform-gpu" style={{
+            <div className="grid auto-rows-fr gap-2 sm:gap-3 transform-gpu rotating-gallery" style={{
               gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
               transform: 'rotateX(15deg) rotateY(-15deg)',
               transformStyle: 'preserve-3d',
               width: 'calc(100% + 16rem)',
               marginLeft: '-8rem'
             }}>
-              {extendedProjects.map((project, index) => {
-                const isFakeProject = typeof project.id === 'string' && project.id.startsWith('fake-');
+              {projects.map((project, index) => {
+                const rowIndex = getRowIndex(index);
+                const rotationDirection = rowIndex % 2 === 0 ? 'rotate-left' : 'rotate-right';
+                
                 return (
                   <div 
                     key={project.id} 
-                    className={`group relative transition-all duration-700 ease-out transform-gpu ${
-                      isFakeProject 
-                        ? 'opacity-30' // Reduced opacity for fake projects
-                        : 'cursor-pointer hover:scale-105 hover:z-20'
-                    } ${
+                    className={`group relative transition-all duration-700 ease-out transform-gpu cursor-pointer hover:scale-105 hover:z-20 ${rotationDirection} ${
                       isVisible 
                         ? 'transform translate-y-0 opacity-100' 
                         : 'transform -translate-y-20 opacity-0'
                     }`}
-                    onClick={() => !isFakeProject && handleProjectClick(project)} 
+                    onClick={() => handleProjectClick(project)} 
                     style={{
                       gridColumn: `span ${getGridSpan(index)}`,
                       transformOrigin: 'center center',
                       backfaceVisibility: 'hidden',
-                      transitionDelay: `${Math.min(index * 80, 2000)}ms`
+                      transitionDelay: `${Math.min(index * 80, 2000)}ms`,
+                      animationDelay: `${rowIndex * 0.5}s`
                     }}
                   >
                     <div className="h-full overflow-hidden rounded-lg bg-muted shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/50">
@@ -455,27 +424,23 @@ export const PortfolioContent = () => {
                       {/* Glow Effect on Hover */}
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-primary/20 via-transparent to-primary/10 rounded-lg"></div>
                       
-                      {/* Hover Overlay - only show for real projects */}
-                      {!isFakeProject && (
-                        <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
-                          <div className="text-center p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                            <h3 className="text-white font-bold text-sm sm:text-base mb-2 line-clamp-2 drop-shadow-lg">
-                              {project.title}
-                            </h3>
-                            <div className="text-primary font-semibold text-xs">
-                              Click to explore
-                            </div>
-                            {project.award && <div className="text-yellow-300 text-sm mt-1 animate-pulse">
-                                {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
-                              </div>}
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center rounded-lg backdrop-blur-sm">
+                        <div className="text-center p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                          <h3 className="text-white font-bold text-sm sm:text-base mb-2 line-clamp-2 drop-shadow-lg">
+                            {project.title}
+                          </h3>
+                          <div className="text-primary font-semibold text-xs">
+                            Click to explore
                           </div>
+                          {project.award && <div className="text-yellow-300 text-sm mt-1 animate-pulse">
+                              {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
+                            </div>}
                         </div>
-                      )}
+                      </div>
 
-                      {/* Border Glow - only for real projects */}
-                      {!isFakeProject && (
-                        <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
-                      )}
+                      {/* Border Glow */}
+                      <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)]"></div>
                     </div>
                   </div>
                 );

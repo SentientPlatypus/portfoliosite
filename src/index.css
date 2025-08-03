@@ -205,4 +205,43 @@
     background-color: hsl(var(--intellisense-selected));
     color: hsl(var(--intellisense-text));
   }
+  
+  /* Row rotation animations for gallery */
+  .rotate-left {
+    animation: rotateLeft 20s linear infinite;
+  }
+  
+  .rotate-right {
+    animation: rotateRight 20s linear infinite;
+  }
+  
+  @keyframes rotateLeft {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-2px);
+    }
+  }
+  
+  @keyframes rotateRight {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(2px);
+    }
+  }
+  
+  /* Fix mobile overflow issue */
+  @media (max-width: 640px) {
+    body {
+      overflow: auto;
+    }
+    
+    .h-full {
+      height: auto;
+      min-height: 100vh;
+    }
+  }
 }
