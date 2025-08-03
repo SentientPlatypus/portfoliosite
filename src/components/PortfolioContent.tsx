@@ -308,7 +308,7 @@ export const PortfolioContent = () => {
   };
 
   // Extend projects array to go beyond edges and duplicate edge projects lower
-  const extendedProjects = [...projects, ...projects.slice(0, 12) // Duplicate first 12 projects to ensure edge ones appear fully later
+  const extendedProjects = [...projects, ...projects.slice(-12) // Duplicate last 12 projects to ensure edge ones appear fully later
   ];
   return <div className="h-full overflow-y-auto overflow-x-hidden">
       <div className="pt-2 pb-6 -mx-8">
