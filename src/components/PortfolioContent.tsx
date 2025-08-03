@@ -328,22 +328,22 @@ export const PortfolioContent = () => {
     const containerWidth = window.innerWidth - 160; // Account for margins
     const maxColumns = Math.floor(containerWidth / gridMinWidth);
     
-    const extendedArray = [...projects];
+    const extendedArray: Project[] = [];
     let fakeId = 1;
+    let projectIndex = 0;
     
-    // Calculate rows and fill ends with fake projects
-    let currentIndex = 0;
-    
-    while (currentIndex < projects.length) {
+    // Process projects row by row
+    while (projectIndex < projects.length) {
       let currentRowSpan = 0;
-      let itemsInCurrentRow = 0;
+      const rowStartIndex = extendedArray.length;
       
-      // Calculate how many real projects fit in current row
-      while (currentRowSpan < maxColumns && currentIndex + itemsInCurrentRow < projects.length) {
-        const span = getGridSpan(currentIndex + itemsInCurrentRow);
+      // Add real projects to current row
+      while (currentRowSpan < maxColumns && projectIndex < projects.length) {
+        const span = getGridSpan(extendedArray.length);
         if (currentRowSpan + span <= maxColumns) {
+          extendedArray.push(projects[projectIndex]);
           currentRowSpan += span;
-          itemsInCurrentRow++;
+          projectIndex++;
         } else {
           break;
         }
@@ -359,8 +359,6 @@ export const PortfolioContent = () => {
           break;
         }
       }
-      
-      currentIndex += itemsInCurrentRow;
     }
     
     return extendedArray;
