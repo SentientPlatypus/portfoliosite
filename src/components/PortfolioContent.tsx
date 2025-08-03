@@ -14,15 +14,15 @@ interface Project {
 }
 const projects: Project[] = [{
   id: 1,
-  title: "E-Commerce Platform",
-  description: "A full-stack e-commerce platform with React, Node.js, and PostgreSQL. Features include user authentication, shopping cart, payment processing, order management, and admin dashboard.",
+  title: "QuantJL",
+  description: "DDPG based RL agent for trading. Written in Julia, from scratch.",
   technologies: ["React", "TypeScript", "Node.js", "PostgreSQL", "Tailwind CSS"],
-  githubUrl: "https://github.com/gene/ecommerce",
-  liveUrl: "https://ecommerce-demo.com",
-  paperUrl: "https://arxiv.org/pdf/example-paper.pdf",
-  date: "2024-01",
-  image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250&fit=crop",
-  award: "winner"
+  githubUrl: "https://github.com/SentientPlatypus/quantjl",
+  liveUrl: null,
+  paperUrl: null,
+  date: "2024",
+  image: "images/gbm_path_full.png",
+  award: null
 }, {
   id: 2,
   title: "Task Management App",
