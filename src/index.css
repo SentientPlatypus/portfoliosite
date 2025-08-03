@@ -205,4 +205,35 @@
     background-color: hsl(var(--intellisense-selected));
     color: hsl(var(--intellisense-text));
   }
+  
+  /* Carousel animations */
+  .carousel-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: calc(100% + 16rem);
+    margin-left: -8rem;
+  }
+  
+  .carousel-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+    animation: move-right-infinite 60s linear infinite;
+    animation-delay: calc(var(--row-index) * -10s);
+  }
+  
+  .carousel-item {
+    min-width: 200px;
+    height: 250px;
+  }
+  
+  @keyframes move-right-infinite {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-33.33%);
+    }
+  }
 }
