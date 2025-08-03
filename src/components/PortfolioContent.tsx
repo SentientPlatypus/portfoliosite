@@ -10,6 +10,7 @@ interface Project {
   paperUrl?: string | null;
   date: string;
   image: string;
+  images?: string[];
   award?: string | null;
 }
 const projects: Project[] = [{
@@ -22,6 +23,7 @@ const projects: Project[] = [{
   paperUrl: null,
   date: "2024",
   image: "images/gbm_path_full.png",
+  images: ["https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=250&fit=crop", "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop"],
   award: null
 }, {
   id: 2,
@@ -54,6 +56,7 @@ const projects: Project[] = [{
   paperUrl: "https://example.com/research-paper.pdf",
   date: "2024-03",
   image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=250&fit=crop",
+  images: ["https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop", "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop", "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=250&fit=crop"],
   award: "winner"
 }, {
   id: 5,
