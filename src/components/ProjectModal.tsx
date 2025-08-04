@@ -145,7 +145,7 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
                 <Button variant="outline" asChild>
                   <a href={project.paperUrl} target="_blank" rel="noopener noreferrer">
                     <FileText className="w-4 h-4 mr-2" />
-                    Research Paper
+                    Paper
                   </a>
                 </Button>
               )}

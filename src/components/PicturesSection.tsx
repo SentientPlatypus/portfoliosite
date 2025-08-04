@@ -9,21 +9,6 @@ const pictures: Picture[] = [{
   title: 'Tabling for CRU at Binghampton University',
   description: 'Tabling for CRU at Binghampton University as part of a two day event with some guys from the Cornell CRU',
   imageUrl: 'images/CRU.jpg'
-}, {
-  id: '2',
-  title: 'Code & Coffee',
-  description: 'Late night coding sessions',
-  imageUrl: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=200&fit=crop'
-}, {
-  id: '3',
-  title: 'Wildlife Photography',
-  description: 'Captured in the wilderness',
-  imageUrl: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?w=300&h=200&fit=crop'
-}, {
-  id: '4',
-  title: 'My Coding Setup',
-  description: 'Where the magic happens',
-  imageUrl: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=300&h=200&fit=crop'
 }];
 interface PicturesSectionProps {
   onPictureClick?: (picture: {
