@@ -3,8 +3,15 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+// Set base for GitHub Pages deployment
+// Use '/portfoliosite/' for production (GitHub Pages), '/' for development
+function getBase(mode: string) {
+  return mode === "production" ? "/portfoliosite/" : "/";
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: getBase(mode),
   server: {
     host: "::",
     port: 8080,

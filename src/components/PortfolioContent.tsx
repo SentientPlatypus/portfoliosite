@@ -78,7 +78,8 @@ const projects: Project[] = [{
   githubUrl: "https://github.com/CRRobotics/2024Visions",
   paperUrl: "https://github.com/CRRobotics/2024Visions/blob/master/Code_Red_Robotics_2024_Visions_Docs.pdf",
   date: "2024",
-  image: "images/wholeLottaRed.jpg",
+  image: "images/wholelottared.JPG",
+  images: ["images/wholelottared.JPG"],
   award: null
 }, {
   id: 7,
@@ -113,105 +114,115 @@ const projects: Project[] = [{
   paperUrl: null,
   date: "2024",
   image: "images/belugaSturgeon.png",
-  images: ["https://github.com/Beluga-Sturgeon/site/raw/main/image.png", "images/belugaSturgeon.png", "https://github.com/Beluga-Sturgeon/site/raw/main/image-1.png", "https://github.com/Beluga-Sturgeon/site/raw/main/image-4.png", "https://github.com/Beluga-Sturgeon/site/raw/main/image-2.png"],
+  images: ["https://github.com/Beluga-Sturgeon/site/raw/main/image.png", "images/sentimentovertime.png", "images/belugaSturgeon.png", "https://github.com/Beluga-Sturgeon/site/raw/main/image-1.png", "https://github.com/Beluga-Sturgeon/site/raw/main/image-4.png", "https://github.com/Beluga-Sturgeon/site/raw/main/image-2.png"],
   award: null
 }, {
   id: 10,
-  title: "Blockchain Voting System",
-  description: "Secure digital voting platform built on blockchain technology ensuring transparency and immutability of election results.",
-  technologies: ["Solidity", "Web3.js", "React", "Ethereum", "IPFS"],
-  githubUrl: "https://github.com/gene/blockchain-voting",
-  paperUrl: "https://example.com/blockchain-paper.pdf",
-  date: "2024-05",
-  image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=250&fit=crop",
-  award: "winner"
+  title: "Lunar Gateway Storage",
+  description: "GrabCad design challenge. Worked with Arda Griffin and Ziqi wang. My part was to CAD the containers for the boxes.",
+  technologies: ["Autodesk Inventor"],
+  githubUrl: null,
+  paperUrl: null,
+  liveUrl: "https://grabcad.com/library/nasa-lunar-gateway-module-1",
+  date: "2024",
+  image: "https://d2t1xqejof9utc.cloudfront.net/screenshots/pics/b94ef139cc3b73ad414a7a05aa3f7dad/large.png",
+  images: ["https://d2t1xqejof9utc.cloudfront.net/screenshots/pics/b94ef139cc3b73ad414a7a05aa3f7dad/large.png"],
+  award: "Semifinalist @ NASA GrabCad Lunar Gateway Design Challenge"
 }, {
   id: 11,
-  title: "Recipe Discovery Platform",
-  description: "Food discovery app with AI-powered recipe recommendations, meal planning, and grocery list generation based on dietary preferences.",
-  technologies: ["React", "Python", "FastAPI", "PostgreSQL", "OpenAI API"],
-  githubUrl: "https://github.com/gene/recipe-platform",
-  liveUrl: "https://recipe-demo.com",
+  title: "Toy Rocket League Car",
+  description: "I tried making a rocket league car. Check the github.",
+  technologies: ["Autodesk 360", "Raspberry PI"],
+  githubUrl: "https://github.com/SentientPlatypus/octane7",
+  liveUrl: null,
   paperUrl: null,
   date: "2023-10",
-  image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=250&fit=crop",
+  image: "https://github.com/SentientPlatypus/octane7/raw/main/images/engine.png",
+  images: ["https://github.com/SentientPlatypus/octane7/raw/main/images/engine.png","https://github.com/SentientPlatypus/octane7/raw/main/images/octane7%20diagram.png","https://github.com/SentientPlatypus/octane7/raw/main/images/body.png", "https://github.com/SentientPlatypus/octane7/raw/main/images/jumper.png"],
   award: null
 }, {
   id: 12,
-  title: "Virtual Reality Gallery",
-  description: "Immersive VR art gallery platform allowing artists to showcase 3D artwork and users to explore virtual exhibitions.",
-  technologies: ["A-Frame", "Three.js", "WebXR", "Node.js", "MongoDB"],
-  githubUrl: "https://github.com/gene/vr-gallery",
-  liveUrl: "https://vr-gallery-demo.com",
+  title: "Johns Hopkins CTY",
+  description: "This is a repository of turned in work for the Center for Talented Youth at Johns Hopkins University, Investigations in Engineering. This course was taught by Dr. Manuela Badea TA. Yarin C.A. Throughout the 3 week course, we completed lots of labs, and projects, with each of them documented here. I chose to do most of my writeups in notebooks, as it seemed like a great tool when working with datasets and calculations. I tried R, but Im better with np and pandas haha. For one of the projects, I designed and prototyped an anti-texting device, and I think I might pursue it, dont know though. Kinda overloaded with other things. Check it out. CTY is fun",
+  technologies: ["Matplotlib"],
+  githubUrl: "https://github.com/SentientPlatypus/JHU-CTY/tree/master",
+  liveUrl: null,
   paperUrl: null,
-  date: "2024-06",
-  image: "https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?w=400&h=250&fit=crop",
-  award: "finalist"
+  date: "2023",
+  image: "https://i.ytimg.com/vi/XoZz8ZJRpaU/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLDdi2EDlwFB1D84LqAiupU-8kdFUg",
+  images: ["https://i.ytimg.com/vi/XoZz8ZJRpaU/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLDdi2EDlwFB1D84LqAiupU-8kdFUg"],
+  award: null
 }, {
   id: 13,
-  title: "Smart Home Dashboard",
-  description: "IoT dashboard for home automation with real-time device monitoring, energy usage tracking, and voice control integration.",
-  technologies: ["React", "IoT Core", "AWS Lambda", "DynamoDB", "Alexa SDK"],
-  githubUrl: "https://github.com/gene/smart-home",
-  liveUrl: "https://smarthome-demo.com",
+  title: "Gerrymandering Map Analyzer",
+  description: "Gerrymandering, the manipulation of district boundaries to benefit a particular political party or group, is a serious issue that undermines the integrity of democratic elections. It can result in the unfair representation of certain communities, the suppression of minority voices, and the consolidation of power in the hands of a select few. Our program aims to allow the user to input an image of a voting district and establish the values of the contiguous, compactness and solidity of the district. We define solidity as the area of a contour subtracted by the areas of all child contours, divided by the area of the parent contour's onvex hull. A convex hull is a boundary which a line segment connecting any two points within the boundary does not intersect the boundary. Compactness of a voting district is measured in a different way. If the shape of the voting district is a perfect circle, the compactness will be 100%. The general formula for compactness is: 4π * (A/P²), where A is the area of the district and P is the parameter of the district. For visualizatoin, a circle that has the same area as the distric will appear upon the district These values will allow the user to then calculate whether or not the district has fallen victim to political gerrymandering or not. In addition, the program can aid the user in determining what group or groups have been suppressed. Upon running this program, 3 windows will open. The first has sliders, which allow ou do configure different color filters, and display different elements of our analysis. The second is the display window. Upon filtering districts, ideal circles will be drawn along with contiguousness and solidity values. You also have the ability to select different districts by clicking on them. Finally, there is a filtering window. Our filter method relies on an HSV filter for colors. The filter window assists the user in finding their desired HSV thresholds for the districts they wish to analyze. We hope that our program can lead to the removal of gerrymandered voting districts and the unfair representation of minority groups and communities. In turn, this will allow us to hold fair and impartial elections and promote greater transparency and acountability in the political process. We believe that developing a reliable and accurate tool to detect gerrymandering, we can ensure that all voices are heard and all communities are represented fairly in our democracy.",
+  technologies: ["OpenCV"],
+  githubUrl: "https://github.com/Rocky0Shao/GerrymanderProject",
+  liveUrl: null,
   paperUrl: null,
-  date: "2023-07",
-  image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=250&fit=crop",
+  date: "2023",
+  image: "images/Selection.png",
+  images: ["images/Selection.png"],
   award: null
 }, {
   id: 14,
-  title: "Language Learning Platform",
-  description: "Interactive language learning app with speech recognition, gamification, and adaptive learning algorithms for personalized education.",
+  title: "Tyrannosaurus Red",
+  description: "For the 2023 FRC game, Charged up, Code Red made three pipelines, used 5 cameras, and won an award for integrating them into the robot code. One for global positioning, one for game piece detection, and another for game piece orientation. I worked heavily on the first one. Photonvision was mentioned, but a limelight didnt provide a sufficient FOV for detection in the community, so we wrote our own pipeline from scratch. This process forced us to learn how pose estimation was based upon fundamental projection concepts. The details are detailed in documentation I wrote, and I also made this the basis of my AP lang research paper. and ran three cameras, a thread for each. We put a PC on the robot, and made our python script a systemctl service, which ran on startup. The second pipeline, was mainly worked on my Rocky Shao, and involved HSV filters on an RGBD camera, and distance calculations. The Third, was for a deprecated indexer subsystem. Good season overall man I loove solvePnP",
   technologies: ["React", "Python", "TensorFlow", "WebRTC", "PostgreSQL"],
-  githubUrl: "https://github.com/gene/language-app",
-  liveUrl: "https://language-demo.com",
-  paperUrl: null,
-  date: "2024-07",
-  image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=250&fit=crop",
-  award: "winner"
+  githubUrl: "https://github.com/CRRobotics/2023Visions",
+  liveUrl: null,
+  paperUrl: "https://docs.google.com/document/d/11vBBTx2znrTHLFnlTPs0ZAiM80KnKGRd8zlHxrLlmtw/edit#",
+  date: "2023",
+  image: "images/tyrannosaurusred.png",
+  images: ["images/tyrannosaurusred.png", "images/apriltags.png"],
+  award: "Innovation In Control Systems Award @ NYTV"
 }, {
   id: 15,
-  title: "Stock Portfolio Analyzer",
-  description: "Advanced financial portfolio analysis tool with real-time market data, risk assessment, and automated trading strategies.",
-  technologies: ["React", "Python", "pandas", "Alpha Vantage API", "Redis"],
-  githubUrl: "https://github.com/gene/portfolio-analyzer",
-  liveUrl: "https://portfolio-demo.com",
-  paperUrl: "https://example.com/finance-paper.pdf",
-  date: "2023-05",
-  image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=250&fit=crop",
-  award: "finalist"
+  title: "Math animation for finding determinants",
+  description: "I made this to freshen up my manim skills for writing visions documentation for Code red. This was also a project for my math teacher. it was supposed to be extra credit, but I didnt finish the animations in time.",
+  technologies: ["Manim Animation Library", "Python"],
+  githubUrl: "https://github.com/SentientPlatypus/finding-determinants",
+  liveUrl: "https://github.com/SentientPlatypus/octane7/raw/main/images/engine.png",
+  paperUrl: null,
+  date: "2023",
+  image: "images/findingdeterminants.png",
+  images: ["images/findingdeterminants.png"],
+  award: null
 }, {
   id: 16,
-  title: "Event Management System",
-  description: "Comprehensive event planning platform with ticketing, attendee management, and real-time analytics for event organizers.",
-  technologies: ["React", "Node.js", "Stripe API", "MongoDB", "Socket.io"],
-  githubUrl: "https://github.com/gene/event-management",
-  liveUrl: "https://events-demo.com",
+  title: "Inverted Spear of Heaven",
+  description: "I made this to potentially print, and (maybe?) cosplay. If you read Jujutsu Kaisen, you know that the person who weilds this is none other than the absolute UNIT, Toji Fushiguro. Ever since I started working out, I always wanted to have a physique like his.",
+  technologies: ["Fusion 360"],
+  githubUrl: "https://a360.co/3w6y1V3",
+  liveUrl: null,
   paperUrl: null,
-  date: "2024-08",
-  image: "https://images.unsplash.com/photo-1511795409834-432f7b91b4b6?w=400&h=250&fit=crop",
+  date: "2022",
+  image: "images/invertedspear.png",
+  images: ["images/invertedspear.png", "images/invertedspearmodel.png"],
   award: null
 }, {
   id: 17,
-  title: "Mental Health Tracker",
-  description: "Personal wellness app with mood tracking, meditation guides, therapy session scheduling, and progress analytics.",
-  technologies: ["React Native", "Node.js", "PostgreSQL", "Stripe", "Push Notifications"],
-  githubUrl: "https://github.com/gene/mental-health",
-  liveUrl: "https://wellness-demo.com",
+  title: "Handwritten Digit Recognition",
+  description: "https://machinelearningmastery.com/wp-content/uploads/2019/02/Plot-of-a-Subset-of-Images-from-the-MNIST-Dataset.png",
+  technologies: ["Rust"],
+  githubUrl: "https://github.com/SentientPlatypus/digit-recognition-dnn",
+  liveUrl: null,
   paperUrl: null,
   date: "2023-04",
-  image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=250&fit=crop",
-  award: "winner"
+  image: "https://machinelearningmastery.com/wp-content/uploads/2019/02/Plot-of-a-Subset-of-Images-from-the-MNIST-Dataset.png",
+  images: ["https://machinelearningmastery.com/wp-content/uploads/2019/02/Plot-of-a-Subset-of-Images-from-the-MNIST-Dataset.png", "https://github.com/SentientPlatypus/digit-recognition-dnn/raw/master/image-1.png"],
+  award: null
 }, {
   id: 18,
-  title: "3D Model Marketplace",
-  description: "Digital marketplace for buying and selling 3D models with preview functionality, user reviews, and secure payment processing.",
-  technologies: ["React", "Three.js", "Node.js", "Stripe", "AWS S3"],
-  githubUrl: "https://github.com/gene/3d-marketplace",
-  liveUrl: "https://3d-models-demo.com",
+  title: "Foresight",
+  description: "The Foresight is a webapp that does stock price prediction with tensorflow's LSTM dense model. Foresight splits its responsibilities into 2 applications: The webapp, and the Foresight API. The webapp is responsible for displaying content, while the API does most of the heavylifting. I did this, because I needed to access data in javascript that is only available with python libraries. So, I just had my scripts send queries to a python application: the Foresight API. Foresight took a lot of work. Routing, Styling, Scripting, Webscraping, Machine learning, integration and deployment were all things that needed to happen. it was daunting at first, but my enthusiasm increased as things started coming together, especially after integrating the graph (Huge thanks to anychart)",
+  technologies: ["Tensorflow", "Javascript", "Python", "Flask", "BS4"],
+  githubUrl: "https://github.com/SentientPlatypus/Foresight",
+  liveUrl: null,
   paperUrl: null,
-  date: "2024-09",
-  image: "https://images.unsplash.com/photo-1558618666-d9d0c5518ad0?w=400&h=250&fit=crop",
+  date: "2022",
+  image: "https://github.com/SentientPlatypus/Foresight/raw/main/flaskApp/static/images/ForesightLogo.png",
+  images: ["https://github.com/SentientPlatypus/Foresight/raw/main/flaskApp/static/images/ForesightLogo.png", "https://github.com/SentientPlatypus/Foresight/raw/main/flaskApp/static/images/image.png", "https://github.com/SentientPlatypus/Foresight/raw/main/flaskApp/static/images/gf.png"],
   award: "finalist"
 }, {
   id: 19,
@@ -309,7 +320,7 @@ export const PortfolioContent = () => {
 
   // Create different span sizes for varied widths
   const getGridSpan = (index: number) => {
-    const patterns = [1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1];
+    const patterns = [2, 2, 1, 2, 1, 1, 2, 1, 1, 1, 2, 1];
     return patterns[index % patterns.length];
   };
 
@@ -397,8 +408,8 @@ export const PortfolioContent = () => {
               gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
               transform: 'rotateX(15deg) rotateY(-15deg)',
               transformStyle: 'preserve-3d',
-              width: 'calc(100% + 16rem)',
-              marginLeft: '-8rem'
+              width: '100%',
+              marginLeft: '-3rem'
             }}>
               {projects.map((project, index) => {
                 return (
