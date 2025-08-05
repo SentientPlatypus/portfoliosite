@@ -378,7 +378,7 @@ export const PortfolioContent = () => {
                       </div>
                       {project.award && (
                         <div className="text-yellow-600 text-sm font-medium">
-                          {project.award === 'winner' ? '🏆 Winner' : '🥈 Finalist'}
+                          {project.award}
                         </div>
                       )}
                     </div>
