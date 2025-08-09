@@ -27,16 +27,28 @@ export const PicturesSection = ({
           <p className="text-sm text-green-400 font-mono">"🧀"</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {pictures.map(picture => <div key={picture.id} className="group cursor-pointer" onClick={() => onPictureClick?.(picture)}>
-              <div className="relative overflow-hidden rounded-lg border border-border bg-card hover:border-primary/50 transition-colors">
-                <img src={picture.imageUrl} alt={picture.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
-                <div className="p-3">
-                  <h3 className="font-medium text-sm mb-1">{picture.title}</h3>
-                  <p className="text-xs text-muted-foreground">{picture.description}</p>
+        <div className="space-y-3">
+          {pictures.map(picture => (
+            <div 
+              key={picture.id} 
+              className="group cursor-pointer border border-border rounded-lg hover:border-primary/50 transition-colors bg-card p-3"
+              onClick={() => onPictureClick?.(picture)}
+            >
+              <div className="flex gap-3">
+                <div className="w-16 h-16 rounded overflow-hidden flex-shrink-0">
+                  <img 
+                    src={picture.imageUrl} 
+                    alt={picture.title} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-sm mb-1 truncate">{picture.title}</h3>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{picture.description}</p>
                 </div>
               </div>
-            </div>)}
+            </div>
+          ))}
         </div>
       </div>
     </div>;
