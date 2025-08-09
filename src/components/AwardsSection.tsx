@@ -23,7 +23,7 @@ const awards: Award[] = [{
   year: '2025',
   description: 'Proceeded to final presentation round and won best use of Hardware with AuraHat',
   icon: 'trophy',
-  link: 'https://makeathon.org/'
+  link: 'https://www.instagram.com/bigredhacks/'
 }, {
   id: '3',
   title: 'Best Beginner Hack & Finalist',
@@ -31,7 +31,7 @@ const awards: Award[] = [{
   year: '2024',
   description: 'Proceeded to final presentation round and won best beginner hack with Lockd',
   icon: 'medal',
-  link: 'https://bigredhacks.com/'
+  link: 'https://bigred-hacks-2024.devpost.com/?ref_feature=challenge&ref_medium=your-open-hackathons&ref_content=Recently+ended'
 }, {
   id: '4',
   title: 'Semifinalist',
@@ -39,7 +39,7 @@ const awards: Award[] = [{
   year: '2024',
   description: 'Semifinalist in the NASA Lunar Gateway Cargo Storing design challenge',
   icon: 'star',
-  link: 'https://grabcad.com/challenges'
+  link: 'https://grabcad.com/library/nasa-lunar-gateway-module-1'
 }, {
   id: '5',
   title: 'Deans List Semifinalist',
@@ -47,7 +47,7 @@ const awards: Award[] = [{
   year: '2023',
   description: 'Selected to represent Code Red Robotics at the Finger Lakes Regional ',
   icon: 'medal',
-  link: 'https://www.firstinspires.org/robotics/frc'
+  link: 'https://www.team639.org/'
 }, {
   id: '6',
   title: 'Cornell University Dept of CS Award',
@@ -55,7 +55,7 @@ const awards: Award[] = [{
   year: '2024',
   description: 'Recognized for excellence in CS',
   icon: 'award',
-  link: 'https://www.cs.cornell.edu/'
+  link: 'https://drive.google.com/drive/folders/1nD_AtuKja6q2RQzLuFEGz_IkMf9el1LA'
 }, {
   id: '7',
   title: 'Ruth E Polson Academic Achievement Award',
@@ -63,7 +63,7 @@ const awards: Award[] = [{
   year: '2024',
   description: 'I think this was a top 10 a GPA award (?)',
   icon: 'award',
-  link: 'https://www.icsd.k12.ny.us/ihs'
+  link: 'https://drive.google.com/drive/folders/1nD_AtuKja6q2RQzLuFEGz_IkMf9el1LA'
 }, {
   id: '8',
   title: 'RIT Computing Medalist',
