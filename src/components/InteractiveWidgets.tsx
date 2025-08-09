@@ -524,7 +524,7 @@ const ClashRoyaleWidget = ({
           <div className="text-center">
             <div className="flex items-center justify-center space-x-1 mb-1">
               <Trophy className="w-3 h-3 text-yellow-500" />
-              <div className="text-lg font-bold text-yellow-500">{clashData?.bestTrophies?.toLocaleString()}</div>
+              <div className="text-lg font-bold text-yellow-500">10,000 now</div>
             </div>
             <div className="text-xs text-muted-foreground">Best</div>
           </div>
