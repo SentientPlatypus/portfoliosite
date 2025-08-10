@@ -600,8 +600,13 @@ export const InteractiveInfo = () => {
           </p>
           <p className="text-sm font-medium text-yellow-400 mb-4">Currently @ AWS Cryptography</p>
         </div>
-        <div className="w-32 h-40 md:w-48 md:h-64 rounded-lg overflow-hidden flex-shrink-0 mx-auto md:mx-0 order-1 md:order-2">
-          <img src="/lovable-uploads/4df64f57-d54d-441a-9514-c9c8aed3594e.png" alt="Portrait" className="w-full h-full object-contain md:object-cover" />
+        <div className="w-32 h-40 md:w-48 md:h-64 rounded-lg overflow-hidden flex-shrink-0 mx-auto md:mx-0 order-1 md:order-2 bg-muted/10">
+          <img 
+            src="/lovable-uploads/4df64f57-d54d-441a-9514-c9c8aed3594e.png" 
+            alt="Portrait" 
+            className="w-full h-full object-cover" 
+            style={{ minWidth: '128px', minHeight: '160px' }}
+          />
         </div>
       </div>
       
