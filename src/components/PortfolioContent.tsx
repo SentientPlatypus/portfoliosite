@@ -203,7 +203,7 @@ const projects: Project[] = [{
 }, {
   id: 17,
   title: "Handwritten Digit Recognition",
-  description: "https://machinelearningmastery.com/wp-content/uploads/2019/02/Plot-of-a-Subset-of-Images-from-the-MNIST-Dataset.png",
+  description: "Deep Neural Network written in Rust, In scratch.  (Had to parse the dataset in python first tho idk if that counts)",
   technologies: ["Rust"],
   githubUrl: "https://github.com/SentientPlatypus/digit-recognition-dnn",
   liveUrl: null,
@@ -223,7 +223,7 @@ const projects: Project[] = [{
   date: "2022",
   image: "https://github.com/SentientPlatypus/Foresight/raw/main/flaskApp/static/images/ForesightLogo.png",
   images: ["https://github.com/SentientPlatypus/Foresight/raw/main/flaskApp/static/images/ForesightLogo.png", "https://github.com/SentientPlatypus/Foresight/raw/main/flaskApp/static/images/image.png", "https://github.com/SentientPlatypus/Foresight/raw/main/flaskApp/static/images/gf.png"],
-  award: "finalist"
+  award: null
 }, {
   id: 19,
   title: "Tau Defense",
@@ -275,10 +275,11 @@ const projects: Project[] = [{
   description: "Lives SMP is a spigot plugin for minecraft that implements a life system. In this life system, You can donate lives, and steal lives when you kill another player. When a player's lives reaches 0, they are put in spectator mode, and a message is shown to everyone in the server. This was my first java project, and It was really fun making it.",
   technologies: ["Java", "Spigot", "Minecraft"],
   githubUrl: "https://github.com/SentientPlatypus/LiveSMP",
-  liveUrl: "https://supply-demo.com",
+  liveUrl: "https://www.spigotmc.org/resources/lives-smp.96177/",
   paperUrl: null,
   date: "2024-12",
-  image: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400&h=250&fit=crop",
+  image: "images/smpGUI.png",
+  images: ["images/SMPlives.png"],
   award: "705 downloads"
 }, {
   id: 24,
@@ -318,18 +319,6 @@ const projects: Project[] = [{
   award: null
 }, {
   id: 27,
-  title: "BozuBot",
-  description: "BozuBot is a discord bot made for the CodeBozu communnity. Codebozu was a cornell edtech startup, which offered coding courses. I wrote this bot in like 2 days. Rishi hit me up and asked me If I could make a bot that could sort people into groups based on a google spreadsheet. I said yes. This bot also adds support for Bozu point tracking, which was an awards system in the community. Unfortunately, CodeBozu has been discontinued.",
-  technologies: ["nextcord", "Python"],
-  githubUrl: "https://github.com/SentientPlatypus/BozuBot",
-  liveUrl: null,
-  paperUrl: null,
-  date: "2022",
-  image: "https://media-exp1.licdn.com/dms/image/C4D0BAQFmTZ4t_b7H8A/company-logo_200_200/0/1639364471276?e=2147483647&v=beta&t=KB2ySCdsQzrU7hV9jmZS_kXoka7GnR_HUifxCRNoVdM",
-  images: ["https://media-exp1.licdn.com/dms/image/C4D0BAQFmTZ4t_b7H8A/company-logo_200_200/0/1639364471276?e=2147483647&v=beta&t=KB2ySCdsQzrU7hV9jmZS_kXoka7GnR_HUifxCRNoVdM"],
-  award: null
-}, {
-  id: 28,
   title: "Reflex Testing Game",
   description: "This game is played with a camera. The goal is to catch as many circles as you can with your hand. This project was made to help me get familiar with openCV before the code red season. It uses a library that adds landmarks to where the joints in your hands are, after that its just basic math.",
   technologies: ["OpenCV", "Mediapipe Models"],
@@ -341,7 +330,7 @@ const projects: Project[] = [{
   images: ["images/ReflexGame.png"],
   award: null
 }, {
-  id: 29,
+  id: 28,
   title: "Amoris",
   description: "Amoris was a discord bot that had an absolute truckload of features. It was my very first project in python. So everything new that I learned, would have some implementation in Amoris. Each of the systems in Amoris was interconnected. You want to play minecraft with your virtual friend? You need to buy a pc and minecraft from the shop first. And make sure your PC meets the specs minecraft has. You need money? Get a job! Job application rejected? Get some xp first. Or, if you want secondary income, you can fish, mine or hunt (make sure you buy the correct tools to do so). Want to get better loot? Craft better tools. Someone is trying to rob you? Defend yourself! Got beaten, upgrade your stats by levelling up! Use your money to buy weapons and items that have different abilities and ultimates. I even made a webapp that you can change personal settings from! Amoris' main feature was the.. well.. lets call it the 'friend simulator' This simulator allows you to customize everything about your buddy. Images, personality, etc. The cool thing is, The experiences with your friend are saved, and their responses update as well. Its like talking to a real person. This is thanks to GPT-3, an incredibly advanced NLP engine. It should also be noted that Amoris has a webapp that users can go to modify guild settings. Source code is linked down below. It was an excellent application of MongoDB.",
   technologies: ["Nextcord", "MongoDB", "Python", "Flask", "OpenAI GPT-3"],
@@ -353,7 +342,7 @@ const projects: Project[] = [{
   images: ["https://cdn.discordapp.com/avatars/822265614244511754/61cdc288c07c18e83082e538e5ca6671.webp?size=1024"],
   award: null
 }, {
-  id: 30,
+  id: 29,
   title: "Puzzles",
   description: "This was the submission for the discord code jam hosted by the Python discord server. It was a competition among groups made of individuals who had solved the qualifier. It was my very first time working in a group with other developers, so it was a very valuable experience.",
   technologies: ["Python", "Turtle"],
@@ -373,8 +362,8 @@ const projects: Project[] = [{
   liveUrl: null,
   paperUrl: "https://docs.google.com/document/d/1wopOZllNE47XJXkMYUnJH79BcgCRephUfpS8FBaqJrw/export?format=pdf",
   date: "2021",
-  image: "images/puzzles.png",
-  images: ["images/puzzles.png"],
+  image: "images/presidents.png",
+  images: ["images/presidents.png"],
   award: null
 }];
 export const PortfolioContent = () => {
@@ -405,37 +394,6 @@ export const PortfolioContent = () => {
     setSelectedProject(null);
   };
 
-  // Create different span sizes for varied widths
-  const getGridSpan = (index: number) => {
-    const patterns = [2, 2, 1, 2, 1, 1, 2, 1, 1, 1, 2, 1];
-    return patterns[index % patterns.length];
-  };
-
-  // Calculate rows for rotation effect
-  const getRowIndex = (index: number) => {
-    const gridMinWidth = 160;
-    const containerWidth = window.innerWidth - 160;
-    const maxColumns = Math.floor(containerWidth / gridMinWidth);
-    
-    let currentIndex = 0;
-    let rowIndex = 0;
-    
-    while (currentIndex < index) {
-      let currentRowSpan = 0;
-      while (currentRowSpan < maxColumns && currentIndex < projects.length) {
-        const span = getGridSpan(currentIndex);
-        if (currentRowSpan + span <= maxColumns) {
-          currentRowSpan += span;
-          currentIndex++;
-        } else {
-          break;
-        }
-      }
-      if (currentIndex <= index) rowIndex++;
-    }
-    
-    return rowIndex;
-  };
   return <div className="h-full overflow-x-hidden overflow-y-auto">
       <div className="pt-2 pb-6 -mx-8">
         {/* Always use mobile-style linear layout */}
