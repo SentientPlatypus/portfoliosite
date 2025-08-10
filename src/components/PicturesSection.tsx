@@ -6,9 +6,19 @@ interface Picture {
 }
 const pictures: Picture[] = [{
   id: '1',
+  title: 'Graduated!',
+  description: 'Picture that was taken of Me and Bel before graduation',
+  imageUrl: 'images/grad.jpg'
+}, {
+  id: '2',
   title: 'Tabling for CRU at Binghampton University',
   description: 'Tabling for CRU at Binghampton University as part of a two day event with some guys from the Cornell CRU',
   imageUrl: 'images/CRU.jpg'
+}, {
+  id: '3',
+  title: 'Speaking at the Final round of BigRedHacks',
+  description: 'Speaking at the Final round of BigRedHacks about my project LockD',
+  imageUrl: 'images/speaking.png'
 }];
 interface PicturesSectionProps {
   onPictureClick?: (picture: {
