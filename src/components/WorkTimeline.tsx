@@ -57,9 +57,7 @@ const workExperiences: WorkExperience[] = [
     company: 'Lockheed Martin',
     duration: '2023',
     description: [
-      'Maintained legacy applications',
-      'Learned modern web technologies',
-      'Participated in code reviews'
+      'Designed ADS-B In, Air Traffic Management, and IFF Antennae status functions for the Mission Performance V280 Team.'
     ],
     skills: ['JavaScript', 'jQuery', 'PHP', 'MySQL']
   }
