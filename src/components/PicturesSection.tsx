@@ -18,7 +18,12 @@ const pictures: Picture[] = [{
   id: '3',
   title: 'Speaking at the Final round of BigRedHacks',
   description: 'Speaking at the Final round of BigRedHacks about my project LockD',
-  imageUrl: 'images/speaking.png'
+  imageUrl: 'images/speaking.jpg'
+}, {
+  id: '4',
+  title: 'Trap Shooting',
+  description: 'I went shooting with Liam and Arda',
+  imageUrl: 'images/trap.jpg'
 }];
 interface PicturesSectionProps {
   onPictureClick?: (picture: {
