@@ -17,13 +17,13 @@ const projects: Project[] = [{
   id: 1,
   title: "QuantJL",
   description: "DDPG based RL agent for trading. Written in Julia, from scratch.",
-  technologies: ["React", "TypeScript", "Node.js", "PostgreSQL", "Tailwind CSS"],
+  technologies: ["Julia"],
   githubUrl: "https://github.com/SentientPlatypus/quantjl",
   liveUrl: null,
   paperUrl: null,
   date: "2024",
   image: "images/gbm_path_full.png",
-  images: ["https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=250&fit=crop", "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop"],
+  images: ["https://github.com/SentientPlatypus/quantjl/blob/master/plots/total_rewards.png?raw=true"],
   award: null
 }, {
   id: 2,
