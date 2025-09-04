@@ -16,7 +16,7 @@ interface Project {
 const projects: Project[] = [{
   id: 1,
   title: "QuantJL",
-  description: "DDPG based RL agent for trading. Written in Julia, from scratch.",
+  description: "Built a high-frequency trading simulation platform in Julia from scratch, implementing Deep Deterministic Policy Gradient (DDPG) for automated portfolio management. Designed custom neural networks, feature pipelines (EMA, RSI, MACD, Bollinger Bands, VWAP, ATR, OBV, time-of-day, and a proprietary GBM-based volatility score), and reward functions balancing risk, transaction costs, and capital preservation. Leveraged RL techniques including continuous action spaces, policy gradients, exploration strategies, experience replay, target networks, and environment simulation for training and evaluation.",
   technologies: ["Julia"],
   githubUrl: "https://github.com/SentientPlatypus/quantjl",
   liveUrl: null,
@@ -108,7 +108,7 @@ const projects: Project[] = [{
   id: 9,
   title: "Beluga Sturgeon Financial",
   description: "The model expands on Jun's generalized Deep reinforcement learning approach, by adding geometric brownian motion as an indicator. I worked on experimenting with sentiment to see if it was a good indicator. Unfortunately, due to its volatility, it would not provide much advantage to the model. The website shows the stock price over time, the `state` of the environment over time, and finally a recommended action. (0 for short, 1 for idle, and 2 for long.). We have realized that simulation time is quite a bottleneck for website performance so I rewrote it with pytorch to take advantage of parallel GPU computations. Website allows users to purchase “portfolios” which advise them on how to partition their money among chosen stocks. Utilizes firebase database, firebase authentication, and PayPal API.",
-  technologies: ["React", "Node.js", "Redis", "AWS S3", "TensorFlow"],
+  technologies: ["C++", "Python", "Firebase API", "Paypal API", "HTML/CSS/JS", "Flask"],
   githubUrl: "https://github.com/Beluga-Sturgeon",
   liveUrl: null,
   paperUrl: null,
@@ -245,7 +245,7 @@ const projects: Project[] = [{
   liveUrl: "https://foresightapi.herokuapp.com/",
   paperUrl: null,
   date: "2023-03",
-  image: "https://images.unsplash.com/photo-1473091534298-04dcbce3278c?w=400&h=250&fit=crop",
+  image: "https://foresightapi.herokuapp.com/static/images/ForesightLogo.png",
   award: null
 }, {
   id: 21,
