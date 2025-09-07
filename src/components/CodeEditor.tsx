@@ -269,7 +269,7 @@ Let's build something amazing together!`
               }`} style={{ lineHeight: '1.5rem sm:1.75rem' }}>
                 {step === 'typing-dev' && (
                   <TypewriterAnimation
-                    text='let mut me = Dev{name: String::from("Gene"), age: 18};'
+                    text='let mut me = Dev{name: String::from("Gene"), age: 19};'
                     delay={80}
                     onComplete={handleDevComplete}
                     className="syntax-variable"
