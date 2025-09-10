@@ -16,8 +16,8 @@ const workExperiences: WorkExperience[] = [
     company: 'AWS Cryptography',
     duration: '4/27/2025 - 8/15/2025',
     description: [
-      'Implemented Dynamic Throttling for Certificate Authority',
-      'Improved throttling performance for over 54 regions',
+      'Implemented dynamic throttling for AWS Certificate Authority across 54 regions, improving reliability under variable load and reducing on-call rate-limit adjustment time from two hours to under 30 seconds.',
+      'Developed metrics, alarms, and canaries to rapidly detect emergent issues, reducing potential customer impact and improving service resilience.',
     ],
     skills: ['Java', 'TypeScript', 'Cloudwatch', 'EC2']
   },
