@@ -12,7 +12,7 @@ interface WorkExperience {
 const workExperiences: WorkExperience[] = [
   {
     id: '1',
-    title: 'Amazon Future Engineer Intern',
+    title: 'Software Development Intern',
     company: 'AWS Cryptography',
     duration: '4/27/2025 - 8/15/2025',
     description: [
