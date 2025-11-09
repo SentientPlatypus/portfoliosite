@@ -23,7 +23,7 @@ const projects: Project[] = [{
   paperUrl: null,
   date: "2024",
   image: "images/gbm_path_full.png",
-  images: ["https://github.com/SentientPlatypus/quantjl/blob/master/plots/capital_distribution/2025-09-12/total_rewards.png?raw=true", "https://github.com/SentientPlatypus/quantjl/blob/master/plots/total_rewards.png?raw=true"],
+  images: ["https://github.com/SentientPlatypus/quantjl/blob/master/plots/capital_distribution/2025-09-12/total_rewards.png?raw=true", "https://github.com/SentientPlatypus/quantjl/blob/master/plots/total_rewards.png?raw=true", "https://github.com/SentientPlatypus/quantjl/blob/master/plots/capital_distribution/2025-11-08/total_rewards.png?raw=true"],
   award: null
 }, {
   id: 2,
