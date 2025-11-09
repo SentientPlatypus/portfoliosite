@@ -23,7 +23,7 @@ const workExperiences: WorkExperience[] = [
   },
   {
     id: '2',
-    title: 'Intern',
+    title: 'Student Researcher',
     company: 'Cornell SonicMEMS Lab',
     duration: '2024 - Present',
     description: [
