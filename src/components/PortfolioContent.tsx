@@ -13,7 +13,22 @@ interface Project {
   images?: string[];
   award?: string | null;
 }
-const projects: Project[] = [{
+const projects: Project[] = [
+
+  {
+  id: 1,
+  title: "Indonesian Coconut",
+  description: "Indonesian Coconut is a reinforcement-learning–driven Rocket League bot made with RLGYM. It is designed around a highly specialized reward architecture that emphasizes possession safety, controlled mechanical execution, and game-theoretic decision making. Unlike continuous-control RL agents, Indonesian Coconut operates in a discrete, lookup-table action space, making the policy more interpretable while still enabling advanced mechanics such as controlled air dribbles, stable dribble→flick transitions, adaptive defensive rotations, and pressure-aware ball touches. Performance was validated against Element, one of the strongest S-tier bots in the RLBot competitive ecosystem. Using a binomial scoring model (n=69 total goals, p=0.5 under the null hypothesis of equal skill), statistical significance requires winning at least 42–28 to achieve p < 0.05. Indonesian Coconut exceeded this threshold decisively, winning 48–23, demonstrating not only superior policy quality but also consistent, repeatable outperformance across the full distribution of scoring events.",
+  technologies: ["Python", "RLGYM", "PyTorch", "RLBOT"],
+  githubUrl: "https://github.com/SentientPlatypus/indonesiancoconut",
+  liveUrl: "https://ballchasing.com/replay/2c0321ef-152d-426a-b0c9-d607cf97aa88#overview?t=68.56s",
+  paperUrl: null,
+  date: "2025",
+  image: "images/cover.png",
+  images: [],
+  award: "RLBOT Element Eliminator"
+},
+  {
   id: 1,
   title: "QuantJL",
   description: "Built a high-frequency trading simulation platform in Julia from scratch, implementing Deep Deterministic Policy Gradient (DDPG) for automated portfolio management. Designed custom neural networks, feature pipelines (EMA, RSI, MACD, Bollinger Bands, VWAP, ATR, OBV, time-of-day, and a proprietary GBM-based volatility score), and reward functions balancing risk, transaction costs, and capital preservation. Leveraged RL techniques including continuous action spaces, policy gradients, exploration strategies, experience replay, target networks, and environment simulation for training and evaluation.",
