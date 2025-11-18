@@ -11,6 +11,7 @@ interface Project {
   date: string;
   image: string;
   images?: string[];
+  embedUrls?: string[];
   award?: string | null;
 }
 const projects: Project[] = [
