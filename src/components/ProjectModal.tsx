@@ -15,6 +15,7 @@ interface Project {
   date: string;
   image: string;
   images?: string[];
+  embedUrls?: string[];
   award?: string | null;
 }
 
@@ -29,19 +30,30 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
   
   if (!project) return null;
 
-  // Get all available images (main image + additional images)
-  const allImages = project.images && project.images.length > 0 
-    ? [project.image, ...project.images] 
-    : [project.image];
+  // Get all available media (images + embeds)
+  const mediaItems: Array<{ type: 'image' | 'embed', url: string }> = [];
   
-  const hasMultipleImages = allImages.length > 1;
+  // Add main image
+  mediaItems.push({ type: 'image', url: project.image });
+  
+  // Add additional images
+  if (project.images && project.images.length > 0) {
+    project.images.forEach(img => mediaItems.push({ type: 'image', url: img }));
+  }
+  
+  // Add embed URLs
+  if (project.embedUrls && project.embedUrls.length > 0) {
+    project.embedUrls.forEach(url => mediaItems.push({ type: 'embed', url }));
+  }
+  
+  const hasMultipleMedia = mediaItems.length > 1;
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
+  const nextMedia = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % mediaItems.length);
   };
 
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+  const prevMedia = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
   };
 
   return (
@@ -52,42 +64,52 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Project Image Slideshow */}
-          <div className="aspect-video w-full overflow-hidden rounded-lg relative group">
-            <img 
-              src={allImages[currentImageIndex]} 
-              alt={`${project.title} - Image ${currentImageIndex + 1}`}
-              className="w-full h-full object-cover transition-opacity duration-300"
-            />
+          {/* Project Media Slideshow */}
+          <div className="aspect-video w-full overflow-hidden rounded-lg relative group bg-muted">
+            {mediaItems[currentImageIndex].type === 'image' ? (
+              <img 
+                src={mediaItems[currentImageIndex].url} 
+                alt={`${project.title} - Media ${currentImageIndex + 1}`}
+                className="w-full h-full object-cover transition-opacity duration-300"
+              />
+            ) : (
+              <iframe 
+                src={mediaItems[currentImageIndex].url}
+                className="w-full h-full border-0"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                title={`${project.title} - Embed ${currentImageIndex + 1}`}
+              />
+            )}
             
             {/* Navigation Arrows */}
-            {hasMultipleImages && (
+            {hasMultipleMedia && (
               <>
                 <button
-                  onClick={prevImage}
+                  onClick={prevMedia}
                   className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  aria-label="Previous image"
+                  aria-label="Previous media"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
-                  onClick={nextImage}
+                  onClick={nextMedia}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  aria-label="Next image"
+                  aria-label="Next media"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
                 
-                {/* Image Indicators */}
+                {/* Media Indicators */}
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-                  {allImages.map((_, index) => (
+                  {mediaItems.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
                       className={`w-2 h-2 rounded-full transition-colors duration-200 ${
                         index === currentImageIndex ? 'bg-white' : 'bg-white/50'
                       }`}
-                      aria-label={`Go to image ${index + 1}`}
+                      aria-label={`Go to media ${index + 1}`}
                     />
                   ))}
                 </div>
