@@ -25,7 +25,7 @@ const projects: Project[] = [
   paperUrl: null,
   date: "2025",
   image: "images/cover.png",
-  images: [],
+  images: ["https://drive.google.com/uc?export=view&id=1Wsokr7R-ckpOBy-ougmz-JeZPNLNBjdt"],
   award: "RLBOT Element Eliminator"
 },
   {
