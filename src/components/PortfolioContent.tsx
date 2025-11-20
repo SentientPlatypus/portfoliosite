@@ -11,7 +11,7 @@ interface Project {
   date: string;
   image: string;
   images?: string[];
-  embedUrls?: string[];
+  videos?: string[];
   award?: string | null;
 }
 const projects: Project[] = [
@@ -27,9 +27,8 @@ const projects: Project[] = [
   date: "2025",
   image: "images/cover.png",
   images: ["https://drive.google.com/uc?export=view&id=1Wsokr7R-ckpOBy-ougmz-JeZPNLNBjdt"],
-  embedUrls: [
-    "https://drive.google.com/file/d/1Wsokr7R-ckpOBy-ougmz-JeZPNLNBjdt/preview",
-    "https://drive.google.com/file/d/1rlEv7vf4e3HwccVCBLrHbn0o0oAXQPO5/preview"
+  videos: [
+    // Add your MP4 video URLs here
   ],
   award: "RLBOT Element Eliminator"
 },
