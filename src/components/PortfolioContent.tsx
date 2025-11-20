@@ -19,16 +19,16 @@ const projects: Project[] = [
   {
   id: 1,
   title: "Indonesian Coconut",
-  description: "Indonesian Coconut is a reinforcement-learning–driven Rocket League bot made with RLGYM. It is designed around a highly specialized reward architecture that emphasizes possession safety, controlled mechanical execution, and game-theoretic decision making. Unlike continuous-control RL agents, Indonesian Coconut operates in a discrete, lookup-table action space, making the policy more interpretable while still enabling advanced mechanics such as controlled air dribbles, stable dribble→flick transitions, adaptive defensive rotations, and pressure-aware ball touches. Performance was validated against Element, one of the strongest S-tier bots in the RLBot competitive ecosystem. Using a binomial scoring model (n=69 total goals, p=0.5 under the null hypothesis of equal skill), statistical significance requires winning at least 42–28 to achieve p < 0.05. Indonesian Coconut exceeded this threshold decisively, winning 48–23, demonstrating not only superior policy quality but also consistent, repeatable outperformance across the full distribution of scoring events.",
+  description: "Indonesian Coconut is a reinforcement-learning–driven Rocket League bot made with RLGYM. It is designed around a highly specialized reward architecture that emphasizes possession safety, controlled mechanical execution, and game-theoretic decision making. Unlike continuous-control RL agents, Indonesian Coconut operates in a discrete, lookup-table action space, making the policy more interpretable while still enabling advanced mechanics such as controlled air dribbles, stable dribble→flick transitions, adaptive defensive rotations, and pressure-aware ball touches. Performance was validated against Element, one of the strongest S-tier bots in the RLBot competitive ecosystem. Using a binomial scoring model (n=69 total goals, p=0.5 under the null hypothesis of equal skill), statistical significance requires winning at least 42–28 to achieve p < 0.05. Indonesian Coconut exceeded this threshold decisively, winning 64–24, demonstrating not only superior policy quality but also consistent, repeatable outperformance across the full distribution of scoring events.",
   technologies: ["Python", "RLGYM", "PyTorch", "RLBOT"],
   githubUrl: "https://github.com/SentientPlatypus/indonesiancoconut",
-  liveUrl: "https://ballchasing.com/replay/2c0321ef-152d-426a-b0c9-d607cf97aa88#overview?t=68.56s",
+  liveUrl: "https://ballchasing.com/replay/200643a5-4bd4-4f20-89a3-fbda846514a2",
   paperUrl: null,
   date: "2025",
   image: "images/cover.png",
-  images: ["https://drive.google.com/uc?export=view&id=1Wsokr7R-ckpOBy-ougmz-JeZPNLNBjdt"],
+  images: [],
   videos: [
-    // Add your MP4 video URLs here
+    "images/Flick_over.mp4", "images/off_wall.mp4", "images/speedflip_flick.mp4"
   ],
   award: "RLBOT Element Eliminator"
 },
