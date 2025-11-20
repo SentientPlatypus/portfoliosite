@@ -15,7 +15,7 @@ interface Project {
   date: string;
   image: string;
   images?: string[];
-  embedUrls?: string[];
+  videos?: string[];
   award?: string | null;
 }
 
@@ -30,8 +30,8 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
   
   if (!project) return null;
 
-  // Get all available media (images + embeds)
-  const mediaItems: Array<{ type: 'image' | 'embed', url: string }> = [];
+  // Get all available media (images + videos)
+  const mediaItems: Array<{ type: 'image' | 'video', url: string }> = [];
   
   // Add main image
   mediaItems.push({ type: 'image', url: project.image });
@@ -41,9 +41,9 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
     project.images.forEach(img => mediaItems.push({ type: 'image', url: img }));
   }
   
-  // Add embed URLs
-  if (project.embedUrls && project.embedUrls.length > 0) {
-    project.embedUrls.forEach(url => mediaItems.push({ type: 'embed', url }));
+  // Add videos
+  if (project.videos && project.videos.length > 0) {
+    project.videos.forEach(url => mediaItems.push({ type: 'video', url }));
   }
   
   const hasMultipleMedia = mediaItems.length > 1;
@@ -73,12 +73,12 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
                 className="w-full h-full object-cover transition-opacity duration-300"
               />
             ) : (
-              <iframe 
+              <video 
                 src={mediaItems[currentImageIndex].url}
-                className="w-full h-full border-0"
-                allow="autoplay; encrypted-media"
-                allowFullScreen
-                title={`${project.title} - Embed ${currentImageIndex + 1}`}
+                className="w-full h-full object-contain"
+                controls
+                controlsList="nodownload"
+                title={`${project.title} - Video ${currentImageIndex + 1}`}
               />
             )}
             
