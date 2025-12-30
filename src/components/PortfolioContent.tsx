@@ -107,7 +107,7 @@ const projects: Project[] = [
   technologies: ["Python", "Matlab", "ROS"],
   githubUrl: "https://github.com/SentientPlatypus/jackal",
   liveUrl: null,
-  paperUrl: "https://dl.acm.org/doi/abs/10.1145/3568162.3576955",
+  paperUrl: "https://mc.manuscriptcentral.com/ijrr?DOWNLOAD=TRUE&PARAMS=xik_2eKxjJUi7fAXit9pCBfhTcZ69K9Ef1kpZKSzNZRv8ZTGZi1yUxk2YCUVWgbH3PuYmABPwDhjXwcNiZDceX8Eo3zSQycZFPbkTC6QcPWpruN6iEBHqaoBbmVQ4XZqmDwTY8ykP5R1Q5pPxFY6jcnrv9avDQjXpqTdudN7joCJWQ74onaxS3X9XoRXCkbkCs852ws9H",
   date: "2023",
   image: "images/jackal.png",
   images: ["images/jackal.png"],
