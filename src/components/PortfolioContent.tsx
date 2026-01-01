@@ -28,7 +28,7 @@ const projects: Project[] = [
   image: "images/cover.png",
   images: [],
   videos: [
-    "images/walldash.mp4","images/Flick_over.mp4", "images/off_wall.mp4", "images/speedflip_flick.mp4"
+    "images/walldash.mp4","images/Flick_over.mp4", "images/wavedash.mp4", "images/off_wall.mp4", "images/speedflip_flick.mp4"
   ],
   award: "RLBOT Element Eliminator"
 },
