@@ -16,6 +16,20 @@ interface Project {
 }
 const projects: Project[] = [
 
+    {
+  id: 1,
+  title: "OptionsImpliedPDF.jl",
+  description: "OptionsImpliedPDF.jl is a registered package in the Julia registry that extracts risk-neutral probability distributions from options market data, revealing the market's collective expectations about future asset price movements. This is done by solving for implied volatility, fitting an SVI curve, and numerically differentiating, thus creating a PDF by breeden litzenberger.",
+  technologies: ["Julia"],
+  githubUrl: "https://github.com/SentientPlatypus/OptionsImpliedPDF.jl",
+  liveUrl: "https://juliahub.com/ui/Packages/General/OptionsImpliedPDF",
+  paperUrl: null,
+  date: "2026",
+  image: "images/oipd_logo.png",
+  images: ["images/7_pdf_numerical.png"],
+  videos: [],
+  award: "Registered Julia Package"
+},
   {
   id: 1,
   title: "Indonesian Coconut",
