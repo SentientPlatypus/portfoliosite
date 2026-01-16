@@ -133,8 +133,8 @@ export const IntellisenseContent = ({ content, className, isWorkSelected, onWork
   };
 
   return (
-    <div className={cn('intellisense-bg rounded shadow-lg p-3 ml-2 max-h-[80vh] overflow-y-auto scrollbar-hide', className)}>
-      <div className="text-sm">
+    <div className={cn('intellisense-bg rounded shadow-lg p-2 sm:p-3 ml-0 sm:ml-2 max-h-[60vh] sm:max-h-[80vh] overflow-y-auto scrollbar-hide', className)}>
+      <div className="text-xs sm:text-sm">
         {renderContent()}
       </div>
     </div>
