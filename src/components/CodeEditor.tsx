@@ -313,10 +313,11 @@ Let's build something amazing together!`
                     />
                   )}
                   {step === 'showing-intellisense' && selectedOption && (
-                    <div className="relative">
-                      <span className="syntax-variable">me</span>
-                      <span className="text-white">.</span>
-                      <span className="syntax-method">
+                    <div className="relative sm:relative static">
+                      {/* Desktop: show code text. Mobile: hide it since we use full-screen layout */}
+                      <span className="syntax-variable hidden sm:inline">me</span>
+                      <span className="text-white hidden sm:inline">.</span>
+                      <span className="syntax-method hidden sm:inline">
                         {selectedOption.label}()
                       </span>
                       
@@ -344,8 +345,8 @@ Let's build something amazing together!`
                             />
                           </div>
 
-                          {/* Mobile Layout */}
-                          <div className="sm:hidden">
+                          {/* Mobile Layout - uses fixed positioning to span full viewport */}
+                          <div className="sm:hidden fixed inset-0 top-[88px] bottom-[24px] z-20 pointer-events-none">
                             {/* Mobile Method Selector Button */}
                             <button
                               onClick={(e) => {
@@ -358,14 +359,14 @@ Let's build something amazing together!`
                                 e.stopPropagation();
                                 setShowMobileMethodSelector(!showMobileMethodSelector);
                               }}
-                              className="absolute top-6 right-4 bg-[#2d2d30] border border-border rounded px-3 py-2 text-xs text-foreground hover:bg-[#3c3c3c] active:bg-[#3c3c3c] transition-colors touch-manipulation z-20"
+                              className="absolute top-2 right-4 bg-[#2d2d30] border border-border rounded px-3 py-2 text-xs text-foreground hover:bg-[#3c3c3c] active:bg-[#3c3c3c] transition-colors touch-manipulation pointer-events-auto"
                             >
                               {selectedOption.label}() ▼
                             </button>
 
                             {/* Mobile Method Selector Overlay */}
                             {showMobileMethodSelector && (
-                              <div className="absolute top-6 left-4 right-4 z-30">
+                              <div className="absolute top-2 left-4 right-4 z-30 pointer-events-auto">
                                 <div className="intellisense-bg rounded shadow-lg p-1 min-w-48">
                                   <div className="text-xs text-muted-foreground px-2 py-1 border-b border-border">
                                     methods
@@ -399,7 +400,7 @@ Let's build something amazing together!`
 
                             {/* Mobile Content Display */}
                             {!showMobileMethodSelector && (
-                              <div className="absolute top-12 left-2 right-2 bottom-8 z-10 overflow-hidden">
+                              <div className="absolute top-12 left-2 right-2 bottom-0 overflow-hidden pointer-events-auto">
                                 <IntellisenseContent
                                   content={selectedOption.content}
                                   className="w-full h-full max-h-full"
