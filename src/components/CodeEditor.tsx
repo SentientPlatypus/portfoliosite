@@ -399,10 +399,10 @@ Let's build something amazing together!`
 
                             {/* Mobile Content Display */}
                             {!showMobileMethodSelector && (
-                              <div className="absolute top-12 left-4 right-4 z-10">
+                              <div className="absolute top-12 left-2 right-2 bottom-8 z-10 overflow-hidden">
                                 <IntellisenseContent
                                   content={selectedOption.content}
-                                  className="w-full"
+                                  className="w-full h-full max-h-full"
                                   isWorkSelected={selectedOption.id === 'work' && isWorkComponentActive}
                                   onWorkNavigationRequest={(direction) => {
                                     if (direction === 'left') {
@@ -448,22 +448,22 @@ Let's build something amazing together!`
       </div>
 
       {/* VS Code Status Bar */}
-      <div className="h-6 bg-[#007ACC] flex items-center justify-between px-4 text-xs text-white">
-        <div className="flex items-center space-x-4">
+      <div className="h-6 bg-[#007ACC] flex items-center justify-between px-2 sm:px-4 text-xs text-white shrink-0">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           <span>Rust</span>
-          <span>UTF-8</span>
-          <span>LF</span>
+          <span className="hidden sm:inline">UTF-8</span>
+          <span className="hidden sm:inline">LF</span>
           <span>Ln 3, Col 18</span>
         </div>
-        <div className="flex items-center space-x-4">
-          <span>✓ Prettier</span>
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <span className="hidden sm:inline">✓ Prettier</span>
           <span>⚡ Auto Save</span>
         </div>
       </div>
 
-      {/* Footer with instructions */}
+      {/* Footer with instructions - hidden on mobile */}
       {showIntellisense && activeTab === 'me.rs' && (
-        <div className="absolute bottom-4 sm:bottom-8 left-2 sm:left-16 text-xs sm:text-sm text-muted-foreground">
+        <div className="hidden sm:block absolute bottom-8 left-16 text-sm text-muted-foreground">
           {isWorkComponentActive ? 
             'Use ↑↓ to navigate work experiences • ← to return to methods' : 
             'Use ↑↓ arrow keys to navigate • → to enter work mode'
