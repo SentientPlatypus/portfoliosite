@@ -12,11 +12,11 @@ interface WorkExperience {
 const workExperiences: WorkExperience[] = [
   {
     id: '1',
-    title: 'Software Development Intern',
-    company: 'AWS Cryptography',
-    duration: '4/27/2025 - 8/15/2025',
+    title: 'Software Developer Intern, AWS Cryptography',
+    company: 'Amazon Web Services (AWS)',
+    duration: '05/2025 - 08/2025',
     description: [
-      'Implemented dynamic throttling for AWS Certificate Authority across 54 regions, improving reliability under variable load and reducing on-call rate-limit adjustment time from two hours to under 30 seconds.',
+      'Implemented dynamic throttling for proprietary AWS certificate management system across 54 regions, improving reliability under variable load and reducing on-call rate-limit adjustment time from two hours to under 30 seconds.',
       'Developed metrics, alarms, and canaries to rapidly detect emergent issues, reducing potential customer impact and improving service resilience.',
     ],
     skills: ['Java', 'TypeScript', 'Cloudwatch', 'EC2']
@@ -24,42 +24,56 @@ const workExperiences: WorkExperience[] = [
   {
     id: '2',
     title: 'Student Researcher',
-    company: 'Cornell SonicMEMS Lab',
-    duration: '2024 - Present',
+    company: 'Cornell Architectural Robotics Laboratory',
+    duration: '12/2025 - Present',
     description: [
-      'Print and image PCBs for GAN network. In SonicMEMS lab under Prof. Amit Lal.',
+      'Mitigated excessive current draw in a robotic arm and reduced peak electrical load by 50% mass reduction via multiple iterations of generative design and 3D-printed structural components, alongside improved soldered connections.',
     ],
-    skills: ['Volterra', 'BotFactory']
+    skills: ['Generative Design', '3D Printing', 'Robotics', 'Electrical Systems']
   },
   {
     id: '3',
-    title: 'Experiment Developer',
-    company: 'Cornell SC Johnson',
-    duration: '2024',
+    title: 'Student Researcher, PCB Manufacturing',
+    company: 'Cornell Sonic MEMS Laboratory',
+    duration: '09/2024 - 12/2025',
     description: [
-      'Created website to study how "nudging" affects B2B consumer behavior',
+      'Fabricated and imaged PCBs for a GAN predicting print quality from printer parameters.',
     ],
-    skills: ['Python', 'Flask']
+    skills: ['PCB Design', 'GAN', 'Manufacturing']
   },
   {
     id: '4',
-    title: 'Research Intern',
-    company: 'Cornell Autonommous Systems Lab',
-    duration: '2023',
+    title: 'Experiment Developer, B2B Experiment',
+    company: 'Cornell SC Johnson College of Business',
+    duration: '08/2024 - 12/2024',
     description: [
-      'Study determining whether human-initiated/robot-initiated evactuations are more effective.',
+      'Built experimental B2B website to study seller behavior under ranking algorithms and scroll nudges.',
+      'Tested with 100+ users; results showed nudges reduced retention.',
     ],
-    skills: ['ROS', 'MatLab', 'Python']
+    skills: ['Full Stack Web Development', 'Python', 'User Research', 'Flask']
   },
   {
     id: '5',
-    title: 'Systems Intern',
-    company: 'Lockheed Martin',
-    duration: '2023',
+    title: 'Research Intern',
+    company: 'Cornell Autonomous Systems Laboratory',
+    duration: '06/2023 - 12/2023',
     description: [
-      'Designed ADS-B In, Air Traffic Management, and IFF Antennae status functions for the Mission Performance V280 Team.'
+      'Developed LiDAR-based waypoint navigation ensuring wall collision-free robot movement using ROS.',
+      'Collected 18,000 images and trained a support vector machine to detect user hand silhouettes.',
+      'Resulted in a 33-participant study showing robot-initiated evacuation improves speed and perceived competence.',
+      'Co-authored "Effects of Proactivity of Robot Behavior and Robot Failures on Humans and Robots Achieving a Shared Goal".',
     ],
-    skills: ['JavaScript', 'jQuery', 'PHP', 'MySQL']
+    skills: ['ROS', 'LiDAR', 'SVM', 'Python', 'Computer Vision']
+  },
+  {
+    id: '6',
+    title: 'Systems Engineer Intern, Mission Performance V280 Team',
+    company: 'Lockheed Martin',
+    duration: '06/2023 - 08/2023',
+    description: [
+      'Designed ADS-B In, Air Traffic Management, and IFF Antennae functions for the Mission Performance V280 Team.',
+    ],
+    skills: ['JIRA', 'Confluence', 'Excell']
   }
 ];
 
