@@ -16,6 +16,20 @@ interface Project {
 }
 const projects: Project[] = [
 
+      {
+  id: 1,
+  title: "GroovyAR",
+  description: "AR-assisted real-time drumming trainer that maps songs to timed 4-lane percussion cues via Fast fourier transform, and displays them to a Raspberry Pi Screen in an Osu-like game. Engineered a low-latency pipeline by preprocessing MP3s into timestamped JSON events (librosa), streaming cues over WebSockets, and anchoring UI with ArUco tracking (OpenCV PnP).",
+  technologies: ["OpenCV, scikit"],
+  githubUrl: "https://github.com/Cyberninja101/Groovy/tree/main",
+  liveUrl: "https://www.youtube.com/watch?v=zjiVDPzzH5k",
+  paperUrl: null,
+  date: "2026",
+  image: "images/renderLOL.png",
+  images: ["https://github.com/Cyberninja101/Groovy/blob/main/image.png?raw=true", "https://github.com/Cyberninja101/Groovy/blob/main/docs/media/IMG_0723.png?raw=true"],
+  videos: [],
+  award: "1st Place @ Cornell Makeathon 2026"
+},
     {
   id: 1,
   title: "OptionsImpliedPDF.jl",
