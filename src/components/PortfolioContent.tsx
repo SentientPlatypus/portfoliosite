@@ -460,7 +460,7 @@ export const PortfolioContent = () => {
                 onClick={() => handleProjectClick(project)}
               >
                 <div className="bg-card rounded-lg overflow-hidden shadow-lg">
-                  <div className="aspect-video w-full overflow-hidden">
+                  <div className="aspect-video w-full overflow-hidden flex-shrink-0">
                     <img 
                       src={project.image} 
                       alt={project.title} 
