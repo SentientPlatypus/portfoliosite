@@ -15,7 +15,20 @@ interface Project {
   award?: string | null;
 }
 const projects: Project[] = [
-
+      {
+  id: 1,
+  title: "Spinphony",
+  description: "Spinphony is an embedded audio-to-motor system built on the FRDM-KL46Z microcontroller. Instead of recording through an analog microphone, the current system listens to computer audio routed through a virtual audio cable, analyzes it live on the host, and streams motor commands to the board as the song plays. On the laptop, system audio is captured at 48 kHz, mixed to mono, normalized, resampled to 8.4 kHz, and analyzed with a Short-Time Fourier Transform. The Python code turns the notes it finds into motor frequencies and sends compact serial packets to the board. The FRDM receives those frames over USB-UART, buffers them, and drives four NEMA17 stepper motors with a 20 kHz phase-accumulator loop. The live visualizer helped us see the spectrum and the motor notes while a song was playing.",
+  technologies: ["C", "FRDM KL46z"],
+  githubUrl: "https://github.com/SentientPlatypus/spinphony",
+  liveUrl: "https://sentientplatypus.github.io/spinphony/",
+  paperUrl: null,
+  date: "2026",
+  image: "images/spinphony_demo.png",
+  images: ["images/spinphony_exploded.png"],
+  videos: ["https://www.youtube.com/watch?v=yMq8EANEw10&t=10s"],
+  award: "ECE 3140 Honorable Mention"
+},
       {
   id: 1,
   title: "GroovyAR",
