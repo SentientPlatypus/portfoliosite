@@ -26,7 +26,7 @@ const projects: Project[] = [
   date: "2026",
   image: "images/spinphony_demo.png",
   images: ["images/spinphony_exploded.png"],
-  videos: ["https://www.youtube.com/watch?v=yMq8EANEw10&t=10s"],
+  videos: ["https://www.youtube.com/watch?v=9HgGE3Rc5pE", "https://www.youtube.com/watch?v=yMq8EANEw10&t=10s"],
   award: "ECE 3140 Honorable Mention"
 },
       {
