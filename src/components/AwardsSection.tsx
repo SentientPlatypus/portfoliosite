@@ -16,7 +16,16 @@ const awards: Award[] = [{
   description: 'One of 400 students selected nationwide for the Amazon Future Engineer program',
   icon: 'trophy',
   link: 'https://amazon.jobs/en/teams/university-programs/future-engineer'
-}, {
+}, 
+{
+  id: '2',
+  title: '1st Place Overall',
+  organization: 'ASMLxCornell Makeathon',
+  year: '2026',
+  description: 'Won 1st place out of 150 participants overall at the ASMLxCornell Makeathon with GroovyAR',
+  icon: 'trophy',
+  link: 'https://www.linkedin.com/posts/geneustace-wicaksono-923410287_i-cant-believe-this-worked-live-proud-ugcPost-7432982581853384704-5EwX/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEWmdisBSmJrZBrtHJ4rT4uuolUnfkdRZ54'
+},{
   id: '1',
   title: 'Best Hardware Hack',
   organization: 'Cornell Makeathon',

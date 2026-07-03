@@ -11,8 +11,8 @@ const pictures: Picture[] = [{
   imageUrl: 'images/grad.jpg'
 }, {
   id: '2',
-  title: 'Tabling for CRU at Binghampton University',
-  description: 'Tabling for CRU at Binghampton University as part of a two day event with some guys from the Cornell CRU',
+  title: 'Tabling for CRU at Binghamton University',
+  description: 'Tabling for CRU at Binghamton University as part of a two day event with some guys from the Cornell CRU',
   imageUrl: 'images/CRU.jpg'
 }, {
   id: '3',
@@ -24,7 +24,12 @@ const pictures: Picture[] = [{
   title: 'Trap Shooting',
   description: 'I went shooting with Liam and Arda',
   imageUrl: 'images/trap.jpg'
-}];
+}, {
+  id: '5',
+  title: 'GroovyAR DEMO',
+  description: 'Demonstrating the GroovyAR device at ASMLxCornell Makeathon',
+  imageUrl: 'images/groovyAR_demo.png'
+},];
 interface PicturesSectionProps {
   onPictureClick?: (picture: {
     id: string;
