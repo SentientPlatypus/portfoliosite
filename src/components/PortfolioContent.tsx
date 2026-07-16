@@ -17,6 +17,19 @@ interface Project {
 const projects: Project[] = [
       {
   id: 1,
+  title: "FourierMesh",
+  description: "A Blender Addon and python library for spectral analysis and low-frequency reconstruction for triangle meshes using the graph Laplacian.Its eigenvectors form a Fourier basis shaped by the geometry itself — low modes carry broad form, high modes carry fine detail. The add-on solves the eigenbasis once and caches it, keeping the k slider live in the viewport, and can paint individual modes onto the surface. ",
+  technologies: ["Python", "Blender"],
+  githubUrl: "https://github.com/SentientPlatypus/FourierMesh",
+  paperUrl: null,
+  date: "2026",
+  image: "images/Fouriermesh.png",
+  images: ["images/david_mesh_fourier_compare_k_30.png"],
+  videos: ["david_fourier_smoothing.mp4", "visualize_eigen.mp4"],
+  award: null
+},
+      {
+  id: 1,
   title: "Spinphony",
   description: "Spinphony is an embedded audio-to-motor system built on the FRDM-KL46Z microcontroller. Instead of recording through an analog microphone, the current system listens to computer audio routed through a virtual audio cable, analyzes it live on the host, and streams motor commands to the board as the song plays. On the laptop, system audio is captured at 48 kHz, mixed to mono, normalized, resampled to 8.4 kHz, and analyzed with a Short-Time Fourier Transform. The Python code turns the notes it finds into motor frequencies and sends compact serial packets to the board. The FRDM receives those frames over USB-UART, buffers them, and drives four NEMA17 stepper motors with a 20 kHz phase-accumulator loop. The live visualizer helped us see the spectrum and the motor notes while a song was playing.",
   technologies: ["C", "FRDM KL46z"],
