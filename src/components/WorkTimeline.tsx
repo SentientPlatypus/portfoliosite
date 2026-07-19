@@ -10,6 +10,17 @@ interface WorkExperience {
 }
 
 const workExperiences: WorkExperience[] = [
+    {
+    id: '1',
+    title: 'Software Developer Intern, AWS Identity and Cloud Governance',
+    company: 'Amazon Web Services (AWS)',
+    duration: '05/2026 - 08/2026',
+    description: [
+      'Designed and shipped a real-time tracking pipeline for AWSs proprietary internal credential distribution service across 20+ regions using SQS and a single-writer DynamoDB architecture, reducing on-call investigation time by 45 minutes per ticket. Implemented idempotent, monotonic writes resilient to duplicate, out-of-order, and replayed events.',
+      'Delivered a paginated, ownership-enforced read API with opaque cursors, summary-first responses, and parent-child change resolution.',
+    ],
+    skills: ['Java', 'Perl', 'SQS', 'DynamoDB']
+  },
   {
     id: '1',
     title: 'Software Developer Intern, AWS Cryptography',
