@@ -270,7 +270,7 @@ Let's build something amazing together!`
                 {step === 'typing-dev' && (
                   <TypewriterAnimation
                     text='let mut me = Dev{name: String::from("Gene"), age: 19};'
-                    delay={47}
+                    delay={42}
                     onComplete={handleDevComplete}
                     className="syntax-variable"
                   />
@@ -307,7 +307,7 @@ Let's build something amazing together!`
                   {step === 'typing-me' && (
                     <TypewriterAnimation
                       text="me."
-                      delay={88}
+                      delay={79}
                       onComplete={handleMeComplete}
                       className="syntax-variable"
                     />
