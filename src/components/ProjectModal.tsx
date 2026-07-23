@@ -11,6 +11,8 @@ interface Project {
   technologies: string[];
   githubUrl: string;
   liveUrl?: string;
+  liveUrlLabel?: string;
+  pypiUrl?: string;
   paperUrl?: string | null;
   date: string;
   image: string;
