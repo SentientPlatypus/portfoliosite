@@ -307,7 +307,7 @@ Let's build something amazing together!`
                   {step === 'typing-me' && (
                     <TypewriterAnimation
                       text="me."
-                      delay={150}
+                      delay={88}
                       onComplete={handleMeComplete}
                       className="syntax-variable"
                     />
