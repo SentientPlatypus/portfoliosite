@@ -7,6 +7,8 @@ interface Project {
   technologies: string[];
   githubUrl: string;
   liveUrl?: string;
+  liveUrlLabel?: string;
+  pypiUrl?: string;
   paperUrl?: string | null;
   date: string;
   image: string;
@@ -21,7 +23,9 @@ const projects: Project[] = [
   description: "A Blender Addon and registered pypi python library for spectral analysis and low-frequency reconstruction for triangle meshes using the graph Laplacian.Its eigenvectors form a Fourier basis shaped by the geometry itself — low modes carry broad form, high modes carry fine detail. The add-on solves the eigenbasis once and caches it, keeping the k slider live in the viewport, and can paint individual modes onto the surface. ",
   technologies: ["Python", "Blender"],
   githubUrl: "https://github.com/SentientPlatypus/FourierMesh",
-  liveUrl: "https://pypi.org/project/FourierMesh/",
+  liveUrl: "https://extensions.blender.org/add-ons/fouriermesh/",
+  liveUrlLabel: "View on Blender",
+  pypiUrl: "https://pypi.org/project/FourierMesh/",
   paperUrl: null,
   date: "2026",
   image: "images/Fouriermesh.png",

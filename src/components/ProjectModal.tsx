@@ -11,6 +11,8 @@ interface Project {
   technologies: string[];
   githubUrl: string;
   liveUrl?: string;
+  liveUrlLabel?: string;
+  pypiUrl?: string;
   paperUrl?: string | null;
   date: string;
   image: string;
@@ -159,7 +161,15 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
                 <Button asChild>
                   <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="w-4 h-4 mr-2" />
-                    Live Demo
+                    {project.liveUrlLabel || "Live Demo"}
+                  </a>
+                </Button>
+              )}
+              {project.pypiUrl && (
+                <Button variant="outline" asChild>
+                  <a href={project.pypiUrl} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    View on PyPi
                   </a>
                 </Button>
               )}
