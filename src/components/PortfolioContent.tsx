@@ -94,7 +94,7 @@ const projects: Project[] = [
   {
   id: 1,
   title: "QuantJL",
-  description: "Built a high-frequency trading simulation platform in Julia from scratch, implementing Deep Deterministic Policy Gradient (DDPG) for automated portfolio management. Designed custom neural networks, feature pipelines (EMA, RSI, MACD, Bollinger Bands, VWAP, ATR, OBV, time-of-day, and a proprietary GBM-based volatility score), and reward functions balancing risk, transaction costs, and capital preservation. Leveraged RL techniques including continuous action spaces, policy gradients, exploration strategies, experience replay, target networks, and environment simulation for training and evaluation.",
+  description: "Built a minute intraday trading simulation platform in Julia from scratch, implementing Deep Deterministic Policy Gradient (DDPG) for automated portfolio management. Designed custom neural networks, feature pipelines (EMA, RSI, MACD, Bollinger Bands, VWAP, ATR, OBV, time-of-day, and a proprietary GBM-based volatility score), and reward functions balancing risk, transaction costs, and capital preservation. Leveraged RL techniques including continuous action spaces, policy gradients, exploration strategies, experience replay, target networks, and environment simulation for training and evaluation.",
   technologies: ["Julia"],
   githubUrl: "https://github.com/SentientPlatypus/quantjl",
   liveUrl: null,
