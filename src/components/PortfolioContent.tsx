@@ -473,7 +473,7 @@ export const PortfolioContent = () => {
   };
 
   return <div className="h-full overflow-x-hidden overflow-y-auto">
-      <div className="pt-2 pb-6 -mx-8">
+      <div className="pt-2 pb-6 sm:-mx-8">
         {/* Always use mobile-style linear layout */}
         <div className="px-2 sm:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
@@ -491,11 +491,11 @@ export const PortfolioContent = () => {
                 onClick={() => handleProjectClick(project)}
               >
                 <div className="bg-card rounded-lg overflow-hidden shadow-lg">
-                  <div className="aspect-video w-full overflow-hidden flex-shrink-0 bg-muted">
+                  <div className="aspect-video w-full overflow-hidden flex-shrink-0 bg-muted relative">
                     <img 
                       src={project.image} 
                       alt={project.title} 
-                      className="w-full h-full object-contain sm:object-cover"
+                      className="absolute inset-0 w-full h-full object-contain sm:object-cover"
                     />
                   </div>
                   <div className="p-4">
