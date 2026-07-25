@@ -31,7 +31,7 @@ const projects: Project[] = [
   image: "images/Fouriermesh.png",
   images: ["images/david_mesh_fourier_compare_k_30.png"],
   videos: ["david_fourier_smoothing.mp4", "visualize_eigen.mp4"],
-  award: null
+  award: "50 downloads on Blender Add-ons!"
 },
       {
   id: 1,
@@ -87,7 +87,7 @@ const projects: Project[] = [
   image: "images/cover.png",
   images: [],
   videos: [
-    "images/walldash.mp4","images/Flick_over.mp4", "images/wavedash.mp4", "images/off_wall.mp4", "images/speedflip_flick.mp4"
+    "images/nextodunk1.mp4", "images/nextodunk2.mp4", "images/walldash.mp4","images/Flick_over.mp4", "images/wavedash.mp4", "images/speedflip_flick.mp4"
   ],
   award: "RLBOT Element Eliminator"
 },
