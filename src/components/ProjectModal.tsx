@@ -72,7 +72,7 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
               <img 
                 src={mediaItems[currentImageIndex].url} 
                 alt={`${project.title} - Media ${currentImageIndex + 1}`}
-                className="w-full h-full object-cover transition-opacity duration-300"
+                className="w-full h-full object-contain transition-opacity duration-300"
               />
             ) : (
               <video 
