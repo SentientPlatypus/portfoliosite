@@ -42,12 +42,18 @@ const pictures: Picture[] = [{
 },
 {
   id: '8',
+  title: 'Moon Jellies',
+  description: 'We probe them in the lab',
+  imageUrl: 'images/jelly.jpeg'
+},
+{
+  id: '9',
   title: 'Golden Gardens Beach',
   description: 'cold water',
   imageUrl: 'images/indawater.jpg'
 },
 {
-  id: '9',
+  id: '10',
   title: 'Snow Lake',
   description: 'kinda gloomy',
   imageUrl: 'images/snowlake.jpeg'
