@@ -4,22 +4,7 @@ interface Picture {
   description: string;
   imageUrl: string;
 }
-const pictures: Picture[] = [{
-  id: '1',
-  title: 'Graduated!',
-  description: 'Picture that was taken of Bel and I before graduation',
-  imageUrl: 'images/grad.jpg'
-}, {
-  id: '2',
-  title: 'Tabling for CRU at Binghamton University',
-  description: 'Tabling for CRU at Binghamton University as part of a two day event with some guys from the Cornell CRU',
-  imageUrl: 'images/CRU.jpg'
-}, {
-  id: '3',
-  title: 'Speaking at the Final round of BigRedHacks',
-  description: 'Speaking at the Final round of BigRedHacks about my project LockD',
-  imageUrl: 'images/speaking.jpg'
-}, {
+const pictures: Picture[] = [ {
   id: '4',
   title: 'Trap Shooting',
   description: 'I went shooting with Liam and Arda',
@@ -50,13 +35,28 @@ const pictures: Picture[] = [{
   id: '9',
   title: 'Golden Gardens Beach',
   description: 'cold water',
-  imageUrl: 'images/indawater.jpg'
+  imageUrl: 'images/indawater.jpeg'
 },
 {
   id: '10',
   title: 'Snow Lake',
   description: 'kinda gloomy',
   imageUrl: 'images/snowlake.jpeg'
+},{
+  id: '1',
+  title: 'Graduated!',
+  description: 'Picture that was taken of Bel and I before graduation',
+  imageUrl: 'images/grad.jpg'
+}, {
+  id: '2',
+  title: 'Tabling for CRU at Binghamton University',
+  description: 'Tabling for CRU at Binghamton University as part of a two day event with some guys from the Cornell CRU',
+  imageUrl: 'images/CRU.jpg'
+}, {
+  id: '3',
+  title: 'Speaking at the Final round of BigRedHacks',
+  description: 'Speaking at the Final round of BigRedHacks about my project LockD',
+  imageUrl: 'images/speaking.jpg'
 },];
 interface PicturesSectionProps {
   onPictureClick?: (picture: {
