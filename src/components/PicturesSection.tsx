@@ -7,7 +7,7 @@ interface Picture {
 const pictures: Picture[] = [{
   id: '1',
   title: 'Graduated!',
-  description: 'Picture that was taken of Me and Bel before graduation',
+  description: 'Picture that was taken of Bel and I before graduation',
   imageUrl: 'images/grad.jpg'
 }, {
   id: '2',
@@ -29,6 +29,28 @@ const pictures: Picture[] = [{
   title: 'GroovyAR DEMO',
   description: 'Demonstrating the GroovyAR device at ASMLxCornell Makeathon',
   imageUrl: 'images/groovyAR_demo.png'
+},{
+  id: '6',
+  title: 'Bellevue Armory',
+  description: 'first time shooting 22s',
+  imageUrl: 'images/range.jpeg'
+},{
+  id: '7',
+  title: 'Rainier',
+  description: 'Rainier Skyline trail',
+  imageUrl: 'images/rainier.jpeg'
+},
+{
+  id: '8',
+  title: 'Golden Gardens Beach',
+  description: 'cold water',
+  imageUrl: 'images/indawater.jpg'
+},
+{
+  id: '9',
+  title: 'Snow Lake',
+  description: 'kinda gloomy',
+  imageUrl: 'images/snowlake.jpeg'
 },];
 interface PicturesSectionProps {
   onPictureClick?: (picture: {
