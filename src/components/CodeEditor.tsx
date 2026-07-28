@@ -400,10 +400,10 @@ Let's build something amazing together!`
 
                             {/* Mobile Content Display */}
                             {!showMobileMethodSelector && (
-                              <div className="absolute top-12 left-2 right-2 bottom-0 overflow-hidden pointer-events-auto">
+                              <div className="absolute top-12 left-2 right-2 bottom-0 overflow-y-auto overscroll-contain pointer-events-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
                                 <IntellisenseContent
                                   content={selectedOption.content}
-                                  className="w-full h-full max-h-full"
+                                  className="w-full"
                                   isWorkSelected={selectedOption.id === 'work' && isWorkComponentActive}
                                   onWorkNavigationRequest={(direction) => {
                                     if (direction === 'left') {
