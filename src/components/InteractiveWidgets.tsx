@@ -518,7 +518,12 @@ const SolvedRing = ({ solved, total }: { solved: number; total: number }) => {
 
   return (
     <div className="relative h-16 w-16 shrink-0">
-      <svg viewBox="0 0 64 64" className="h-full w-full -rotate-90">
+      <svg
+        viewBox="0 0 64 64"
+        width="64"
+        height="64"
+        className="h-16 w-16"
+      >
         <circle
           cx="32"
           cy="32"
@@ -534,6 +539,7 @@ const SolvedRing = ({ solved, total }: { solved: number; total: number }) => {
           fill="none"
           strokeWidth="6"
           strokeLinecap="round"
+          transform="rotate(-90 32 32)"
           className="stroke-[#ffa116] transition-[stroke-dashoffset] duration-700"
           strokeDasharray={circumference}
           strokeDashoffset={circumference * (1 - ratio)}
