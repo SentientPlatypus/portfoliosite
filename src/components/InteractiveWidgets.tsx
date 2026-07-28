@@ -862,7 +862,7 @@ const LinkedInWidget = () => (
 /* -------------------------------------------------------------------------- */
 
 export const InteractiveInfo = () => {
-  const [expandedWidget, setExpandedWidget] = useState<string | null>(null);
+  const [expandedWidget, setExpandedWidget] = useState<string | null>('leetcode');
   const toggle = (id: string) =>
     setExpandedWidget((current) => (current === id ? null : id));
 
