@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ProjectModal } from "./ProjectModal";
+import { TechTag } from "./TechTag";
 interface Project {
   id: number | string;
   title: string;
@@ -515,9 +516,7 @@ export const PortfolioContent = () => {
                     <p className="text-muted-foreground text-sm mb-3 line-clamp-3">{project.description}</p>
                     <div className="flex flex-wrap gap-2 mb-3">
                       {project.technologies.slice(0, 3).map((tech) => (
-                        <span key={tech} className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
-                          {tech}
-                        </span>
+                        <TechTag key={tech} tech={tech} />
                       ))}
                       {project.technologies.length > 3 && (
                         <span className="text-muted-foreground text-xs">+{project.technologies.length - 3} more</span>

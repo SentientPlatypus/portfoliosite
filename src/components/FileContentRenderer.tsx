@@ -4,6 +4,7 @@ import { PicturesSection } from './PicturesSection';
 import { AwardsSection } from './AwardsSection';
 import { PortfolioContent } from './PortfolioContent';
 import { TypewriterAnimation } from './TypewriterAnimation';
+import { GitGraphTimeline } from './GitGraphTimeline';
 import { useEffect, useRef, useState } from 'react';
 
 interface FileContentRendererProps {
@@ -152,36 +153,55 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, viewMode = 'p
     case '/portfolio/about.tsx':
       if (viewMode === 'source') {
         return (
-          <div className="p-6 font-mono text-sm">
+          <div className="p-6 font-mono text-sm leading-relaxed">
             <div className="text-[var(--theme-comment)]">// portfolio/about.tsx</div>
-            <div className="mt-2">
-              <span className="text-[var(--theme-keyword)]">import</span> {'{'} 
-              <span className="text-[var(--theme-variable)]"> InteractiveInfo </span>
-              {'}'} <span className="text-[var(--theme-keyword)]">from</span> <span className="text-[var(--theme-string)]">'./InteractiveWidgets'</span>;
-            </div>
             <div className="mt-4">
-              <span className="text-[var(--theme-keyword)]">export</span> <span className="text-[var(--theme-keyword)]">const</span> <span className="text-[var(--theme-method)]">AboutSection</span> = () {'{'} 
+              <span className="text-[var(--theme-keyword)]">export</span> <span className="text-[var(--theme-keyword)]">const</span> <span className="text-[var(--theme-method)]">aboutData</span> = {'{'} 
             </div>
             <div className="pl-4">
-              <span className="text-[var(--theme-keyword)]">return</span> (
-            </div>
-            <div className="pl-8">
-              {'<'}<span className="text-[var(--theme-type)]">div</span> <span className="text-[var(--theme-variable)]">className</span>=<span className="text-[var(--theme-string)]">"p-6"</span>{'>'} 
-            </div>
-            <div className="pl-12">
-              {'<'}<span className="text-[var(--theme-type)]">InteractiveInfo</span> {'/>'} 
-            </div>
-            <div className="pl-8">
-              {'</'}<span className="text-[var(--theme-type)]">div</span>{'>'} 
+              <span className="text-[var(--theme-variable)]">name</span>: <span className="text-[var(--theme-string)]">"Gene"</span>,
             </div>
             <div className="pl-4">
-              );
+              <span className="text-[var(--theme-variable)]">fullName</span>: <span className="text-[var(--theme-string)]">"Geneustace Wicaksono"</span>,
+            </div>
+            <div className="pl-4">
+              <span className="text-[var(--theme-variable)]">title</span>: <span className="text-[var(--theme-string)]">"Electrical & Computer Engineering Student"</span>,
+            </div>
+            <div className="pl-4">
+              <span className="text-[var(--theme-variable)]">university</span>: <span className="text-[var(--theme-string)]">"Cornell University"</span>,
+            </div>
+            <div className="pl-4">
+              <span className="text-[var(--theme-variable)]">currentPosition</span>: <span className="text-[var(--theme-string)]">"AWS Cryptography"</span>,
+            </div>
+            <div className="pl-4">
+              <span className="text-[var(--theme-variable)]">location</span>: <span className="text-[var(--theme-string)]">"Ithaca, NY"</span>,
+            </div>
+            <div className="pl-4">
+              <span className="text-[var(--theme-variable)]">origin</span>: <span className="text-[var(--theme-string)]">"Jakarta"</span>,
+            </div>
+            <div className="pl-4">
+              <span className="text-[var(--theme-variable)]">bio</span>: [
+            </div>
+            <div className="pl-8">
+              <span className="text-[var(--theme-string)]">"From Jakarta, but lived most of my life in Ithaca NY."</span>,
+            </div>
+            <div className="pl-8">
+              <span className="text-[var(--theme-string)]">"I moved back for a family thing, but I hope to stay in the States!"</span>,
+            </div>
+            <div className="pl-8">
+              <span className="text-[var(--theme-string)]">"All the worthwhile things I do have been influenced by amazing people."</span>,
+            </div>
+            <div className="pl-8">
+              <span className="text-[var(--theme-string)]">"If you have a good idea and need people to run with it, contact me!"</span>
+            </div>
+            <div className="pl-4">
+              ],
+            </div>
+            <div className="pl-4">
+              <span className="text-[var(--theme-variable)]">email</span>: <span className="text-[var(--theme-string)]">"gjw62@cornell.edu"</span>,
             </div>
             <div>
               {'}'};
-            </div>
-            <div className="mt-4 p-4 bg-[var(--theme-sidebar)] rounded border border-[var(--theme-border)]">
-              <div className="text-[var(--theme-comment)]">// Rendered output:</div>
             </div>
           </div>
         );
@@ -193,9 +213,79 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, viewMode = 'p
       );
       
     case '/portfolio/experience.json':
+      if (viewMode === 'source') {
+        return (
+          <div className="p-6 font-mono text-sm leading-relaxed">
+            <div className="text-[var(--theme-comment)]">// portfolio/experience.json</div>
+            <div className="mt-4">
+              {'{'}
+            </div>
+            <div className="pl-4">
+              <span className="text-[var(--theme-variable)]">"experiences"</span>: [
+            </div>
+            <div className="pl-8">
+              {'{'}
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"title"</span>: <span className="text-[var(--theme-string)]">"Software Developer Intern, AWS Cryptography"</span>,
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"company"</span>: <span className="text-[var(--theme-string)]">"Amazon Web Services"</span>,
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"period"</span>: <span className="text-[var(--theme-string)]">"May 2025 — Present"</span>,
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"type"</span>: <span className="text-[var(--theme-string)]">"internship"</span>
+            </div>
+            <div className="pl-8">
+              {'}'},
+            </div>
+            <div className="pl-8">
+              {'{'}
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"title"</span>: <span className="text-[var(--theme-string)]">"Student"</span>,
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"organization"</span>: <span className="text-[var(--theme-string)]">"Cornell University"</span>,
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"degree"</span>: <span className="text-[var(--theme-string)]">"Electrical & Computer Engineering"</span>,
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"period"</span>: <span className="text-[var(--theme-string)]">"August 2022 — Present"</span>
+            </div>
+            <div className="pl-8">
+              {'}'},
+            </div>
+            <div className="pl-8">
+              {'{'}
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"title"</span>: <span className="text-[var(--theme-string)]">"FRC Robotics - Vision Systems"</span>,
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"team"</span>: <span className="text-[var(--theme-string)]">"Code Red Robotics"</span>,
+            </div>
+            <div className="pl-12">
+              <span className="text-[var(--theme-variable)]">"period"</span>: <span className="text-[var(--theme-string)]">"September 2020 — June 2024"</span>
+            </div>
+            <div className="pl-8">
+              {'}'}
+            </div>
+            <div className="pl-4">
+              ]
+            </div>
+            <div>
+              {'}'}
+            </div>
+          </div>
+        );
+      }
       return (
         <div ref={contentRef} className="p-6">
-          <WorkTimeline />
+          <GitGraphTimeline />
         </div>
       );
       
@@ -221,6 +311,30 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, viewMode = 'p
       );
       
     case '/portfolio/contact.md':
+      if (viewMode === 'source') {
+        return (
+          <div className="p-6 font-mono text-sm leading-relaxed">
+            <div className="text-[var(--theme-comment)]">// portfolio/contact.md</div>
+            <div className="mt-4 space-y-2">
+              <div><span className="text-[var(--theme-keyword)]">#</span> <span className="text-[var(--theme-method)]">Get In Touch</span></div>
+              <div className="mt-4" />
+              <div><span className="text-[var(--theme-keyword)]">##</span> <span className="text-[var(--theme-type)]">Contact Information</span></div>
+              <div className="mt-2" />
+              <div className="text-[var(--theme-foreground)]">- <span className="text-[var(--theme-variable)]">**Email:**</span> gjw62@cornell.edu</div>
+              <div className="text-[var(--theme-foreground)]">- <span className="text-[var(--theme-variable)]">**Location:**</span> Ithaca, NY</div>
+              <div className="mt-4" />
+              <div><span className="text-[var(--theme-keyword)]">##</span> <span className="text-[var(--theme-type)]">Available For</span></div>
+              <div className="mt-2" />
+              <div className="text-[var(--theme-foreground)]">- Freelance projects</div>
+              <div className="text-[var(--theme-foreground)]">- Full-time opportunities</div>
+              <div className="text-[var(--theme-foreground)]">- Collaboration on open source</div>
+              <div className="text-[var(--theme-foreground)]">- Speaking at events</div>
+              <div className="mt-4" />
+              <div className="text-[var(--theme-comment)]">_Let's build something amazing together!_</div>
+            </div>
+          </div>
+        );
+      }
       return (
         <div ref={contentRef} className="p-8 prose prose-invert max-w-none">
           <h1 className="text-3xl font-bold mb-6 text-[var(--theme-method)]">Get In Touch</h1>

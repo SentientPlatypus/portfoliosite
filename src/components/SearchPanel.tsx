@@ -21,11 +21,11 @@ export const SearchPanel = ({ isOpen, onClose, onResultClick }: SearchPanelProps
 
   // Searchable content database
   const searchableContent = [
-    { path: '/portfolio/about.tsx', content: 'Geneustace Wicaksono Electrical Computer Engineering Cornell University AWS Cryptography Jakarta Ithaca robotics AI ML' },
-    { path: '/portfolio/experience.json', content: 'AWS Cryptography Cornell FRC Robotics Code Red Makeathon' },
-    { path: '/portfolio/projects/all-projects.tsx', content: 'FourierMesh Spinphony GroovyAR Indonesian Coconut QuantJL SeeRound LockD Python Blender RLGYM PyTorch Julia React' },
-    { path: '/portfolio/contact.md', content: 'gjw62@cornell.edu Ithaca NY freelance collaboration open source' },
-    { path: '/me.rs', content: 'Dev Gene Rust portfolio welcome' },
+    { path: '/portfolio/about.tsx', content: 'Geneustace Wicaksono Electrical Computer Engineering Cornell University AWS Cryptography Jakarta Ithaca' },
+    { path: '/portfolio/experience.json', content: 'AWS Cryptography Cornell FRC Robotics Code Red Makeathon Software Developer Intern' },
+    { path: '/portfolio/projects/all-projects.tsx', content: 'FourierMesh Spinphony GroovyAR Indonesian Coconut QuantJL SeeRound LockD Python Blender RLGYM PyTorch Julia React TypeScript' },
+    { path: '/portfolio/contact.md', content: 'gjw62@cornell.edu Ithaca NY freelance collaboration open source email' },
+    { path: '/me.rs', content: 'Dev Gene Rust portfolio welcome student engineer' },
   ];
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import { X, Minus, Square, Terminal as TerminalIcon } from 'lucide-react';
 interface TerminalLine {
   type: 'command' | 'output' | 'error';
   content: string;
+  color?: 'blue' | 'cyan' | 'red' | 'green' | 'yellow' | 'mixed';
 }
 
 interface IntegratedTerminalProps {
@@ -68,9 +69,9 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
 
       case 'ls':
         setLines(prev => [...prev,
-          { type: 'output', content: '\x1b[34mabout.tsx\x1b[0m          \x1b[34mcontact.md\x1b[0m         \x1b[34mexperience.json\x1b[0m' },
-          { type: 'output', content: '\x1b[36mprojects/\x1b[0m          \x1b[36mpictures/\x1b[0m          \x1b[34mawards.tsx\x1b[0m' },
-          { type: 'output', content: '\x1b[31mresume.pdf\x1b[0m         \x1b[34mme.rs\x1b[0m' },
+          { type: 'output', content: 'about.tsx          contact.md         experience.json', color: 'blue' },
+          { type: 'output', content: 'projects/          pictures/          awards.tsx', color: 'cyan' },
+          { type: 'output', content: 'resume.pdf         me.rs', color: 'mixed' },
           { type: 'output', content: '' },
         ]);
         break;
@@ -301,18 +302,22 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
 
       {/* Terminal Content */}
       <div ref={terminalRef} className="flex-1 overflow-y-auto p-2 font-mono text-[13px]">
-        {lines.map((line, index) => (
-          <div
-            key={index}
-            className={`${
-              line.type === 'command' ? 'text-[#4ec9b0]' :
-              line.type === 'error' ? 'text-[#f48771]' :
-              'text-[#cccccc]'
-            }`}
-          >
-            {line.content}
-          </div>
-        ))}
+        {lines.map((line, index) => {
+          let colorClass = 'text-[#cccccc]';
+          if (line.type === 'command') colorClass = 'text-[#4ec9b0]';
+          if (line.type === 'error') colorClass = 'text-[#f48771]';
+          if (line.color === 'blue') colorClass = 'text-[#569cd6]';
+          if (line.color === 'cyan') colorClass = 'text-[#4ec9b0]';
+          if (line.color === 'red') colorClass = 'text-[#f48771]';
+          if (line.color === 'green') colorClass = 'text-[#6a9955]';
+          if (line.color === 'yellow') colorClass = 'text-[#dcdcaa]';
+          
+          return (
+            <div key={index} className={colorClass}>
+              {line.content}
+            </div>
+          );
+        })}
         
         {/* Input Line */}
         <div className="flex items-center gap-2">

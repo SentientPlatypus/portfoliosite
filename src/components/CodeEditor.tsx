@@ -12,6 +12,7 @@ import { Minimap } from './Minimap';
 import { BootAnimation } from './BootAnimation';
 import { SearchPanel } from './SearchPanel';
 import { ViewModeToggle } from './ViewModeToggle';
+import { GitGraphTimeline } from './GitGraphTimeline';
 import { X } from 'lucide-react';
 
 interface Tab {
@@ -27,6 +28,7 @@ const CodeEditorInner = () => {
   const [activeView, setActiveView] = useState<'explorer' | 'search' | 'git' | 'settings' | 'terminal'>('explorer');
   const [isExplorerOpen, setIsExplorerOpen] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isGitOpen, setIsGitOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'source' | 'preview'>('preview');
@@ -244,12 +246,19 @@ const CodeEditorInner = () => {
             if (view === 'terminal') {
               setTerminalOpen(true);
               setIsSearchOpen(false);
+              setIsGitOpen(false);
             } else if (view === 'explorer') {
               setIsExplorerOpen(true);
               setIsSearchOpen(false);
+              setIsGitOpen(false);
             } else if (view === 'search') {
               setIsSearchOpen(true);
               setIsExplorerOpen(false);
+              setIsGitOpen(false);
+            } else if (view === 'git') {
+              setIsGitOpen(true);
+              setIsExplorerOpen(false);
+              setIsSearchOpen(false);
             }
           }} />
         )}
@@ -269,6 +278,22 @@ const CodeEditorInner = () => {
             onClose={() => setIsSearchOpen(false)}
             onResultClick={handleSearchResultClick}
           />
+        )}
+        
+        {/* Git Panel */}
+        {isGitOpen && !isMobile && (
+          <div className="w-80 bg-[var(--theme-sidebar)] border-r border-[var(--theme-border)] flex flex-col h-full overflow-y-auto">
+            <div className="p-3 border-b border-[var(--theme-border)] flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-[#cccccc] uppercase tracking-wider">Source Control</h3>
+              <button
+                onClick={() => setIsGitOpen(false)}
+                className="text-[#858585] hover:text-white transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <GitGraphTimeline />
+          </div>
         )}
 
         {/* Mobile Explorer Drawer */}
