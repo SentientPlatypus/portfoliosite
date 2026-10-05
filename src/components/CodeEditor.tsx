@@ -9,6 +9,9 @@ import { EditorTabs } from './EditorTabs';
 import { FileContentRenderer } from './FileContentRenderer';
 import { ThemeProvider, useTheme } from './ThemeProvider';
 import { Minimap } from './Minimap';
+import { BootAnimation } from './BootAnimation';
+import { SearchPanel } from './SearchPanel';
+import { ViewModeToggle } from './ViewModeToggle';
 import { X } from 'lucide-react';
 
 interface Tab {
@@ -20,10 +23,13 @@ interface Tab {
 
 const CodeEditorInner = () => {
   const { theme, setTheme } = useTheme();
+  const [showBoot, setShowBoot] = useState(true);
   const [activeView, setActiveView] = useState<'explorer' | 'search' | 'git' | 'settings' | 'terminal'>('explorer');
   const [isExplorerOpen, setIsExplorerOpen] = useState(true);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'source' | 'preview'>('preview');
   const [tabs, setTabs] = useState<Tab[]>([
     { id: 'me.rs', path: '/me.rs', name: 'me.rs', isDirty: false }
   ]);
@@ -38,11 +44,25 @@ const CodeEditorInner = () => {
   const [contentHeight, setContentHeight] = useState(0);
 
   useEffect(() => {
+    // Check if boot animation has been seen
+    const hasSeenBoot = sessionStorage.getItem('hasSeenBoot');
+    if (hasSeenBoot) {
+      setShowBoot(false);
+    }
+  }, []);
+
+  const handleBootComplete = () => {
+    sessionStorage.setItem('hasSeenBoot', 'true');
+    setShowBoot(false);
+  };
+
+  useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       if (mobile) {
         setIsExplorerOpen(false);
+        setIsSearchOpen(false);
       }
     };
     checkMobile();
@@ -69,6 +89,13 @@ const CodeEditorInner = () => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
         e.preventDefault();
         setIsExplorerOpen(prev => !prev);
+      }
+      
+      // Toggle Search: Cmd/Ctrl+Shift+F
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'f') {
+        e.preventDefault();
+        setIsSearchOpen(prev => !prev);
+        setActiveView('search');
       }
       
       // Close Tab: Cmd/Ctrl+W
@@ -112,6 +139,9 @@ const CodeEditorInner = () => {
     if (isMobile) {
       setIsExplorerOpen(false);
     }
+    
+    // Reset view mode to preview when opening a new file
+    setViewMode('preview');
   };
 
   const handleTabClose = (tabId: string) => {
@@ -165,8 +195,9 @@ const CodeEditorInner = () => {
 
   return (
     <div 
-      className="min-h-screen flex flex-col font-mono"
+      className="h-screen flex flex-col font-mono overflow-hidden"
       style={{
+        height: '100dvh',
         background: `var(--theme-background)`,
         color: `var(--theme-foreground)`,
       }}
@@ -205,15 +236,20 @@ const CodeEditorInner = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-h-0">
         {/* Activity Bar */}
         {!isMobile && (
           <ActivityBar activeView={activeView} onViewChange={(view) => {
             setActiveView(view);
             if (view === 'terminal') {
               setTerminalOpen(true);
+              setIsSearchOpen(false);
             } else if (view === 'explorer') {
               setIsExplorerOpen(true);
+              setIsSearchOpen(false);
+            } else if (view === 'search') {
+              setIsSearchOpen(true);
+              setIsExplorerOpen(false);
             }
           }} />
         )}
@@ -223,6 +259,15 @@ const CodeEditorInner = () => {
           <FileExplorer
             onFileSelect={handleFileSelect}
             selectedFile={currentPath}
+          />
+        )}
+        
+        {/* Search Panel */}
+        {isSearchOpen && !isMobile && (
+          <SearchPanel
+            isOpen={isSearchOpen}
+            onClose={() => setIsSearchOpen(false)}
+            onResultClick={handleSearchResultClick}
           />
         )}
 
@@ -248,7 +293,7 @@ const CodeEditorInner = () => {
         )}
 
         {/* Editor Area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
           {/* Tabs */}
           <EditorTabs
             tabs={tabs}
@@ -258,13 +303,21 @@ const CodeEditorInner = () => {
           />
 
           {/* Breadcrumbs */}
-          <Breadcrumbs path={currentPath} />
+          <div className="flex items-center justify-between">
+            <Breadcrumbs path={currentPath} />
+            {/* View Mode Toggle for applicable files */}
+            {(currentPath.includes('.tsx') || currentPath.includes('.md')) && (
+              <div className="pr-4">
+                <ViewModeToggle mode={viewMode} onModeChange={setViewMode} />
+              </div>
+            )}
+          </div>
 
           {/* Editor Content with Minimap */}
-          <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 flex overflow-hidden min-h-0">
             {/* Line numbers */}
             <div 
-              className="w-12 flex-shrink-0 overflow-hidden select-none"
+              className="w-12 flex-shrink-0 overflow-y-auto select-none"
               style={{ 
                 background: 'var(--theme-editor)',
                 borderRight: '1px solid var(--theme-border)',
@@ -288,6 +341,7 @@ const CodeEditorInner = () => {
                 path={currentPath}
                 theme={theme}
                 onPictureClick={handlePictureClick}
+                viewMode={viewMode}
               />
             </div>
 

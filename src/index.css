@@ -126,6 +126,7 @@
     @apply bg-background text-foreground;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     overflow: hidden;
+    height: 100dvh;
   }
   
   /* Hide scrollbars */

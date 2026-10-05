@@ -15,7 +15,7 @@ interface IntegratedTerminalProps {
 
 export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange }: IntegratedTerminalProps) => {
   const [lines, setLines] = useState<TerminalLine[]>([
-    { type: 'output', content: 'Welcome to Gene\'s Portfolio Terminal v1.0.0' },
+    { type: 'output', content: 'Portfolio Terminal v1.0.0' },
     { type: 'output', content: 'Type "help" for available commands.' },
     { type: 'output', content: '' },
   ]);
@@ -68,7 +68,9 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
 
       case 'ls':
         setLines(prev => [...prev,
-          { type: 'output', content: Object.values(files).join('\n') },
+          { type: 'output', content: '\x1b[34mabout.tsx\x1b[0m          \x1b[34mcontact.md\x1b[0m         \x1b[34mexperience.json\x1b[0m' },
+          { type: 'output', content: '\x1b[36mprojects/\x1b[0m          \x1b[36mpictures/\x1b[0m          \x1b[34mawards.tsx\x1b[0m' },
+          { type: 'output', content: '\x1b[31mresume.pdf\x1b[0m         \x1b[34mme.rs\x1b[0m' },
           { type: 'output', content: '' },
         ]);
         break;
@@ -161,10 +163,10 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
 
       case 'whoami':
         setLines(prev => [...prev,
-          { type: 'output', content: 'Name: Geneustace (Gene) Wellington' },
-          { type: 'output', content: 'Role: Software Engineer & Student' },
-          { type: 'output', content: 'Location: Cornell University, Ithaca NY' },
-          { type: 'output', content: 'Interests: Robotics, AI/ML, Systems Programming' },
+          { type: 'output', content: 'Geneustace Wicaksono' },
+          { type: 'output', content: 'Electrical & Computer Engineering @ Cornell University' },
+          { type: 'output', content: 'Currently @ AWS Cryptography' },
+          { type: 'output', content: 'Location: Ithaca, NY' },
           { type: 'output', content: '' },
         ]);
         break;

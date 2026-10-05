@@ -10,9 +10,10 @@ interface FileContentRendererProps {
   path: string;
   theme: any;
   onPictureClick?: (picture: { id: string; title: string; description: string; imageUrl: string }) => void;
+  viewMode?: 'source' | 'preview';
 }
 
-export const FileContentRenderer = ({ path, theme, onPictureClick }: FileContentRendererProps) => {
+export const FileContentRenderer = ({ path, theme, onPictureClick, viewMode = 'preview' }: FileContentRendererProps) => {
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
   const [animationStep, setAnimationStep] = useState<'dev' | 'me' | 'complete'>('dev');
   const contentRef = useRef<HTMLDivElement>(null);
@@ -149,6 +150,42 @@ export const FileContentRenderer = ({ path, theme, onPictureClick }: FileContent
       return renderMeRsContent();
       
     case '/portfolio/about.tsx':
+      if (viewMode === 'source') {
+        return (
+          <div className="p-6 font-mono text-sm">
+            <div className="text-[var(--theme-comment)]">// portfolio/about.tsx</div>
+            <div className="mt-2">
+              <span className="text-[var(--theme-keyword)]">import</span> {'{'} 
+              <span className="text-[var(--theme-variable)]"> InteractiveInfo </span>
+              {'}'} <span className="text-[var(--theme-keyword)]">from</span> <span className="text-[var(--theme-string)]">'./InteractiveWidgets'</span>;
+            </div>
+            <div className="mt-4">
+              <span className="text-[var(--theme-keyword)]">export</span> <span className="text-[var(--theme-keyword)]">const</span> <span className="text-[var(--theme-method)]">AboutSection</span> = () {'{'} 
+            </div>
+            <div className="pl-4">
+              <span className="text-[var(--theme-keyword)]">return</span> (
+            </div>
+            <div className="pl-8">
+              {'<'}<span className="text-[var(--theme-type)]">div</span> <span className="text-[var(--theme-variable)]">className</span>=<span className="text-[var(--theme-string)]">"p-6"</span>{'>'} 
+            </div>
+            <div className="pl-12">
+              {'<'}<span className="text-[var(--theme-type)]">InteractiveInfo</span> {'/>'} 
+            </div>
+            <div className="pl-8">
+              {'</'}<span className="text-[var(--theme-type)]">div</span>{'>'} 
+            </div>
+            <div className="pl-4">
+              );
+            </div>
+            <div>
+              {'}'};
+            </div>
+            <div className="mt-4 p-4 bg-[var(--theme-sidebar)] rounded border border-[var(--theme-border)]">
+              <div className="text-[var(--theme-comment)]">// Rendered output:</div>
+            </div>
+          </div>
+        );
+      }
       return (
         <div ref={contentRef} className="p-6">
           <InteractiveInfo />
@@ -245,23 +282,27 @@ export const FileContentRenderer = ({ path, theme, onPictureClick }: FileContent
       );
       
     case '/README.md':
-      return (
-        <div ref={contentRef} className="p-8 prose prose-invert max-w-none">
-          <h1 className="text-3xl font-bold mb-4 text-[var(--theme-method)]">Portfolio Site</h1>
-          <p className="text-[var(--theme-foreground)] mb-4">
-            This is an interactive portfolio built with Vite + React + TypeScript + Tailwind.
-          </p>
-          <h2 className="text-2xl font-bold mb-3 mt-6 text-[var(--theme-type)]">Features</h2>
-          <ul className="list-disc list-inside space-y-2 text-[var(--theme-foreground)]">
-            <li>VS Code-inspired interface</li>
-            <li>File explorer navigation</li>
-            <li>Command palette (Cmd/Ctrl+P)</li>
-            <li>Integrated terminal</li>
-            <li>Multiple color themes</li>
-            <li>Fully responsive design</li>
-          </ul>
-        </div>
-      );
+    return (
+      <div className="p-8 prose prose-invert max-w-none">
+        <h1 className="text-3xl font-bold mb-4 text-[var(--theme-method)]">Portfolio Site</h1>
+        <p className="text-[var(--theme-foreground)] mb-4">
+          Interactive portfolio showcasing projects and experience.
+        </p>
+        <h2 className="text-2xl font-bold mb-3 mt-6 text-[var(--theme-type)]">Features</h2>
+        <ul className="list-disc list-inside space-y-2 text-[var(--theme-foreground)]">
+          <li>VS Code-inspired interface</li>
+          <li>File explorer navigation</li>
+          <li>Command palette (Cmd/Ctrl+P)</li>
+          <li>Integrated terminal</li>
+          <li>Multiple color themes</li>
+          <li>Fully responsive design</li>
+        </ul>
+        <h2 className="text-2xl font-bold mb-3 mt-6 text-[var(--theme-type)]">Tech Stack</h2>
+        <p className="text-[var(--theme-foreground)]">
+          Built with Vite + React + TypeScript + Tailwind + shadcn/ui
+        </p>
+      </div>
+    );
       
     default:
       return (

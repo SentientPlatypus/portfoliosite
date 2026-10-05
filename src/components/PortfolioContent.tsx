@@ -496,7 +496,19 @@ export const PortfolioContent = () => {
                       src={project.image} 
                       alt={project.title} 
                       className="max-w-full max-h-full object-contain sm:w-full sm:h-full sm:max-w-none sm:max-h-none sm:object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const placeholder = target.parentElement?.querySelector('.image-placeholder');
+                        if (placeholder) {
+                          (placeholder as HTMLElement).style.display = 'flex';
+                        }
+                      }}
                     />
+                    <div className="image-placeholder hidden w-full h-full items-center justify-center flex-col bg-[var(--theme-sidebar)] border border-[var(--theme-border)]">
+                      <div className="text-4xl mb-2">📦</div>
+                      <div className="text-sm text-[var(--theme-comment)]">{project.title}</div>
+                    </div>
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-lg mb-2 line-clamp-2">{project.title}</h3>
