@@ -28,10 +28,10 @@ export const GitGraphTimeline = () => {
       branch: 'main'
     },
     {
-      date: '2023-02',
+      date: '2026-02',
       title: '1st Place',
-      company: 'Cornell Makeathon 2023',
-      commit: 'feat: Won Makeathon with GroovyAR',
+      company: 'Cornell Makeathon 2026',
+      commit: 'feat: Won 1st Place at Cornell Makeathon with GroovyAR',
       hash: 'd9c1e4f',
       branch: 'main'
     }

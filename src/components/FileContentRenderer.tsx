@@ -2,19 +2,22 @@ import { InteractiveInfo } from './InteractiveWidgets';
 import { WorkTimeline } from './WorkTimeline';
 import { PicturesSection } from './PicturesSection';
 import { AwardsSection } from './AwardsSection';
-import { PortfolioContent } from './PortfolioContent';
+import { PortfolioContent, projects, Project } from './PortfolioContent';
 import { TypewriterAnimation } from './TypewriterAnimation';
 import { GitGraphTimeline } from './GitGraphTimeline';
+import { TechTag } from './TechTag';
+import { ExternalLink, Github, FileText } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface FileContentRendererProps {
   path: string;
   theme: any;
   onPictureClick?: (picture: { id: string; title: string; description: string; imageUrl: string }) => void;
+  onProjectClick?: (project: any) => void;
   viewMode?: 'source' | 'preview';
 }
 
-export const FileContentRenderer = ({ path, theme, onPictureClick, viewMode = 'preview' }: FileContentRendererProps) => {
+export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClick, viewMode = 'preview' }: FileContentRendererProps) => {
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
   const [animationStep, setAnimationStep] = useState<'dev' | 'me' | 'complete'>('dev');
   const contentRef = useRef<HTMLDivElement>(null);
@@ -292,7 +295,11 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, viewMode = 'p
     case '/portfolio/projects/all-projects.tsx':
       return (
         <div ref={contentRef}>
-          <PortfolioContent />
+          <PortfolioContent onProjectOpen={(project) => {
+            if (onProjectClick) {
+              onProjectClick(project);
+            }
+          }} />
         </div>
       );
       
@@ -322,15 +329,6 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, viewMode = 'p
               <div className="mt-2" />
               <div className="text-[var(--theme-foreground)]">- <span className="text-[var(--theme-variable)]">**Email:**</span> gjw62@cornell.edu</div>
               <div className="text-[var(--theme-foreground)]">- <span className="text-[var(--theme-variable)]">**Location:**</span> Ithaca, NY</div>
-              <div className="mt-4" />
-              <div><span className="text-[var(--theme-keyword)]">##</span> <span className="text-[var(--theme-type)]">Available For</span></div>
-              <div className="mt-2" />
-              <div className="text-[var(--theme-foreground)]">- Freelance projects</div>
-              <div className="text-[var(--theme-foreground)]">- Full-time opportunities</div>
-              <div className="text-[var(--theme-foreground)]">- Collaboration on open source</div>
-              <div className="text-[var(--theme-foreground)]">- Speaking at events</div>
-              <div className="mt-4" />
-              <div className="text-[var(--theme-comment)]">_Let's build something amazing together!_</div>
             </div>
           </div>
         );
@@ -356,22 +354,6 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, viewMode = 'p
                 <div className="font-semibold text-[var(--theme-variable)]">Location</div>
                 <div className="text-[var(--theme-foreground)]">Ithaca, NY</div>
               </div>
-            </div>
-            
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-3 text-[var(--theme-type)]">Available for:</h2>
-              <ul className="list-disc list-inside space-y-2 text-[var(--theme-foreground)]">
-                <li>Freelance projects</li>
-                <li>Full-time opportunities</li>
-                <li>Collaboration on open source</li>
-                <li>Speaking at events</li>
-              </ul>
-            </div>
-            
-            <div className="mt-8 p-4 bg-[var(--theme-sidebar)] rounded border border-[var(--theme-border)]">
-              <p className="text-[var(--theme-comment)] italic">
-                Let's build something amazing together!
-              </p>
             </div>
           </div>
         </div>
@@ -416,9 +398,131 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, viewMode = 'p
           Built with Vite + React + TypeScript + Tailwind + shadcn/ui
         </p>
       </div>
-    );
+      );
       
     default:
+      // Check if it's a project file
+      if (path.startsWith('/projects/')) {
+        const projectId = parseInt(path.split('/')[2]);
+        const project = projects.find(p => p.id === projectId);
+        
+        if (project) {
+          return (
+            <div className="p-8">
+              <div className="max-w-4xl mx-auto">
+                {/* Project Header */}
+                <div className="mb-6">
+                  <h1 className="text-3xl font-bold mb-2 text-[var(--theme-method)]">{project.title}</h1>
+                  <div className="flex items-center gap-2 text-sm text-[var(--theme-comment)]">
+                    <span>{project.date}</span>
+                    {project.award && (
+                      <>
+                        <span>•</span>
+                        <span className="text-yellow-600">🏆 {project.award}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Project Image */}
+                <div className="mb-6 rounded-lg overflow-hidden border border-[var(--theme-border)] bg-[var(--theme-sidebar)]">
+                  <img 
+                    src={project.image} 
+                    alt={project.title}
+                    className="w-full h-auto"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
+                </div>
+
+                {/* Description */}
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold mb-3 text-[var(--theme-type)]">Overview</h2>
+                  <p className="text-[var(--theme-foreground)] leading-relaxed whitespace-pre-line">
+                    {project.description}
+                  </p>
+                </div>
+
+                {/* Technologies */}
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold mb-3 text-[var(--theme-type)]">Technologies</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((tech) => (
+                      <TechTag key={tech} tech={tech} />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Links */}
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold mb-3 text-[var(--theme-type)]">Links</h2>
+                  <div className="flex flex-wrap gap-3">
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 bg-[var(--theme-sidebar)] border border-[var(--theme-border)] rounded hover:border-[var(--theme-method)] transition-colors"
+                    >
+                      <Github className="w-4 h-4" />
+                      <span>GitHub</span>
+                    </a>
+                    {project.liveUrl && (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-[var(--theme-sidebar)] border border-[var(--theme-border)] rounded hover:border-[var(--theme-method)] transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>{project.liveUrlLabel || 'Live Demo'}</span>
+                      </a>
+                    )}
+                    {project.paperUrl && (
+                      <a
+                        href={project.paperUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-[var(--theme-sidebar)] border border-[var(--theme-border)] rounded hover:border-[var(--theme-method)] transition-colors"
+                      >
+                        <FileText className="w-4 h-4" />
+                        <span>Paper</span>
+                      </a>
+                    )}
+                    {project.pypiUrl && (
+                      <a
+                        href={project.pypiUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-[var(--theme-sidebar)] border border-[var(--theme-border)] rounded hover:border-[var(--theme-method)] transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>PyPI</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                {/* Additional Images */}
+                {project.images && project.images.length > 0 && (
+                  <div className="mb-6">
+                    <h2 className="text-xl font-semibold mb-3 text-[var(--theme-type)]">Gallery</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {project.images.map((img, idx) => (
+                        <div key={idx} className="rounded-lg overflow-hidden border border-[var(--theme-border)]">
+                          <img src={img} alt={`${project.title} ${idx + 1}`} className="w-full h-auto" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+      }
+      
       return (
         <div ref={contentRef} className="p-8">
           <div className="text-[var(--theme-comment)]">

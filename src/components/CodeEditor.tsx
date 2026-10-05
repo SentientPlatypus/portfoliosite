@@ -163,6 +163,10 @@ const CodeEditorInner = () => {
   const handlePictureClick = (picture: { id: string; title: string; description: string; imageUrl: string }) => {
     handleFileSelect(`/picture/${picture.id}`, picture.title);
   };
+  
+  const handleProjectClick = (project: any) => {
+    handleFileSelect(`/projects/${project.id}`, `${project.title.toLowerCase().replace(/\s+/g, '-')}.md`);
+  };
 
   const currentTab = tabs.find(t => t.id === activeTab);
   const currentPath = currentTab?.path || '';
@@ -366,6 +370,7 @@ const CodeEditorInner = () => {
                 path={currentPath}
                 theme={theme}
                 onPictureClick={handlePictureClick}
+                onProjectClick={handleProjectClick}
                 viewMode={viewMode}
               />
             </div>
