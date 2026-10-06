@@ -194,6 +194,9 @@ const SpotifyWidget = ({
               src={track.albumImage}
               alt={track.album ?? track.name}
               className="h-16 w-16 shrink-0 rounded border border-border object-cover shadow-md"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
             />
           )}
           <div className="min-w-0 flex-1">
@@ -320,6 +323,9 @@ const YouTubeWidget = ({
                 src={data.avatarUrl}
                 alt={data.channelName}
                 className="h-10 w-10 rounded-full border border-border object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             )}
             <div className="min-w-0 flex-1">
@@ -350,11 +356,16 @@ const YouTubeWidget = ({
               className="flex gap-3 rounded border border-border p-2 transition-colors hover:border-red-500/60 hover:bg-card"
               onClick={(event) => event.stopPropagation()}
             >
-              <img
-                src={data.latestVideo.thumbnail}
-                alt={data.latestVideo.title}
-                className="h-12 w-20 shrink-0 rounded object-cover"
-              />
+              {data.latestVideo.thumbnail && (
+                <img
+                  src={data.latestVideo.thumbnail}
+                  alt={data.latestVideo.title}
+                  className="h-12 w-20 shrink-0 rounded object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              )}
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
                   Latest upload
@@ -678,7 +689,7 @@ const ClashRoyaleWidget = ({
 
   return (
     <Widget
-      icon={<img src={bestRanked.icon} alt="" className="h-4 w-4" />}
+      icon={<img src={bestRanked.icon} alt="" className="h-4 w-4" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
       title="Clash Royale"
       subtitle={subtitle}
       href={SOCIAL.clashRoyale.profileUrl}
@@ -707,7 +718,7 @@ const ClashRoyaleWidget = ({
               label={`Best ranked • ${bestRanked.league}`}
               value={
                 <span className="inline-flex items-center gap-1">
-                  <img src={bestRanked.icon} alt="" className="h-4 w-4" />
+                  <img src={bestRanked.icon} alt="" className="h-4 w-4" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                   {bestRanked.rating.toLocaleString()}
                 </span>
               }
@@ -720,7 +731,7 @@ const ClashRoyaleWidget = ({
               {data.arena && (
                 <span className="inline-flex items-center gap-1">
                   {data.arenaIcon && (
-                    <img src={data.arenaIcon} alt="" className="h-4 w-4" />
+                    <img src={data.arenaIcon} alt="" className="h-4 w-4" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                   )}
                   {data.arena}
                 </span>
@@ -747,6 +758,9 @@ const ClashRoyaleWidget = ({
                       src={card.image}
                       alt={card.name}
                       className="h-full w-full rounded border border-border object-cover transition-transform group-hover/card:scale-105"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
                     />
                     {card.level !== null && (
                       <span className="absolute bottom-0 left-0 right-0 rounded-b bg-black/75 text-center text-[8px] text-white">
@@ -793,6 +807,9 @@ const RocketLeagueWidget = ({
           src={publicAssetUrl('rocket-league-logo.svg')}
           alt=""
           className="h-3.5 w-auto"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
         />
       }
       title="Rocket League"
@@ -821,6 +838,9 @@ const RocketLeagueWidget = ({
                 alt={peak.rank}
                 title={peak.rank}
                 className="mx-auto h-8 w-8"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             }
           />
@@ -893,6 +913,9 @@ export const InteractiveInfo = () => {
             alt="Portrait"
             className="w-full h-full object-cover"
             style={{ minWidth: '128px', minHeight: '160px' }}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
           />
         </div>
       </div>

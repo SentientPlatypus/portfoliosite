@@ -2,10 +2,11 @@ import { ChevronRight } from 'lucide-react';
 
 interface BreadcrumbsProps {
   path: string;
+  fileName?: string;
   onNavigate?: (path: string) => void;
 }
 
-export const Breadcrumbs = ({ path, onNavigate }: BreadcrumbsProps) => {
+export const Breadcrumbs = ({ path, fileName, onNavigate }: BreadcrumbsProps) => {
   const parts = path.split('/').filter(Boolean);
   
   return (
@@ -17,6 +18,8 @@ export const Breadcrumbs = ({ path, onNavigate }: BreadcrumbsProps) => {
           {parts.map((part, index) => {
             const isLast = index === parts.length - 1;
             const pathToHere = '/' + parts.slice(0, index + 1).join('/');
+            // Use fileName for the last part if provided
+            const displayPart = isLast && fileName ? fileName : part;
             
             return (
               <div key={index} className="flex items-center gap-1">
@@ -26,7 +29,7 @@ export const Breadcrumbs = ({ path, onNavigate }: BreadcrumbsProps) => {
                     isLast ? 'text-white font-medium' : 'text-[#858585]'
                   }`}
                 >
-                  {part}
+                  {displayPart}
                 </button>
                 {!isLast && <ChevronRight className="w-3 h-3 text-[#858585]" />}
               </div>

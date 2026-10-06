@@ -52,19 +52,23 @@ const CodeEditorInner = () => {
     if (hasSeenBoot) {
       setShowBoot(false);
       // Returning visitors land on About directly
-      setTimeout(() => {
-        handleFileSelect('/portfolio/about.tsx', 'about.tsx');
-      }, 100);
+      const timer = setTimeout(() => {
+        if (tabs.length === 1 && tabs[0].path === '/me.rs') {
+          handleFileSelect('/portfolio/about.tsx', 'about.tsx');
+        }
+      }, 200);
+      return () => clearTimeout(timer);
     }
-  }, []);
+  }, [tabs]);
 
   const handleBootComplete = () => {
     sessionStorage.setItem('hasSeenBoot', 'true');
     setShowBoot(false);
     // Land on About Me after boot
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       handleFileSelect('/portfolio/about.tsx', 'about.tsx');
-    }, 100);
+    }, 200);
+    return () => clearTimeout(timer);
   };
 
   useEffect(() => {
@@ -343,7 +347,7 @@ const CodeEditorInner = () => {
 
           {/* Breadcrumbs */}
           <div className="flex items-center justify-between">
-            <Breadcrumbs path={currentPath} />
+            <Breadcrumbs path={currentPath} fileName={currentTab?.name} />
             {/* View Mode Toggle for applicable files */}
             {(currentPath.includes('.tsx') || currentPath.includes('.md')) && (
               <div className="pr-4">
