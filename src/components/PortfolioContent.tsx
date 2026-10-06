@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ProjectModal } from "./ProjectModal";
 import { TechTag } from "./TechTag";
+import { motion } from "framer-motion";
 interface Project {
   id: number | string;
   title: string;
@@ -451,6 +452,22 @@ interface PortfolioContentProps {
 
 export { projects };
 export type { Project };
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05
+    }
+  }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
+
 export const PortfolioContent = ({ onProjectOpen }: PortfolioContentProps = {}) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -483,18 +500,18 @@ export const PortfolioContent = ({ onProjectOpen }: PortfolioContentProps = {}) 
       <div className="pt-2 pb-6 sm:-mx-8">
         {/* Always use mobile-style linear layout */}
         <div className="px-2 sm:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+          >
             {projects.map((project, index) => (
-              <div 
-                key={project.id} 
-                className={`cursor-pointer transition-all duration-700 ease-out ${
-                  isVisible 
-                    ? 'transform translate-y-0 opacity-100' 
-                    : 'transform -translate-y-16 opacity-0'
-                }`}
-                style={{ 
-                  transitionDelay: `${index * 100}ms` 
-                }}
+              <motion.div
+                key={project.id}
+                variants={item}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="cursor-pointer"
                 onClick={() => {
                   if (onProjectOpen) {
                     onProjectOpen(project);
@@ -503,12 +520,12 @@ export const PortfolioContent = ({ onProjectOpen }: PortfolioContentProps = {}) 
                   }
                 }}
               >
-                <div className="bg-card rounded-lg overflow-hidden shadow-lg">
+                <div className="bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
                   <div className="aspect-video w-full overflow-hidden flex-shrink-0 bg-muted flex items-center justify-center">
                     <img 
                       src={project.image} 
                       alt={project.title} 
-                      className="max-w-full max-h-full object-contain sm:w-full sm:h-full sm:max-w-none sm:max-h-none sm:object-cover"
+                      className="max-w-full max-h-full object-contain sm:w-full sm:h-full sm:max-w-none sm:max-h-none sm:object-cover transition-transform duration-300 hover:scale-105"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
@@ -541,9 +558,9 @@ export const PortfolioContent = ({ onProjectOpen }: PortfolioContentProps = {}) 
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
 

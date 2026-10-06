@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { GitBranch, Wifi, Bell, Zap, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface EnhancedStatusBarProps {
   currentFile: string;
@@ -82,6 +83,11 @@ export const EnhancedStatusBar = ({
         <div className="flex items-center gap-1.5 hover:bg-white/10 px-2 py-0.5 rounded cursor-pointer transition-colors">
           <Clock className="w-3 h-3" />
           <span>{formatTime(time)}</span>
+          <motion.div
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-1.5 h-1.5 rounded-full bg-green-400 ml-1"
+          />
         </div>
         {!isMobile && (
           <div className="hover:bg-white/10 px-2 py-0.5 rounded cursor-pointer transition-colors">

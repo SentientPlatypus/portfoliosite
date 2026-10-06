@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 interface TechTagProps {
   tech: string;
@@ -45,14 +46,19 @@ export const TechTag = ({ tech, className = '' }: TechTagProps) => {
       </span>
       
       {showTooltip && description && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 animate-fade-in">
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 5 }}
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50"
+        >
           <div className="bg-[#2d2d30] border border-[#454545] rounded-lg shadow-2xl p-3 max-w-xs">
             <div className="text-xs font-semibold text-white mb-1">{tech}</div>
             <div className="text-xs text-[#cccccc]">{description}</div>
             {/* Tooltip arrow */}
             <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-[#454545]" />
           </div>
-        </div>
+        </motion.div>
       )}
     </span>
   );

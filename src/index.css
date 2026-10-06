@@ -225,6 +225,13 @@
     color: hsl(var(--intellisense-text));
   }
   
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
   
   /* Fix mobile overflow issue */
   @media (max-width: 640px) {

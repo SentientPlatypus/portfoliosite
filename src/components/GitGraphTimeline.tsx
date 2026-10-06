@@ -1,5 +1,6 @@
 import { GitBranch, GitCommit, Circle } from 'lucide-react';
 import { WorkTimeline } from './WorkTimeline';
+import { motion } from 'framer-motion';
 
 export const GitGraphTimeline = () => {
   const experiences = [
@@ -50,8 +51,13 @@ export const GitGraphTimeline = () => {
         <div className="absolute left-[11px] top-0 bottom-0 w-[2px] bg-[var(--theme-border)]" />
 
         {experiences.map((exp, index) => (
-          <div key={index} className="relative pl-10 pb-8 group hover:bg-[var(--theme-sidebar)]/50 -ml-2 p-2 rounded transition-colors">
-            {/* Commit dot */}
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="relative pl-10 pb-8 group hover:bg-[var(--theme-sidebar)]/50 -ml-2 p-2 rounded transition-colors"
+          >            {/* Commit dot */}
             <div className="absolute left-[5px] top-[8px] w-[14px] h-[14px] rounded-full bg-[var(--theme-editor)] border-2 border-[var(--theme-method)] z-10 group-hover:border-[var(--theme-string)] transition-colors" />
             
             {/* Content */}
@@ -70,7 +76,7 @@ export const GitGraphTimeline = () => {
                 {exp.commit}
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
 
         {/* Initial commit */}

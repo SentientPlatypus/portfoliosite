@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, FileText, Palette, Terminal as TerminalIcon, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Command {
   id: string;
@@ -134,8 +135,18 @@ export const CommandPalette = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-start justify-center pt-[15vh] z-50" onClick={onClose}>
-      <div 
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 flex items-start justify-center pt-[15vh] z-50"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -20 }}
+        transition={{ type: "spring", duration: 0.3 }}
         className="w-full max-w-2xl bg-[#252526] border border-[#454545] rounded-lg shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
@@ -195,7 +206,7 @@ export const CommandPalette = ({
           <span>↑↓ to navigate</span>
           <span>↵ to select</span>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };

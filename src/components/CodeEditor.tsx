@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ActivityBar } from './ActivityBar';
 import { FileExplorer } from './FileExplorer';
 import { CommandPalette } from './CommandPalette';
@@ -50,12 +51,20 @@ const CodeEditorInner = () => {
     const hasSeenBoot = sessionStorage.getItem('hasSeenBoot');
     if (hasSeenBoot) {
       setShowBoot(false);
+      // Returning visitors land on About directly
+      setTimeout(() => {
+        handleFileSelect('/portfolio/about.tsx', 'about.tsx');
+      }, 100);
     }
   }, []);
 
   const handleBootComplete = () => {
     sessionStorage.setItem('hasSeenBoot', 'true');
     setShowBoot(false);
+    // Land on About Me after boot
+    setTimeout(() => {
+      handleFileSelect('/portfolio/about.tsx', 'about.tsx');
+    }, 100);
   };
 
   useEffect(() => {
@@ -165,7 +174,8 @@ const CodeEditorInner = () => {
   };
   
   const handleProjectClick = (project: any) => {
-    handleFileSelect(`/projects/${project.id}`, `${project.title.toLowerCase().replace(/\s+/g, '-')}.md`);
+    const fileName = `${project.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.md`;
+    handleFileSelect(`/projects/${project.id}`, fileName);
   };
 
   const currentTab = tabs.find(t => t.id === activeTab);
