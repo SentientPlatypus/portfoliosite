@@ -15,9 +15,10 @@ interface FileContentRendererProps {
   onPictureClick?: (picture: { id: string; title: string; description: string; imageUrl: string }) => void;
   onProjectClick?: (project: any) => void;
   viewMode?: 'source' | 'preview';
+  onTypingComplete?: () => void;
 }
 
-export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClick, viewMode = 'preview' }: FileContentRendererProps) => {
+export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClick, viewMode = 'preview', onTypingComplete }: FileContentRendererProps) => {
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
   const [animationStep, setAnimationStep] = useState<'dev' | 'me' | 'complete'>('dev');
   const contentRef = useRef<HTMLDivElement>(null);
@@ -42,7 +43,12 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
   };
 
   const handleMeComplete = () => {
-    setTimeout(() => setAnimationStep('complete'), 300);
+    setTimeout(() => {
+      setAnimationStep('complete');
+      if (onTypingComplete) {
+        setTimeout(() => onTypingComplete(), 800);
+      }
+    }, 300);
   };
 
   const renderMeRsContent = () => {

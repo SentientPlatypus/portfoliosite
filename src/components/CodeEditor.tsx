@@ -49,7 +49,8 @@ const CodeEditorInner = () => {
   useEffect(() => {
     // Check if boot animation has been seen
     const hasSeenBoot = sessionStorage.getItem('hasSeenBoot');
-    if (hasSeenBoot) {
+    const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+    if (hasSeenBoot && hasSeenWelcome) {
       setShowBoot(false);
       // Returning visitors land on About directly
       const timer = setTimeout(() => {
@@ -58,17 +59,22 @@ const CodeEditorInner = () => {
         }
       }, 200);
       return () => clearTimeout(timer);
+    } else if (hasSeenBoot) {
+      setShowBoot(false);
     }
   }, [tabs]);
 
   const handleBootComplete = () => {
     sessionStorage.setItem('hasSeenBoot', 'true');
     setShowBoot(false);
-    // Land on About Me after boot
-    const timer = setTimeout(() => {
-      handleFileSelect('/portfolio/about.tsx', 'about.tsx');
-    }, 200);
-    return () => clearTimeout(timer);
+  };
+
+  const handleTypingComplete = () => {
+    handleFileSelect('/portfolio/about.tsx', 'about.tsx');
+  };
+
+  const handleSearchResultClick = (path: string, name: string) => {
+    handleFileSelect(path, name);
   };
 
   useEffect(() => {
@@ -386,6 +392,7 @@ const CodeEditorInner = () => {
                 onPictureClick={handlePictureClick}
                 onProjectClick={handleProjectClick}
                 viewMode={viewMode}
+                onTypingComplete={handleTypingComplete}
               />
             </div>
 
