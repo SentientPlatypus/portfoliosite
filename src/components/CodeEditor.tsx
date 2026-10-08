@@ -472,7 +472,7 @@ const CodeEditorInner = () => {
             />
             <Panel 
               ref={terminalPanelRef}
-              defaultSize={35} 
+              defaultSize={0} 
               minSize={0}
               maxSize={70} 
               id="terminal-panel"

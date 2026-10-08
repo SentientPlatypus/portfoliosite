@@ -84,15 +84,23 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
     
     setLines(prev => [...prev, { type: 'output', content: '__DONUT_ANIMATION__', color: 'cyan' }]);
     
-    // Calculate terminal dimensions dynamically
+    // Calculate terminal dimensions from actual visible area
     const calculateTerminalSize = () => {
       if (!terminalRef.current) return { cols: 80, rows: 22 };
-      const rect = terminalRef.current.getBoundingClientRect();
-      const charWidth = 7.8; // Approximate width of a monospace character at 13px
-      const lineHeight = 20; // Approximate line height
-      const cols = Math.floor(rect.width / charWidth) || 80;
-      const rows = Math.floor((rect.height - 80) / lineHeight) || 22; // Subtract header/input area
-      return { cols: Math.max(cols, 40), rows: Math.max(rows, 10) };
+      
+      // Get actual visible content area (excluding header/input)
+      const contentHeight = terminalRef.current.clientHeight - 40; // Subtract prompt line height
+      const contentWidth = terminalRef.current.clientWidth;
+      
+      // Calculate character dimensions
+      const charWidth = 7.8; // Monospace character width at 13px
+      const lineHeight = 20; // Line height
+      
+      // Calculate available rows and columns
+      const cols = Math.floor(contentWidth / charWidth);
+      const rows = Math.floor(contentHeight / lineHeight);
+      
+      return { cols: Math.max(cols, 20), rows: Math.max(rows, 5) };
     };
     
     let A = 0, B = 0;
@@ -111,10 +119,18 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
         z[k] = 0;
       }
       
+      // Keep donut round by using the same scale for both axes
       const centerX = cols / 2;
       const centerY = rows / 2;
-      const scaleX = cols / 80 * 30;
-      const scaleY = rows / 22 * 15;
+      
+      // Calculate scale to fit the donut (which is about 80x22 at base scale)
+      const scaleX = cols / 80;
+      const scaleY = rows / 22;
+      
+      // Use the smaller scale to keep it round and fully visible
+      const scale = Math.min(scaleX, scaleY);
+      const radiusX = 30 * scale;
+      const radiusY = 15 * scale;
       
       for (let j = 0; j < 6.28; j += 0.07) {
         const ct = Math.cos(j), st = Math.sin(j);
@@ -124,8 +140,9 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
           const D = 1 / (sp * h * sA + st * cA + 5);
           const t = sp * h * cA - st * sA;
           
-          const x = Math.floor(centerX + scaleX * D * (cp * h * cB - t * sB));
-          const y = Math.floor(centerY + scaleY * D * (cp * h * sB + t * cB));
+          // Apply uniform scale to keep donut round
+          const x = Math.floor(centerX + radiusX * D * (cp * h * cB - t * sB));
+          const y = Math.floor(centerY + radiusY * D * (cp * h * sB + t * cB));
           const o = x + cols * y;
           const N = Math.floor(8 * ((st * sA - sp * ct * cA) * cB - sp * ct * sA - st * cA - cp * ct * sB));
           
