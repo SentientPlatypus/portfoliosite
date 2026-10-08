@@ -16,7 +16,7 @@ import { ViewModeToggle } from './ViewModeToggle';
 import { GitGraphTimeline } from './GitGraphTimeline';
 import { Settings } from './Settings';
 import { X } from 'lucide-react';
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { Panel, PanelGroup, PanelResizeHandle, ImperativePanelHandle } from 'react-resizable-panels';
 
 interface Tab {
   id: string;
@@ -36,6 +36,7 @@ const CodeEditorInner = () => {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'source' | 'preview'>('preview');
+  const terminalPanelRef = useRef<ImperativePanelHandle>(null);
   const [tabs, setTabs] = useState<Tab[]>([
     { id: 'me.rs', path: '/me.rs', name: 'me.rs', isDirty: false }
   ]);
@@ -56,16 +57,18 @@ const CodeEditorInner = () => {
     if (hasSeenBoot && hasSeenWelcome) {
       setShowBoot(false);
       // Returning visitors land on About directly
-      const timer = setTimeout(() => {
-        if (tabs.length === 1 && tabs[0].path === '/me.rs') {
-          handleFileSelect('/portfolio/about.tsx', 'about.tsx');
-        }
-      }, 200);
-      return () => clearTimeout(timer);
+      const aboutTab: Tab = {
+        id: '/portfolio/about.tsx',
+        path: '/portfolio/about.tsx',
+        name: 'about.tsx',
+        isDirty: false
+      };
+      setTabs([aboutTab]);
+      setActiveTab(aboutTab.id);
     } else if (hasSeenBoot) {
       setShowBoot(false);
     }
-  }, [tabs]);
+  }, []);
 
   const handleBootComplete = () => {
     sessionStorage.setItem('hasSeenBoot', 'true');
@@ -142,6 +145,17 @@ const CodeEditorInner = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeTab, tabs]);
+
+  // Handle terminal panel expand/collapse
+  useEffect(() => {
+    if (terminalPanelRef.current) {
+      if (terminalOpen) {
+        terminalPanelRef.current.resize(35);
+      } else {
+        terminalPanelRef.current.collapse();
+      }
+    }
+  }, [terminalOpen]);
 
   const handleFileSelect = (path: string, name: string) => {
     const existingTab = tabs.find(t => t.path === path);
@@ -374,7 +388,7 @@ const CodeEditorInner = () => {
           </div>
 
           {/* Editor Content and Terminal with Resizable Panels */}
-          <PanelGroup direction="vertical" className="flex-1" id="editor-terminal-group">
+          <PanelGroup direction="vertical" className="flex-1" id="editor-terminal-group" autoSaveId="editor-terminal-layout">
             <Panel 
               defaultSize={terminalOpen ? 60 : 100} 
               minSize={30} 
@@ -436,7 +450,8 @@ const CodeEditorInner = () => {
               className="hover:bg-[var(--theme-statusBar)] transition-colors"
             />
             <Panel 
-              defaultSize={terminalOpen ? 40 : 0} 
+              ref={terminalPanelRef}
+              defaultSize={0} 
               minSize={0}
               maxSize={70} 
               id="terminal-panel"

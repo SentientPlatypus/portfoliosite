@@ -28,9 +28,11 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
   const [currentPath, setCurrentPath] = useState('~/portfolio');
   const [isRunning, setIsRunning] = useState(false);
   const [runningCommand, setRunningCommand] = useState<string | null>(null);
+  const [animationFrame, setAnimationFrame] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const runningRef = useRef<{ isRunning: boolean; command: string | null }>({ isRunning: false, command: null });
 
   const files: Record<string, string> = {
     'about.tsx': 'about.tsx - Personal information and bio',
@@ -57,17 +59,30 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
+    runningRef.current = { isRunning: false, command: null };
     setIsRunning(false);
     setRunningCommand(null);
-    setLines(prev => [...prev,
-      { type: 'output', content: '^C' },
-      { type: 'output', content: '' },
-    ]);
+    setAnimationFrame('');
+    setLines(prev => {
+      const filtered = prev.filter(line => 
+        !(typeof line.content === 'string' && (line.content === '__DONUT_ANIMATION__' || line.content === '__MATRIX_ANIMATION__'))
+      );
+      return [...filtered,
+        { type: 'output', content: '^C' },
+        { type: 'output', content: '' },
+      ];
+    });
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
   };
 
   const runDonut = () => {
     setIsRunning(true);
     setRunningCommand('donut');
+    runningRef.current = { isRunning: true, command: 'donut' };
+    
+    setLines(prev => [...prev, { type: 'output', content: '__DONUT_ANIMATION__', color: 'cyan' }]);
     
     let A = 0, B = 0;
     const donutFrame = () => {
@@ -103,14 +118,9 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
         }
       }
       
-      setLines(prev => {
-        const filtered = prev.filter(line => 
-          !(line.type === 'output' && typeof line.content === 'string' && line.content.includes('.,-~:;=!*#$@'))
-        );
-        return [...filtered, { type: 'output', content: b.join(''), color: 'cyan' }];
-      });
+      setAnimationFrame(b.join(''));
       
-      if (isRunning && runningCommand === 'donut') {
+      if (runningRef.current.isRunning && runningRef.current.command === 'donut') {
         animationFrameRef.current = requestAnimationFrame(donutFrame);
       }
     };
@@ -121,6 +131,9 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
   const runMatrix = () => {
     setIsRunning(true);
     setRunningCommand('matrix');
+    runningRef.current = { isRunning: true, command: 'matrix' };
+    
+    setLines(prev => [...prev, { type: 'output', content: '__MATRIX_ANIMATION__', color: 'green' }]);
     
     const chars = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ01';
     const columns = 80;
@@ -154,15 +167,10 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
         drops[i]++;
       }
       
-      setLines(prev => {
-        const filtered = prev.filter(line => 
-          !(line.type === 'output' && typeof line.content === 'string' && (line.content.includes('ﾊ') || line.content.includes('ﾐ')))
-        );
-        return [...filtered, { type: 'output', content: output, color: 'green' }];
-      });
+      setAnimationFrame(output);
       
       frameCount++;
-      if (frameCount < maxFrames && isRunning && runningCommand === 'matrix') {
+      if (frameCount < maxFrames && runningRef.current.isRunning && runningRef.current.command === 'matrix') {
         setTimeout(() => {
           animationFrameRef.current = requestAnimationFrame(matrixFrame);
         }, 50);
@@ -776,6 +784,20 @@ me.`
   }, [isOpen]);
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isRunning && ((e.ctrlKey && e.key === 'c') || e.key === 'q' || e.key === 'Escape')) {
+        e.preventDefault();
+        stopRunningProgram();
+      }
+    };
+
+    if (isRunning) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isRunning]);
+
+  useEffect(() => {
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -841,9 +863,13 @@ me.`
             return <div key={index}>{line.content}</div>;
           }
           
+          const content = typeof line.content === 'string' && (line.content === '__DONUT_ANIMATION__' || line.content === '__MATRIX_ANIMATION__')
+            ? animationFrame
+            : line.content;
+          
           return (
             <div key={index} className={colorClass} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-              {line.content}
+              {content}
             </div>
           );
         })}
