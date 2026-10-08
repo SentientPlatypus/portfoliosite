@@ -374,8 +374,13 @@ const CodeEditorInner = () => {
           </div>
 
           {/* Editor Content and Terminal with Resizable Panels */}
-          <PanelGroup direction="vertical" className="flex-1">
-            <Panel defaultSize={terminalOpen ? 70 : 100} minSize={30}>
+          <PanelGroup direction="vertical" className="flex-1" id="editor-terminal-group">
+            <Panel 
+              defaultSize={terminalOpen ? 60 : 100} 
+              minSize={30} 
+              id="editor-panel"
+              order={1}
+            >
               <div className="h-full flex overflow-hidden">
                 {/* Main Editor with Line Numbers */}
                 <div 
@@ -416,20 +421,39 @@ const CodeEditorInner = () => {
               </div>
             </Panel>
 
-            {/* Terminal Panel */}
-            {terminalOpen && (
-              <>
-                <PanelResizeHandle className="h-1 bg-transparent hover:bg-[var(--theme-statusBar)] transition-colors cursor-ns-resize" />
-                <Panel defaultSize={30} minSize={15} maxSize={70}>
-                  <IntegratedTerminal
-                    isOpen={terminalOpen}
-                    onClose={() => setTerminalOpen(false)}
-                    onFileOpen={handleFileSelect}
-                    onThemeChange={setTheme}
-                  />
-                </Panel>
-              </>
-            )}
+            {/* Terminal Panel - Always in PanelGroup */}
+            <PanelResizeHandle 
+              id="terminal-resize-handle"
+              style={{ 
+                height: '8px',
+                minHeight: '8px',
+                background: 'var(--theme-border)',
+                cursor: 'ns-resize',
+                userSelect: 'none',
+                position: 'relative',
+                zIndex: 10
+              }}
+              className="hover:bg-[var(--theme-statusBar)] transition-colors"
+            />
+            <Panel 
+              defaultSize={terminalOpen ? 40 : 0} 
+              minSize={0}
+              maxSize={70} 
+              id="terminal-panel"
+              order={2}
+              collapsible={true}
+              onCollapse={() => setTerminalOpen(false)}
+              onExpand={() => setTerminalOpen(true)}
+            >
+              {terminalOpen && (
+                <IntegratedTerminal
+                  isOpen={terminalOpen}
+                  onClose={() => setTerminalOpen(false)}
+                  onFileOpen={handleFileSelect}
+                  onThemeChange={setTheme}
+                />
+              )}
+            </Panel>
           </PanelGroup>
         </div>
       </div>
