@@ -84,23 +84,26 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
     
     setLines(prev => [...prev, { type: 'output', content: '__DONUT_ANIMATION__', color: 'cyan' }]);
     
-    // Calculate terminal dimensions from actual visible area
+    // Measure the real monospace cell size once, so the donut is round at any font/zoom
+    const cell = (() => {
+      const el = terminalRef.current;
+      if (!el) return { w: 7.8, h: 19.5 };
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+      probe.textContent = 'X'.repeat(100);
+      el.appendChild(probe);
+      const r = probe.getBoundingClientRect();
+      el.removeChild(probe);
+      return { w: r.width / 100 || 7.8, h: r.height || 19.5 };
+    })();
+
+    // Grid that fits the visible terminal area (history is hidden while a program runs)
     const calculateTerminalSize = () => {
-      if (!terminalRef.current) return { cols: 80, rows: 22 };
-      
-      // Get actual visible content area (excluding header/input)
-      const contentHeight = terminalRef.current.clientHeight - 40; // Subtract prompt line height
-      const contentWidth = terminalRef.current.clientWidth;
-      
-      // Calculate character dimensions
-      const charWidth = 7.8; // Monospace character width at 13px
-      const lineHeight = 20; // Line height
-      
-      // Calculate available rows and columns
-      const cols = Math.floor(contentWidth / charWidth);
-      const rows = Math.floor(contentHeight / lineHeight);
-      
-      return { cols: Math.max(cols, 20), rows: Math.max(rows, 5) };
+      const el = terminalRef.current;
+      if (!el) return { cols: 80, rows: 22 };
+      const cols = Math.floor((el.clientWidth - 16) / cell.w); // minus p-2 padding
+      const rows = Math.floor((el.clientHeight - 16) / cell.h);
+      return { cols: Math.max(cols, 10), rows: Math.max(rows, 3) };
     };
     
     let A = 0, B = 0;
@@ -113,24 +116,18 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
       const cA = Math.cos(A), sA = Math.sin(A);
       const cB = Math.cos(B), sB = Math.sin(B);
       
+      // Each row is (cols - 1) characters plus a newline
       const totalSize = cols * rows;
       for (let k = 0; k < totalSize; k++) {
         b[k] = k % cols === cols - 1 ? '\n' : ' ';
         z[k] = 0;
       }
       
-      // Keep donut round by using the same scale for both axes
-      const centerX = cols / 2;
+      // Uniform scale in pixels: the projected torus never exceeds 0.75 units from
+      // the center, so radius R keeps it inside the smaller of width/height.
+      const centerX = (cols - 1) / 2;
       const centerY = rows / 2;
-      
-      // Calculate scale to fit the donut (which is about 80x22 at base scale)
-      const scaleX = cols / 80;
-      const scaleY = rows / 22;
-      
-      // Use the smaller scale to keep it round and fully visible
-      const scale = Math.min(scaleX, scaleY);
-      const radiusX = 30 * scale;
-      const radiusY = 15 * scale;
+      const R = (0.95 * Math.min((cols - 1) * cell.w, rows * cell.h)) / 2 / 0.75;
       
       for (let j = 0; j < 6.28; j += 0.07) {
         const ct = Math.cos(j), st = Math.sin(j);
@@ -140,20 +137,20 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
           const D = 1 / (sp * h * sA + st * cA + 5);
           const t = sp * h * cA - st * sA;
           
-          // Apply uniform scale to keep donut round
-          const x = Math.floor(centerX + radiusX * D * (cp * h * cB - t * sB));
-          const y = Math.floor(centerY + radiusY * D * (cp * h * sB + t * cB));
+          // Convert pixel offsets to character cells so it stays round
+          const x = Math.floor(centerX + (R * D * (cp * h * cB - t * sB)) / cell.w);
+          const y = Math.floor(centerY + (R * D * (cp * h * sB + t * cB)) / cell.h);
           const o = x + cols * y;
           const N = Math.floor(8 * ((st * sA - sp * ct * cA) * cB - sp * ct * sA - st * cA - cp * ct * sB));
           
-          if (y < rows && y >= 0 && x >= 0 && x < cols && D > z[o]) {
+          if (y < rows && y >= 0 && x >= 0 && x < cols - 1 && D > z[o]) {
             z[o] = D;
             b[o] = '.,-~:;=!*#$@'[N > 0 ? N : 0];
           }
         }
       }
       
-      setAnimationFrame(b.join(''));
+      setAnimationFrame(b.join('').slice(0, -1));
       
       if (runningRef.current.isRunning && runningRef.current.command === 'donut') {
         animationFrameRef.current = requestAnimationFrame(donutFrame);
@@ -853,7 +850,7 @@ me.`
       className="h-full border-t flex flex-col" 
       style={{ background: 'var(--theme-terminal)', borderColor: 'var(--theme-border)' }}
     >
-      <div className="h-9 border-b flex items-center justify-between px-3" style={{ background: 'var(--theme-sidebar)', borderColor: 'var(--theme-border)' }}>
+      <div className="h-9 border-b flex items-center justify-between px-3 select-none" style={{ background: 'var(--theme-sidebar)', borderColor: 'var(--theme-border)' }}>
         <div className="flex items-center gap-2 text-[13px]" style={{ color: 'var(--theme-foreground)' }}>
           <TerminalIcon className="w-4 h-4" />
           <span>bash</span>
@@ -884,7 +881,8 @@ me.`
         className="flex-1 overflow-y-auto p-2 font-mono text-[13px] cursor-text vscode-scrollbar"
         onClick={handleTerminalClick}
       >
-        {lines.map((line, index) => {
+        {/* While a program runs, show only its frame (like a full-screen terminal app) */}
+        {lines.filter(line => !isRunning || line.content === '__DONUT_ANIMATION__' || line.content === '__MATRIX_ANIMATION__').map((line, index) => {
           let colorClass = 'text-[#cccccc]';
           if (line.type === 'command') colorClass = 'text-[#4ec9b0]';
           if (line.type === 'error') colorClass = 'text-[#f48771]';

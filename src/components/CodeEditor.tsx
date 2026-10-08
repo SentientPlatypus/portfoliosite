@@ -39,12 +39,20 @@ const CodeEditorInner = () => {
   const terminalPanelRef = useRef<ImperativePanelHandle>(null);
   const lastTerminalSizeRef = useRef<number>((() => {
     try {
-      const saved = localStorage.getItem('terminal-last-size');
-      return saved ? parseFloat(saved) : 35;
+      // Ignore missing, stale or tiny saved sizes; fall back to 35%
+      const saved = parseFloat(localStorage.getItem('terminal-last-size') ?? '');
+      return saved >= 15 && saved <= 70 ? saved : 35;
     } catch {
       return 35;
     }
   })());
+  // Remember the open terminal size (never a mid-drag value on the way to closing)
+  const isDraggingTerminalRef = useRef(false);
+  const rememberTerminalSize = (size: number) => {
+    if (size < 15) return;
+    lastTerminalSizeRef.current = size;
+    localStorage.setItem('terminal-last-size', size.toString());
+  };
   const [tabs, setTabs] = useState<Tab[]>(() => {
     // Returning visitors land on about.tsx
     const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
@@ -173,10 +181,7 @@ const CodeEditorInner = () => {
     } else if (terminalPanelRef.current && !terminalOpen) {
       // Save current size before collapsing
       const currentSize = terminalPanelRef.current.getSize();
-      if (currentSize > 5) {
-        lastTerminalSizeRef.current = currentSize;
-        localStorage.setItem('terminal-last-size', currentSize.toString());
-      }
+      rememberTerminalSize(currentSize);
       terminalPanelRef.current.collapse();
     }
   }, [terminalOpen]);
@@ -472,11 +477,18 @@ const CodeEditorInner = () => {
                 zIndex: 10
               }}
               className="hover:bg-[var(--theme-statusBar)] transition-colors"
+              hitAreaMargins={{ coarse: 15, fine: 10 }}
+              onDragging={(dragging) => {
+                isDraggingTerminalRef.current = dragging;
+                // Save where the drag ended; if it was dragged shut, keep the pre-drag size
+                if (!dragging) rememberTerminalSize(terminalPanelRef.current?.getSize() ?? 0);
+              }}
             />
             <Panel 
               ref={terminalPanelRef}
               defaultSize={0} 
-              minSize={0}
+              minSize={15}
+              collapsedSize={0}
               maxSize={70} 
               id="terminal-panel"
               order={2}
@@ -484,10 +496,7 @@ const CodeEditorInner = () => {
               onCollapse={() => setTerminalOpen(false)}
               onExpand={() => setTerminalOpen(true)}
               onResize={(size) => {
-                if (size > 5) {
-                  lastTerminalSizeRef.current = size;
-                  localStorage.setItem('terminal-last-size', size.toString());
-                }
+                if (!isDraggingTerminalRef.current) rememberTerminalSize(size);
               }}
             >
               {terminalOpen && (
