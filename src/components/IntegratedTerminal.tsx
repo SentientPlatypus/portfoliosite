@@ -84,8 +84,20 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
     
     setLines(prev => [...prev, { type: 'output', content: '__DONUT_ANIMATION__', color: 'cyan' }]);
     
+    // Calculate terminal dimensions dynamically
+    const calculateTerminalSize = () => {
+      if (!terminalRef.current) return { cols: 80, rows: 22 };
+      const rect = terminalRef.current.getBoundingClientRect();
+      const charWidth = 7.8; // Approximate width of a monospace character at 13px
+      const lineHeight = 20; // Approximate line height
+      const cols = Math.floor(rect.width / charWidth) || 80;
+      const rows = Math.floor((rect.height - 80) / lineHeight) || 22; // Subtract header/input area
+      return { cols: Math.max(cols, 40), rows: Math.max(rows, 10) };
+    };
+    
     let A = 0, B = 0;
     const donutFrame = () => {
+      const { cols, rows } = calculateTerminalSize();
       const b = [];
       const z = [];
       A += 0.04;
@@ -93,10 +105,16 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
       const cA = Math.cos(A), sA = Math.sin(A);
       const cB = Math.cos(B), sB = Math.sin(B);
       
-      for (let k = 0; k < 1760; k++) {
-        b[k] = k % 80 === 79 ? '\n' : ' ';
+      const totalSize = cols * rows;
+      for (let k = 0; k < totalSize; k++) {
+        b[k] = k % cols === cols - 1 ? '\n' : ' ';
         z[k] = 0;
       }
+      
+      const centerX = cols / 2;
+      const centerY = rows / 2;
+      const scaleX = cols / 80 * 30;
+      const scaleY = rows / 22 * 15;
       
       for (let j = 0; j < 6.28; j += 0.07) {
         const ct = Math.cos(j), st = Math.sin(j);
@@ -106,12 +124,12 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
           const D = 1 / (sp * h * sA + st * cA + 5);
           const t = sp * h * cA - st * sA;
           
-          const x = Math.floor(40 + 30 * D * (cp * h * cB - t * sB));
-          const y = Math.floor(12 + 15 * D * (cp * h * sB + t * cB));
-          const o = x + 80 * y;
+          const x = Math.floor(centerX + scaleX * D * (cp * h * cB - t * sB));
+          const y = Math.floor(centerY + scaleY * D * (cp * h * sB + t * cB));
+          const o = x + cols * y;
           const N = Math.floor(8 * ((st * sA - sp * ct * cA) * cB - sp * ct * sA - st * cA - cp * ct * sB));
           
-          if (y < 22 && y >= 0 && x >= 0 && x < 79 && D > z[o]) {
+          if (y < rows && y >= 0 && x >= 0 && x < cols && D > z[o]) {
             z[o] = D;
             b[o] = '.,-~:;=!*#$@'[N > 0 ? N : 0];
           }

@@ -37,10 +37,21 @@ const CodeEditorInner = () => {
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'source' | 'preview'>('preview');
   const terminalPanelRef = useRef<ImperativePanelHandle>(null);
-  const [tabs, setTabs] = useState<Tab[]>([
-    { id: 'me.rs', path: '/me.rs', name: 'me.rs', isDirty: false }
-  ]);
-  const [activeTab, setActiveTab] = useState('me.rs');
+  const [tabs, setTabs] = useState<Tab[]>(() => {
+    // Returning visitors land on about.tsx
+    const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+    if (hasSeenWelcome) {
+      return [
+        { id: 'me.rs', path: '/me.rs', name: 'me.rs', isDirty: false },
+        { id: '/portfolio/about.tsx', path: '/portfolio/about.tsx', name: 'about.tsx', isDirty: false }
+      ];
+    }
+    return [{ id: 'me.rs', path: '/me.rs', name: 'me.rs', isDirty: false }];
+  });
+  const [activeTab, setActiveTab] = useState(() => {
+    const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+    return hasSeenWelcome ? '/portfolio/about.tsx' : 'me.rs';
+  });
   const [lineNumber, setLineNumber] = useState(1);
   const [columnNumber, setColumnNumber] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
@@ -51,21 +62,9 @@ const CodeEditorInner = () => {
   const [contentHeight, setContentHeight] = useState(0);
 
   useEffect(() => {
-    // Check if boot animation has been seen
-    const hasSeenBoot = sessionStorage.getItem('hasSeenBoot');
+    // Skip boot animation for returning visitors
     const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
-    if (hasSeenBoot && hasSeenWelcome) {
-      setShowBoot(false);
-      // Returning visitors land on About directly
-      const aboutTab: Tab = {
-        id: '/portfolio/about.tsx',
-        path: '/portfolio/about.tsx',
-        name: 'about.tsx',
-        isDirty: false
-      };
-      setTabs([aboutTab]);
-      setActiveTab(aboutTab.id);
-    } else if (hasSeenBoot) {
+    if (hasSeenWelcome) {
       setShowBoot(false);
     }
   }, []);
@@ -150,7 +149,11 @@ const CodeEditorInner = () => {
   useEffect(() => {
     if (terminalPanelRef.current) {
       if (terminalOpen) {
-        terminalPanelRef.current.resize(35);
+        const currentSize = terminalPanelRef.current.getSize();
+        if (currentSize === 0) {
+          // Only set default size if completely collapsed
+          terminalPanelRef.current.expand();
+        }
       } else {
         terminalPanelRef.current.collapse();
       }
@@ -451,7 +454,7 @@ const CodeEditorInner = () => {
             />
             <Panel 
               ref={terminalPanelRef}
-              defaultSize={0} 
+              defaultSize={35} 
               minSize={0}
               maxSize={70} 
               id="terminal-panel"
