@@ -157,15 +157,18 @@ const CodeEditorInner = () => {
   useEffect(() => {
     if (terminalPanelRef.current && terminalOpen) {
       // When opening, restore last known size
+      // Use double requestAnimationFrame to ensure Panel is fully ready
       requestAnimationFrame(() => {
-        if (!terminalPanelRef.current) return;
-        
-        const currentSize = terminalPanelRef.current.getSize();
-        if (currentSize < 5) {
-          // Panel is collapsed - restore to last known size
-          const sizeToRestore = lastTerminalSizeRef.current;
-          terminalPanelRef.current.resize(sizeToRestore);
-        }
+        requestAnimationFrame(() => {
+          if (!terminalPanelRef.current) return;
+          
+          const currentSize = terminalPanelRef.current.getSize();
+          if (currentSize < 5) {
+            // Panel is collapsed - restore to last known size
+            const sizeToRestore = lastTerminalSizeRef.current;
+            terminalPanelRef.current.resize(sizeToRestore);
+          }
+        });
       });
     } else if (terminalPanelRef.current && !terminalOpen) {
       // Save current size before collapsing
