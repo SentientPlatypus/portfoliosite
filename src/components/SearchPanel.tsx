@@ -69,26 +69,28 @@ export const SearchPanel = ({ isOpen, onClose, onResultClick }: SearchPanelProps
   if (!isOpen) return null;
 
   return (
-    <div className="w-80 bg-[var(--theme-sidebar)] border-r border-[var(--theme-border)] flex flex-col h-full">
-      <div className="p-3 border-b border-[var(--theme-border)] flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-[#cccccc] uppercase tracking-wider">Search</h3>
+    <div className="w-80 border-r flex flex-col h-full" style={{ background: 'var(--theme-sidebar)', borderColor: 'var(--theme-border)' }}>
+      <div className="p-3 border-b flex items-center justify-between" style={{ borderColor: 'var(--theme-border)' }}>
+        <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--theme-foreground)' }}>Search</h3>
         <button
           onClick={onClose}
-          className="text-[#858585] hover:text-white transition-colors"
+          className="hover:opacity-100 transition-opacity"
+          style={{ color: 'var(--theme-foreground)', opacity: 0.6 }}
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="p-3 border-b border-[var(--theme-border)]">
-        <div className="flex items-center gap-2 bg-[var(--theme-editor)] border border-[var(--theme-border)] rounded px-2 py-1.5">
-          <SearchIcon className="w-4 h-4 text-[#858585]" />
+      <div className="p-3 border-b" style={{ borderColor: 'var(--theme-border)' }}>
+        <div className="flex items-center gap-2 border rounded px-2 py-1.5" style={{ background: 'var(--theme-editor)', borderColor: 'var(--theme-border)' }}>
+          <SearchIcon className="w-4 h-4" style={{ color: 'var(--theme-foreground)', opacity: 0.6 }} />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search"
-            className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#858585]"
+            className="flex-1 bg-transparent text-sm outline-none"
+            style={{ color: 'var(--theme-foreground)' }}
             autoFocus
           />
         </div>
@@ -96,36 +98,45 @@ export const SearchPanel = ({ isOpen, onClose, onResultClick }: SearchPanelProps
 
       <div className="flex-1 overflow-y-auto">
         {isSearching ? (
-          <div className="p-4 text-center text-[#858585] text-sm">
+          <div className="p-4 text-center text-sm" style={{ color: 'var(--theme-foreground)', opacity: 0.6 }}>
             Searching...
           </div>
         ) : results.length === 0 && query ? (
-          <div className="p-4 text-center text-[#858585] text-sm">
+          <div className="p-4 text-center text-sm" style={{ color: 'var(--theme-foreground)', opacity: 0.6 }}>
             No results found
           </div>
         ) : results.length === 0 ? (
-          <div className="p-4 text-center text-[#858585] text-sm">
+          <div className="p-4 text-center text-sm" style={{ color: 'var(--theme-foreground)', opacity: 0.6 }}>
             Type to search across all files
           </div>
         ) : (
           <div className="text-xs">
-            <div className="px-3 py-2 text-[#858585] uppercase tracking-wider">
+            <div className="px-3 py-2 uppercase tracking-wider" style={{ color: 'var(--theme-foreground)', opacity: 0.6 }}>
               {results.length} result{results.length !== 1 ? 's' : ''} in {new Set(results.map(r => r.file)).size} file{new Set(results.map(r => r.file)).size !== 1 ? 's' : ''}
             </div>
             {results.map((result, index) => (
               <div
                 key={index}
-                className="px-3 py-2 hover:bg-[var(--theme-editor)] cursor-pointer border-l-2 border-transparent hover:border-[var(--theme-statusBar)] transition-colors"
+                className="px-3 py-2 cursor-pointer border-l-2 transition-colors"
+                style={{ borderColor: 'transparent' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--theme-editor)';
+                  e.currentTarget.style.borderColor = 'var(--theme-statusBar)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'transparent';
+                }}
                 onClick={() => {
                   onResultClick(result.file, result.line);
                   onClose();
                 }}
               >
-                <div className="text-[#cccccc] font-mono text-xs mb-1 truncate">
+                <div className="font-mono text-xs mb-1 truncate" style={{ color: 'var(--theme-foreground)' }}>
                   {result.file.split('/').pop()}
                 </div>
-                <div className="text-[#858585] text-xs">
-                  <span className="text-[#cccccc]">{result.line}</span>: {result.content}
+                <div className="text-xs" style={{ color: 'var(--theme-foreground)', opacity: 0.6 }}>
+                  <span style={{ opacity: 1 }}>{result.line}</span>: {result.content}
                 </div>
               </div>
             ))}

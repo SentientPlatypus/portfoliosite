@@ -372,50 +372,44 @@ const CodeEditorInner = () => {
             )}
           </div>
 
-          {/* Editor Content with Minimap */}
+          {/* Editor Content */}
           <div className="flex-1 flex overflow-hidden min-h-0">
-            {/* Line numbers */}
-            <div 
-              className="w-12 flex-shrink-0 overflow-y-auto select-none"
-              style={{ 
-                background: 'var(--theme-editor)',
-                borderRight: '1px solid var(--theme-border)',
-              }}
-            >
-              <div className="text-[#858585] text-xs text-right p-2 leading-6">
-                {Array.from({ length: 50 }, (_, i) => (
-                  <div key={i + 1}>{i + 1}</div>
-                ))}
-              </div>
-            </div>
-
-            {/* Main Editor */}
+            {/* Main Editor with Line Numbers */}
             <div 
               ref={editorRef}
               className="flex-1 overflow-auto vscode-scrollbar"
               style={{ background: 'var(--theme-editor)' }}
               onScroll={handleScroll}
             >
-              <FileContentRenderer
-                path={currentPath}
-                theme={theme}
-                onPictureClick={handlePictureClick}
-                onProjectClick={handleProjectClick}
-                viewMode={viewMode}
-                onTypingComplete={handleTypingComplete}
-              />
-            </div>
+              <div className="flex">
+                {/* Line numbers (scrolls with content) */}
+                <div 
+                  className="w-12 flex-shrink-0 select-none sticky left-0"
+                  style={{ 
+                    background: 'var(--theme-editor)',
+                    borderRight: '1px solid var(--theme-border)',
+                  }}
+                >
+                  <div className="text-xs text-right p-2 leading-6" style={{ color: 'var(--theme-foreground)', opacity: 0.4 }}>
+                    {Array.from({ length: 50 }, (_, i) => (
+                      <div key={i + 1}>{i + 1}</div>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Minimap */}
-            {!isMobile && contentHeight > containerHeight && (
-              <Minimap
-                content={currentPath}
-                scrollTop={scrollTop}
-                containerHeight={containerHeight}
-                contentHeight={contentHeight}
-                onScroll={handleMinimapScroll}
-              />
-            )}
+                {/* File Content */}
+                <div className="flex-1 min-w-0">
+                  <FileContentRenderer
+                    path={currentPath}
+                    theme={theme}
+                    onPictureClick={handlePictureClick}
+                    onProjectClick={handleProjectClick}
+                    viewMode={viewMode}
+                    onTypingComplete={handleTypingComplete}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Terminal */}

@@ -10,28 +10,28 @@ export const Breadcrumbs = ({ path, fileName, onNavigate }: BreadcrumbsProps) =>
   const parts = path.split('/').filter(Boolean);
   
   return (
-    <div className="h-7 bg-[var(--theme-editor)] border-b border-[var(--theme-border)] flex items-center px-4 text-xs text-[#cccccc] select-none">
+    <div className="h-7 border-b flex items-center px-4 text-xs select-none" style={{ background: 'var(--theme-breadcrumb)', borderColor: 'var(--theme-border)', color: 'var(--theme-foreground)' }}>
       {parts.length === 0 ? (
-        <span className="text-[#858585]">No file open</span>
+        <span style={{ opacity: 0.6 }}>No file open</span>
       ) : (
         <div className="flex items-center gap-1">
           {parts.map((part, index) => {
             const isLast = index === parts.length - 1;
             const pathToHere = '/' + parts.slice(0, index + 1).join('/');
-            // Use fileName for the last part if provided
             const displayPart = isLast && fileName ? fileName : part;
             
             return (
               <div key={index} className="flex items-center gap-1">
                 <button
                   onClick={() => onNavigate?.(pathToHere)}
-                  className={`hover:text-white transition-colors ${
-                    isLast ? 'text-white font-medium' : 'text-[#858585]'
+                  className={`hover:opacity-100 transition-opacity ${
+                    isLast ? 'font-medium' : ''
                   }`}
+                  style={{ opacity: isLast ? 1 : 0.6, color: 'var(--theme-foreground)' }}
                 >
                   {displayPart}
                 </button>
-                {!isLast && <ChevronRight className="w-3 h-3 text-[#858585]" />}
+                {!isLast && <ChevronRight className="w-3 h-3" style={{ opacity: 0.6 }} />}
               </div>
             );
           })}

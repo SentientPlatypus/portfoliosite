@@ -796,12 +796,18 @@ me.`
 
   const handleResizeStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsResizing(true);
+    
+    // Prevent text selection during drag
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'ns-resize';
     
     const startY = 'touches' in e ? e.touches[0].clientY : e.clientY;
     const startHeight = height;
     
     const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+      moveEvent.preventDefault();
       const currentY = 'touches' in moveEvent ? moveEvent.touches[0].clientY : moveEvent.clientY;
       const delta = startY - currentY;
       const newHeight = Math.min(Math.max(startHeight + delta, 150), 800);
@@ -811,6 +817,8 @@ me.`
     
     const handleEnd = () => {
       setIsResizing(false);
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
       document.removeEventListener('mousemove', handleMove);
       document.removeEventListener('mouseup', handleEnd);
       document.removeEventListener('touchmove', handleMove);
@@ -831,9 +839,18 @@ me.`
       style={{ height: `${height}px`, background: 'var(--theme-terminal)', borderColor: 'var(--theme-border)' }}
     >
       <div 
-        className="terminal-resize-handle h-1 bg-transparent hover:bg-[var(--theme-statusBar)] active:bg-[var(--theme-statusBar)] cursor-ns-resize"
+        className="h-1 cursor-ns-resize transition-colors group"
+        style={{ background: 'transparent' }}
         onMouseDown={handleResizeStart}
         onTouchStart={handleResizeStart}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'var(--theme-statusBar)';
+        }}
+        onMouseLeave={(e) => {
+          if (!isResizing) {
+            e.currentTarget.style.background = 'transparent';
+          }
+        }}
       />
       <div className="h-9 border-b flex items-center justify-between px-3" style={{ background: 'var(--theme-sidebar)', borderColor: 'var(--theme-border)' }}>
         <div className="flex items-center gap-2 text-[13px]" style={{ color: 'var(--theme-foreground)' }}>
