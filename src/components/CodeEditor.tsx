@@ -37,6 +37,14 @@ const CodeEditorInner = () => {
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'source' | 'preview'>('preview');
   const terminalPanelRef = useRef<ImperativePanelHandle>(null);
+  const lastTerminalSizeRef = useRef<number>((() => {
+    try {
+      const saved = localStorage.getItem('terminal-last-size');
+      return saved ? parseFloat(saved) : 35;
+    } catch {
+      return 35;
+    }
+  })());
   const [tabs, setTabs] = useState<Tab[]>(() => {
     // Returning visitors land on about.tsx
     const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
@@ -147,16 +155,26 @@ const CodeEditorInner = () => {
 
   // Handle terminal panel expand/collapse
   useEffect(() => {
-    if (terminalPanelRef.current) {
-      if (terminalOpen) {
+    if (terminalPanelRef.current && terminalOpen) {
+      // When opening, restore last known size
+      requestAnimationFrame(() => {
+        if (!terminalPanelRef.current) return;
+        
         const currentSize = terminalPanelRef.current.getSize();
-        if (currentSize === 0) {
-          // Only set default size if completely collapsed
-          terminalPanelRef.current.expand();
+        if (currentSize < 5) {
+          // Panel is collapsed - restore to last known size
+          const sizeToRestore = lastTerminalSizeRef.current;
+          terminalPanelRef.current.resize(sizeToRestore);
         }
-      } else {
-        terminalPanelRef.current.collapse();
+      });
+    } else if (terminalPanelRef.current && !terminalOpen) {
+      // Save current size before collapsing
+      const currentSize = terminalPanelRef.current.getSize();
+      if (currentSize > 5) {
+        lastTerminalSizeRef.current = currentSize;
+        localStorage.setItem('terminal-last-size', currentSize.toString());
       }
+      terminalPanelRef.current.collapse();
     }
   }, [terminalOpen]);
 
@@ -462,6 +480,12 @@ const CodeEditorInner = () => {
               collapsible={true}
               onCollapse={() => setTerminalOpen(false)}
               onExpand={() => setTerminalOpen(true)}
+              onResize={(size) => {
+                if (size > 5) {
+                  lastTerminalSizeRef.current = size;
+                  localStorage.setItem('terminal-last-size', size.toString());
+                }
+              }}
             >
               {terminalOpen && (
                 <IntegratedTerminal
