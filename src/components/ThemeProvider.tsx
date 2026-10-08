@@ -18,6 +18,16 @@ interface Theme {
     variable: string;
     method: string;
     type: string;
+    titleBar: string;
+    menuBar: string;
+    tab: string;
+    tabActive: string;
+    tabBorder: string;
+    tabActiveBorder: string;
+    breadcrumb: string;
+    terminal: string;
+    scrollbar: string;
+    scrollbarHover: string;
   };
 }
 
@@ -40,6 +50,16 @@ const themes: Record<string, Theme> = {
       variable: '#9cdcfe',
       method: '#dcdcaa',
       type: '#4ec9b0',
+      titleBar: '#323233',
+      menuBar: '#2d2d30',
+      tab: '#2d2d2e',
+      tabActive: '#1e1e1e',
+      tabBorder: '#252526',
+      tabActiveBorder: '#007acc',
+      breadcrumb: '#1e1e1e',
+      terminal: '#1e1e1e',
+      scrollbar: 'rgba(121, 121, 121, 0.4)',
+      scrollbarHover: 'rgba(121, 121, 121, 0.7)',
     },
   },
   'monokai': {
@@ -60,6 +80,16 @@ const themes: Record<string, Theme> = {
       variable: '#f8f8f2',
       method: '#a6e22e',
       type: '#66d9ef',
+      titleBar: '#1e1f1c',
+      menuBar: '#1e1f1c',
+      tab: '#1e1f1c',
+      tabActive: '#272822',
+      tabBorder: '#222218',
+      tabActiveBorder: '#f92672',
+      breadcrumb: '#272822',
+      terminal: '#1e1e1e',
+      scrollbar: 'rgba(154, 154, 154, 0.4)',
+      scrollbarHover: 'rgba(154, 154, 154, 0.7)',
     },
   },
   'github-dark': {
@@ -80,6 +110,16 @@ const themes: Record<string, Theme> = {
       variable: '#ffa657',
       method: '#d2a8ff',
       type: '#7ee787',
+      titleBar: '#161b22',
+      menuBar: '#1c2128',
+      tab: '#0d1117',
+      tabActive: '#161b22',
+      tabBorder: '#30363d',
+      tabActiveBorder: '#1f6feb',
+      breadcrumb: '#0d1117',
+      terminal: '#0d1117',
+      scrollbar: 'rgba(110, 118, 129, 0.4)',
+      scrollbarHover: 'rgba(110, 118, 129, 0.7)',
     },
   },
   'dracula': {
@@ -100,6 +140,16 @@ const themes: Record<string, Theme> = {
       variable: '#f8f8f2',
       method: '#50fa7b',
       type: '#8be9fd',
+      titleBar: '#1e1f29',
+      menuBar: '#21222c',
+      tab: '#21222c',
+      tabActive: '#282a36',
+      tabBorder: '#44475a',
+      tabActiveBorder: '#bd93f9',
+      breadcrumb: '#282a36',
+      terminal: '#282a36',
+      scrollbar: 'rgba(189, 147, 249, 0.3)',
+      scrollbarHover: 'rgba(189, 147, 249, 0.6)',
     },
   },
   'nord': {
@@ -120,6 +170,16 @@ const themes: Record<string, Theme> = {
       variable: '#d8dee9',
       method: '#88c0d0',
       type: '#8fbcbb',
+      titleBar: '#2e3440',
+      menuBar: '#2e3440',
+      tab: '#3b4252',
+      tabActive: '#2e3440',
+      tabBorder: '#3b4252',
+      tabActiveBorder: '#88c0d0',
+      breadcrumb: '#2e3440',
+      terminal: '#2e3440',
+      scrollbar: 'rgba(76, 86, 106, 0.4)',
+      scrollbarHover: 'rgba(76, 86, 106, 0.7)',
     },
   },
   'solarized-dark': {
@@ -140,6 +200,16 @@ const themes: Record<string, Theme> = {
       variable: '#93a1a1',
       method: '#b58900',
       type: '#cb4b16',
+      titleBar: '#002b36',
+      menuBar: '#073642',
+      tab: '#073642',
+      tabActive: '#002b36',
+      tabBorder: '#073642',
+      tabActiveBorder: '#268bd2',
+      breadcrumb: '#002b36',
+      terminal: '#002b36',
+      scrollbar: 'rgba(131, 148, 150, 0.3)',
+      scrollbarHover: 'rgba(131, 148, 150, 0.6)',
     },
   },
 };

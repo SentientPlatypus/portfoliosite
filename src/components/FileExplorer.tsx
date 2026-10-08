@@ -96,10 +96,22 @@ export const FileExplorer = ({ onFileSelect, selectedFile }: FileExplorerProps) 
     return (
       <div key={node.path}>
         <div
-          className={`flex items-center gap-1 py-0.5 px-2 cursor-pointer hover:bg-[#2a2d2e] text-[13px] ${
-            isSelected ? 'bg-[#37373d]' : ''
-          }`}
-          style={{ paddingLeft: `${level * 12 + 8}px` }}
+          className={`flex items-center gap-1 py-0.5 px-2 cursor-pointer text-[13px]`}
+          style={{ 
+            paddingLeft: `${level * 12 + 8}px`,
+            background: isSelected ? 'var(--theme-tabActive)' : 'transparent',
+            color: 'var(--theme-foreground)'
+          }}
+          onMouseEnter={(e) => {
+            if (!isSelected) {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isSelected) {
+              e.currentTarget.style.background = 'transparent';
+            }
+          }}
           onClick={() => {
             if (node.type === 'folder') {
               toggleFolder(node.path);
@@ -111,14 +123,14 @@ export const FileExplorer = ({ onFileSelect, selectedFile }: FileExplorerProps) 
           {node.type === 'folder' && (
             <span className="flex-shrink-0">
               {isExpanded ? 
-                <ChevronDown className="w-3 h-3 text-[#cccccc]" /> : 
-                <ChevronRight className="w-3 h-3 text-[#cccccc]" />
+                <ChevronDown className="w-3 h-3" style={{ color: 'var(--theme-foreground)' }} /> : 
+                <ChevronRight className="w-3 h-3" style={{ color: 'var(--theme-foreground)' }} />
               }
             </span>
           )}
           {node.type === 'file' && <span className="w-3" />}
           <span className="flex-shrink-0">{getFileIcon(node)}</span>
-          <span className={`truncate ${node.type === 'folder' ? 'text-[#cccccc] font-medium' : 'text-[#cccccc]'}`}>
+          <span className={`truncate ${node.type === 'folder' ? 'font-medium' : ''}`}>
             {node.name}
           </span>
         </div>
@@ -132,13 +144,13 @@ export const FileExplorer = ({ onFileSelect, selectedFile }: FileExplorerProps) 
   };
 
   return (
-    <div className="w-64 bg-[#252526] border-r border-[#2d2d30] flex flex-col h-full">
-      <div className="px-4 py-2 text-[11px] text-[#cccccc] uppercase font-semibold tracking-wider">
+    <div className="w-64 border-r flex flex-col h-full" style={{ background: 'var(--theme-sidebar)', borderColor: 'var(--theme-border)' }}>
+      <div className="px-4 py-2 text-[11px] uppercase font-semibold tracking-wider" style={{ color: 'var(--theme-foreground)' }}>
         Explorer
       </div>
-      <div className="flex-1 overflow-y-auto text-sm">
+      <div className="flex-1 overflow-y-auto text-sm scrollbar-hidden">
         <div className="px-2">
-          <div className="text-[11px] text-[#cccccc] uppercase font-semibold tracking-wider mb-1 px-2">
+          <div className="text-[11px] uppercase font-semibold tracking-wider mb-1 px-2" style={{ color: 'var(--theme-foreground)' }}>
             Portfolio
           </div>
           {fileTree.map(node => renderNode(node))}
@@ -147,3 +159,12 @@ export const FileExplorer = ({ onFileSelect, selectedFile }: FileExplorerProps) 
     </div>
   );
 };
+
+// Add this to your global CSS or index.css:
+// .scrollbar-hidden {
+//   -ms-overflow-style: none;  /* IE and Edge */
+//   scrollbar-width: none;  /* Firefox */
+// }
+// .scrollbar-hidden::-webkit-scrollbar {
+//   display: none;  /* Chrome, Safari, Opera */
+// }

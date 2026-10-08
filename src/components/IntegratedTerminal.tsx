@@ -28,6 +28,11 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
   const [currentPath, setCurrentPath] = useState('~/portfolio');
   const [isRunning, setIsRunning] = useState(false);
   const [runningCommand, setRunningCommand] = useState<string | null>(null);
+  const [height, setHeight] = useState(() => {
+    const saved = localStorage.getItem('terminal-height');
+    return saved ? parseInt(saved, 10) : 256;
+  });
+  const [isResizing, setIsResizing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
@@ -789,27 +794,66 @@ me.`
     }
   };
 
+  const handleResizeStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+    
+    const startY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    const startHeight = height;
+    
+    const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+      const currentY = 'touches' in moveEvent ? moveEvent.touches[0].clientY : moveEvent.clientY;
+      const delta = startY - currentY;
+      const newHeight = Math.min(Math.max(startHeight + delta, 150), 800);
+      setHeight(newHeight);
+      localStorage.setItem('terminal-height', newHeight.toString());
+    };
+    
+    const handleEnd = () => {
+      setIsResizing(false);
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleMove);
+      document.removeEventListener('touchend', handleEnd);
+    };
+    
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleEnd);
+    document.addEventListener('touchmove', handleMove);
+    document.addEventListener('touchend', handleEnd);
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="h-64 bg-[#1e1e1e] border-t border-[#2d2d30] flex flex-col">
-      <div className="h-9 bg-[#252526] border-b border-[#2d2d30] flex items-center justify-between px-3">
-        <div className="flex items-center gap-2 text-[13px] text-[#cccccc]">
+    <div 
+      className="border-t flex flex-col" 
+      style={{ height: `${height}px`, background: 'var(--theme-terminal)', borderColor: 'var(--theme-border)' }}
+    >
+      <div 
+        className="terminal-resize-handle h-1 bg-transparent hover:bg-[var(--theme-statusBar)] active:bg-[var(--theme-statusBar)] cursor-ns-resize"
+        onMouseDown={handleResizeStart}
+        onTouchStart={handleResizeStart}
+      />
+      <div className="h-9 border-b flex items-center justify-between px-3" style={{ background: 'var(--theme-sidebar)', borderColor: 'var(--theme-border)' }}>
+        <div className="flex items-center gap-2 text-[13px]" style={{ color: 'var(--theme-foreground)' }}>
           <TerminalIcon className="w-4 h-4" />
           <span>bash</span>
-          {isRunning && <span className="text-[#4ec9b0]">● running {runningCommand}</span>}
+          {isRunning && <span style={{ color: 'var(--theme-method)' }}>● running {runningCommand}</span>}
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setLines([])}
-            className="text-[#cccccc] hover:bg-[#2a2d2e] p-1 rounded"
+            className="hover:bg-[rgba(255,255,255,0.1)] p-1 rounded"
+            style={{ color: 'var(--theme-foreground)' }}
             title="Clear terminal"
           >
             <Square className="w-3 h-3" />
           </button>
           <button
             onClick={onClose}
-            className="text-[#cccccc] hover:bg-[#2a2d2e] p-1 rounded"
+            className="hover:bg-[rgba(255,255,255,0.1)] p-1 rounded"
+            style={{ color: 'var(--theme-foreground)' }}
             title="Close terminal"
           >
             <X className="w-3 h-3" />
@@ -819,7 +863,7 @@ me.`
 
       <div 
         ref={terminalRef} 
-        className="flex-1 overflow-y-auto p-2 font-mono text-[13px] cursor-text"
+        className="flex-1 overflow-y-auto p-2 font-mono text-[13px] cursor-text vscode-scrollbar"
         onClick={handleTerminalClick}
       >
         {lines.map((line, index) => {

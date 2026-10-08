@@ -397,6 +397,17 @@ const GitHubIcon = () => (
   </div>
 );
 
+interface GitHubPR {
+  title: string;
+  html_url: string;
+  state: string;
+  repository_url: string;
+  created_at: string;
+  closed_at: string | null;
+  merged_at: string | null;
+  number: number;
+}
+
 const GitHubWidget = ({
   isExpanded,
   onToggleExpand,
@@ -406,6 +417,38 @@ const GitHubWidget = ({
 }) => {
   const profile = useGitHubStats();
   const calendar = useContributionCalendar();
+  const [prs, setPrs] = useState<GitHubPR[]>([]);
+  const [prsLoading, setPrsLoading] = useState(false);
+  
+  useEffect(() => {
+    if (!isExpanded) return;
+    
+    const cachedPRs = sessionStorage.getItem('github-prs');
+    const cachedTime = sessionStorage.getItem('github-prs-time');
+    const now = Date.now();
+    
+    // Use cache if less than 5 minutes old
+    if (cachedPRs && cachedTime && (now - parseInt(cachedTime)) < 5 * 60 * 1000) {
+      setPrs(JSON.parse(cachedPRs));
+      return;
+    }
+    
+    setPrsLoading(true);
+    
+    fetch('https://api.github.com/search/issues?q=author:SentientPlatypus+type:pr&sort=created&order=desc&per_page=5')
+      .then(res => res.json())
+      .then(data => {
+        if (data.items) {
+          setPrs(data.items);
+          sessionStorage.setItem('github-prs', JSON.stringify(data.items));
+          sessionStorage.setItem('github-prs-time', now.toString());
+        }
+        setPrsLoading(false);
+      })
+      .catch(() => {
+        setPrsLoading(false);
+      });
+  }, [isExpanded]);
 
   const subtitle = calendar.isLoading ? (
     <Loading />
@@ -416,6 +459,17 @@ const GitHubWidget = ({
   ) : (
     `${profile.data?.publicRepos ?? 0} public repos`
   );
+  
+  const getRepoName = (repoUrl: string) => {
+    const parts = repoUrl.split('/');
+    return `${parts[parts.length - 2]}/${parts[parts.length - 1]}`;
+  };
+  
+  const getPRState = (pr: GitHubPR) => {
+    if (pr.merged_at) return { label: 'merged', color: 'text-purple-400' };
+    if (pr.state === 'closed') return { label: 'closed', color: 'text-red-400' };
+    return { label: 'open', color: 'text-green-400' };
+  };
 
   return (
     <Widget
@@ -507,6 +561,45 @@ const GitHubWidget = ({
             )}
           </>
         )}
+        
+        {prsLoading ? (
+          <div className="text-xs text-center py-2">
+            <Loading label="Loading pull requests..." />
+          </div>
+        ) : prs.length > 0 ? (
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+              Recent pull requests
+            </p>
+            {prs.map((pr) => {
+              const state = getPRState(pr);
+              return (
+                <a
+                  key={pr.html_url}
+                  href={pr.html_url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="flex flex-col gap-1 rounded px-1 py-1.5 text-xs text-foreground hover:bg-muted"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="truncate flex-1">{pr.title}</span>
+                    <span className={`shrink-0 text-[10px] font-medium ${state.color}`}>
+                      {state.label}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                    <span className="truncate">{getRepoName(pr.repository_url)}</span>
+                    <span>•</span>
+                    <span className="shrink-0">
+                      {timeAgo(new Date(pr.created_at))}
+                    </span>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
     </Widget>
   );
@@ -887,7 +980,7 @@ export const InteractiveInfo = () => {
     setExpandedWidget((current) => (current === id ? null : id));
 
   return (
-    <div className="space-y-4">
+    <div className="w-full max-w-[1200px] mx-auto space-y-4">
       <div className="flex flex-col md:flex-row md:items-start md:space-x-4 space-y-4 md:space-y-0">
         <div className="flex-1 order-2 md:order-1">
           <h2 className="text-lg font-semibold mb-2">Hey! I'm Gene</h2>

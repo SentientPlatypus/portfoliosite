@@ -16,7 +16,7 @@ export const ActivityBar = ({ activeView, onViewChange }: ActivityBarProps) => {
   ];
 
   return (
-    <div className="w-12 bg-[#333333] flex flex-col items-center py-2 border-r border-[#2d2d30]">
+    <div className="w-12 flex flex-col items-center py-2 border-r" style={{ background: 'var(--theme-activityBar)', borderColor: 'var(--theme-border)' }}>
       {items.map((item) => {
         const Icon = item.icon;
         const isActive = activeView === item.id;
@@ -27,16 +27,17 @@ export const ActivityBar = ({ activeView, onViewChange }: ActivityBarProps) => {
               <button
                 onClick={() => onViewChange(item.id)}
                 className={`w-12 h-12 flex items-center justify-center cursor-pointer transition-colors relative ${
-                  isActive ? 'text-white' : 'text-[#858585] hover:text-white'
+                  isActive ? '' : 'opacity-60 hover:opacity-100'
                 }`}
+                style={{ color: isActive ? 'var(--theme-foreground)' : 'var(--theme-foreground)' }}
               >
                 {isActive && (
-                  <div className="absolute left-0 w-0.5 h-full bg-white" />
+                  <div className="absolute left-0 w-0.5 h-full" style={{ background: 'var(--theme-statusBar)' }} />
                 )}
                 <Icon className="w-6 h-6" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="right" className="bg-[#2d2d30] text-white border-[#454545]">
+            <TooltipContent side="right" style={{ background: 'var(--theme-sidebar)', color: 'var(--theme-foreground)', borderColor: 'var(--theme-border)' }}>
               {item.label}
             </TooltipContent>
           </Tooltip>

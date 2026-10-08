@@ -14,6 +14,7 @@ import { BootAnimation } from './BootAnimation';
 import { SearchPanel } from './SearchPanel';
 import { ViewModeToggle } from './ViewModeToggle';
 import { GitGraphTimeline } from './GitGraphTimeline';
+import { Settings } from './Settings';
 import { X } from 'lucide-react';
 
 interface Tab {
@@ -30,6 +31,7 @@ const CodeEditorInner = () => {
   const [isExplorerOpen, setIsExplorerOpen] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isGitOpen, setIsGitOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'source' | 'preview'>('preview');
@@ -231,7 +233,7 @@ const CodeEditorInner = () => {
       {/* VS Code Title Bar */}
       <div 
         className="h-8 flex items-center px-2 select-none"
-        style={{ background: '#323233', borderBottom: '1px solid #2d2d30' }}
+        style={{ background: 'var(--theme-titleBar)', borderBottom: `1px solid var(--theme-border)` }}
       >
         <div className="flex items-center space-x-2">
           <div className="flex space-x-1.5">
@@ -239,7 +241,7 @@ const CodeEditorInner = () => {
             <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
             <div className="w-3 h-3 rounded-full bg-[#27ca3f]"></div>
           </div>
-          <span className="text-xs text-[#cccccc] ml-4 hidden sm:inline">
+          <span className="text-xs ml-4 hidden sm:inline" style={{ color: 'var(--theme-foreground)' }}>
             Gene's Portfolio - Visual Studio Code
           </span>
         </div>
@@ -248,16 +250,16 @@ const CodeEditorInner = () => {
       {/* Menu Bar */}
       <div 
         className="h-8 hidden md:flex items-center px-4"
-        style={{ background: '#2d2d30', borderBottom: '1px solid #2d2d30' }}
+        style={{ background: 'var(--theme-menuBar)', borderBottom: `1px solid var(--theme-border)` }}
       >
-        <div className="flex items-center space-x-4 text-xs text-[#cccccc]">
-          <span className="hover:text-white cursor-pointer">File</span>
-          <span className="hover:text-white cursor-pointer">Edit</span>
-          <span className="hover:text-white cursor-pointer">View</span>
-          <span className="hover:text-white cursor-pointer">Go</span>
-          <span className="hover:text-white cursor-pointer">Run</span>
-          <span className="hover:text-white cursor-pointer">Terminal</span>
-          <span className="hover:text-white cursor-pointer">Help</span>
+        <div className="flex items-center space-x-4 text-xs" style={{ color: 'var(--theme-foreground)' }}>
+          <span className="hover:opacity-80 cursor-pointer">File</span>
+          <span className="hover:opacity-80 cursor-pointer">Edit</span>
+          <span className="hover:opacity-80 cursor-pointer">View</span>
+          <span className="hover:opacity-80 cursor-pointer">Go</span>
+          <span className="hover:opacity-80 cursor-pointer">Run</span>
+          <span className="hover:opacity-80 cursor-pointer">Terminal</span>
+          <span className="hover:opacity-80 cursor-pointer">Help</span>
         </div>
       </div>
 
@@ -283,6 +285,13 @@ const CodeEditorInner = () => {
               setIsGitOpen(true);
               setIsExplorerOpen(false);
               setIsSearchOpen(false);
+              setIsSettingsOpen(false);
+            } else if (view === 'settings') {
+              setIsSettingsOpen(true);
+              handleFileSelect('/settings', 'Settings');
+              setIsExplorerOpen(false);
+              setIsSearchOpen(false);
+              setIsGitOpen(false);
             }
           }} />
         )}
@@ -308,10 +317,11 @@ const CodeEditorInner = () => {
         {isGitOpen && !isMobile && (
           <div className="w-80 bg-[var(--theme-sidebar)] border-r border-[var(--theme-border)] flex flex-col h-full overflow-y-auto">
             <div className="p-3 border-b border-[var(--theme-border)] flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-[#cccccc] uppercase tracking-wider">Source Control</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--theme-foreground)' }}>Source Control</h3>
               <button
                 onClick={() => setIsGitOpen(false)}
-                className="text-[#858585] hover:text-white transition-colors"
+                className="hover:opacity-80 transition-opacity"
+                style={{ color: 'var(--theme-foreground)' }}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -319,7 +329,7 @@ const CodeEditorInner = () => {
             <GitGraphTimeline />
           </div>
         )}
-
+        
         {/* Mobile Explorer Drawer */}
         {isExplorerOpen && isMobile && (
           <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setIsExplorerOpen(false)}>
@@ -382,7 +392,7 @@ const CodeEditorInner = () => {
             {/* Main Editor */}
             <div 
               ref={editorRef}
-              className="flex-1 overflow-auto"
+              className="flex-1 overflow-auto vscode-scrollbar"
               style={{ background: 'var(--theme-editor)' }}
               onScroll={handleScroll}
             >

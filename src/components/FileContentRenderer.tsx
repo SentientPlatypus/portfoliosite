@@ -8,6 +8,9 @@ import { GitGraphTimeline } from './GitGraphTimeline';
 import { TechTag } from './TechTag';
 import { ExternalLink, Github, FileText } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Settings } from './Settings';
 
 interface FileContentRendererProps {
   path: string;
@@ -21,6 +24,9 @@ interface FileContentRendererProps {
 export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClick, viewMode = 'preview', onTypingComplete }: FileContentRendererProps) => {
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
   const [animationStep, setAnimationStep] = useState<'dev' | 'me' | 'complete'>('dev');
+  const [readmeContent, setReadmeContent] = useState<string | null>(null);
+  const [readmeLoading, setReadmeLoading] = useState(false);
+  const [readmeError, setReadmeError] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,6 +41,39 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
         setShowWelcomeAnimation(false);
         setAnimationStep('complete');
       }
+    }
+  }, [path]);
+
+  useEffect(() => {
+    if (path === '/README.md') {
+      const cachedReadme = sessionStorage.getItem('github-readme');
+      const cachedTime = sessionStorage.getItem('github-readme-time');
+      const now = Date.now();
+      
+      // Use cache if less than 5 minutes old
+      if (cachedReadme && cachedTime && (now - parseInt(cachedTime)) < 5 * 60 * 1000) {
+        setReadmeContent(cachedReadme);
+        return;
+      }
+      
+      setReadmeLoading(true);
+      setReadmeError(false);
+      
+      fetch('https://raw.githubusercontent.com/SentientPlatypus/SentientPlatypus/main/README.md')
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch README');
+          return res.text();
+        })
+        .then(content => {
+          setReadmeContent(content);
+          sessionStorage.setItem('github-readme', content);
+          sessionStorage.setItem('github-readme-time', now.toString());
+          setReadmeLoading(false);
+        })
+        .catch(() => {
+          setReadmeError(true);
+          setReadmeLoading(false);
+        });
     }
   }, [path]);
 
@@ -156,6 +195,9 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
   };
 
   switch (path) {
+    case '/settings':
+      return <Settings isOpen={true} onClose={() => {}} />;
+      
     case '/me.rs':
       return renderMeRsContent();
       
@@ -384,26 +426,90 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
       );
       
     case '/README.md':
-    return (
-      <div className="p-8 prose prose-invert max-w-none">
-        <h1 className="text-3xl font-bold mb-4 text-[var(--theme-method)]">Portfolio Site</h1>
-        <p className="text-[var(--theme-foreground)] mb-4">
-          Interactive portfolio showcasing projects and experience.
-        </p>
-        <h2 className="text-2xl font-bold mb-3 mt-6 text-[var(--theme-type)]">Features</h2>
-        <ul className="list-disc list-inside space-y-2 text-[var(--theme-foreground)]">
-          <li>VS Code-inspired interface</li>
-          <li>File explorer navigation</li>
-          <li>Command palette (Cmd/Ctrl+P)</li>
-          <li>Integrated terminal</li>
-          <li>Multiple color themes</li>
-          <li>Fully responsive design</li>
-        </ul>
-        <h2 className="text-2xl font-bold mb-3 mt-6 text-[var(--theme-type)]">Tech Stack</h2>
-        <p className="text-[var(--theme-foreground)]">
-          Built with Vite + React + TypeScript + Tailwind + shadcn/ui
-        </p>
-      </div>
+      if (readmeLoading) {
+        return (
+          <div className="p-8 text-center">
+            <div className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent rounded-full text-[var(--theme-statusBar)]" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+            <p className="mt-4 text-[var(--theme-foreground)]">Loading GitHub README...</p>
+          </div>
+        );
+      }
+      
+      if (readmeError || !readmeContent) {
+        return (
+          <div className="p-8">
+            <div className="border border-[var(--theme-border)] rounded-lg p-6 bg-[var(--theme-sidebar)]">
+              <h2 className="text-xl font-bold mb-4 text-[var(--theme-method)]">Failed to load README</h2>
+              <p className="text-[var(--theme-foreground)] mb-4">
+                Could not fetch the README from GitHub. Please check your connection or try again later.
+              </p>
+              <a
+                href="https://github.com/SentientPlatypus/SentientPlatypus"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--theme-statusBar)] text-white rounded hover:opacity-90 transition-opacity"
+              >
+                <Github className="w-4 h-4" />
+                View on GitHub
+              </a>
+            </div>
+          </div>
+        );
+      }
+      
+      return (
+        <div className="p-8">
+          <div className="prose prose-invert max-w-none readme-content">
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              components={{
+                pre: ({ node, ...props }) => (
+                  <pre className="overflow-x-auto whitespace-pre font-mono text-xs leading-tight p-4 bg-[var(--theme-sidebar)] rounded border border-[var(--theme-border)]" {...props} />
+                ),
+                code: ({ node, inline, ...props }) => 
+                  inline ? (
+                    <code className="px-1 py-0.5 bg-[var(--theme-sidebar)] rounded text-[var(--theme-string)]" {...props} />
+                  ) : (
+                    <code className="font-mono text-xs" {...props} />
+                  ),
+                a: ({ node, ...props }) => (
+                  <a className="text-[var(--theme-statusBar)] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />
+                ),
+                h1: ({ node, ...props }) => (
+                  <h1 className="text-3xl font-bold mb-4 mt-6 text-[var(--theme-method)]" {...props} />
+                ),
+                h2: ({ node, ...props }) => (
+                  <h2 className="text-2xl font-bold mb-3 mt-6 text-[var(--theme-type)]" {...props} />
+                ),
+                h3: ({ node, ...props }) => (
+                  <h3 className="text-xl font-bold mb-2 mt-4 text-[var(--theme-type)]" {...props} />
+                ),
+                p: ({ node, ...props }) => (
+                  <p className="text-[var(--theme-foreground)] mb-4" {...props} />
+                ),
+                ul: ({ node, ...props }) => (
+                  <ul className="list-disc list-inside space-y-2 text-[var(--theme-foreground)] mb-4" {...props} />
+                ),
+                ol: ({ node, ...props }) => (
+                  <ol className="list-decimal list-inside space-y-2 text-[var(--theme-foreground)] mb-4" {...props} />
+                ),
+                li: ({ node, ...props }) => (
+                  <li className="text-[var(--theme-foreground)]" {...props} />
+                ),
+                blockquote: ({ node, ...props }) => (
+                  <blockquote className="border-l-4 border-[var(--theme-statusBar)] pl-4 italic text-[var(--theme-comment)] my-4" {...props} />
+                ),
+                img: ({ node, ...props }) => (
+                  <img className="max-w-full h-auto rounded border border-[var(--theme-border)]" {...props} />
+                ),
+              }}
+            >
+              {readmeContent}
+            </ReactMarkdown>
+          </div>
+        </div>
       );
       
     default:

@@ -138,6 +138,65 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* VS Code-style editor scrollbar */
+  .vscode-scrollbar {
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-scrollbar) transparent;
+  }
+  
+  .vscode-scrollbar:hover {
+    scrollbar-color: var(--theme-scrollbarHover) transparent;
+  }
+  
+  /* Chrome, Safari, Edge */
+  .vscode-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .vscode-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .vscode-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--theme-scrollbar);
+    border-radius: 0;
+    border: none;
+  }
+  
+  .vscode-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--theme-scrollbarHover);
+  }
+  
+  .vscode-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  
+  /* Terminal resize handle */
+  .terminal-resize-handle {
+    cursor: ns-resize;
+    user-select: none;
+    touch-action: none;
+  }
+  
+  .terminal-resize-handle:hover {
+    background: var(--theme-statusBar);
+  }
+  
+  .terminal-resize-handle:active {
+    background: var(--theme-statusBar);
+  }
 }
 
 @layer components {
