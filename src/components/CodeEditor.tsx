@@ -1,476 +1,563 @@
-import { useState, useEffect, useCallback } from 'react';
-import { TypewriterAnimation } from './TypewriterAnimation';
-import { Intellisense, IntellisenseContent } from './Intellisense';
-import { InteractiveInfo } from './InteractiveWidgets';
-import { ProjectsError } from './ProjectsError';
-import { PortfolioContent } from './PortfolioContent';
-import { WorkTimeline } from './WorkTimeline';
-import { PicturesSection } from './PicturesSection';
-import { AwardsSection } from './AwardsSection';
-import { FileText, Image, FileCode, Box } from 'lucide-react';
-import { RustIcon } from './RustIcon';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ActivityBar } from './ActivityBar';
+import { FileExplorer } from './FileExplorer';
+import { CommandPalette } from './CommandPalette';
+import { IntegratedTerminal } from './IntegratedTerminal';
+import { EnhancedStatusBar } from './EnhancedStatusBar';
+import { Breadcrumbs } from './Breadcrumbs';
+import { EditorTabs } from './EditorTabs';
+import { FileContentRenderer } from './FileContentRenderer';
+import { ThemeProvider, useTheme } from './ThemeProvider';
+import { Minimap } from './Minimap';
+import { BootAnimation } from './BootAnimation';
+import { SearchPanel } from './SearchPanel';
+import { ViewModeToggle } from './ViewModeToggle';
+import { GitGraphTimeline } from './GitGraphTimeline';
+import { Settings } from './Settings';
+import { X } from 'lucide-react';
+import { Panel, PanelGroup, PanelResizeHandle, ImperativePanelHandle } from 'react-resizable-panels';
 
-interface PictureTab {
+interface Tab {
   id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
+  path: string;
+  name: string;
+  isDirty: boolean;
 }
 
-export const CodeEditor = () => {
-  const [step, setStep] = useState<'typing-dev' | 'typing-me' | 'showing-intellisense'>('typing-dev');
-  const [showIntellisense, setShowIntellisense] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<any>(null);
-  const [hoveredOption, setHoveredOption] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<string>('me.rs');
-  const [artifactsGenerated, setArtifactsGenerated] = useState(false);
-  const [showPortfolioTab, setShowPortfolioTab] = useState(false);
-  const [isWorkComponentActive, setIsWorkComponentActive] = useState(false);
-  const [pictureTabs, setPictureTabs] = useState<PictureTab[]>([]);
-  const [showMobileMethodSelector, setShowMobileMethodSelector] = useState(false);
+const CodeEditorInner = () => {
+  const { theme, setTheme } = useTheme();
+  const [showBoot, setShowBoot] = useState(true);
+  const [activeView, setActiveView] = useState<'explorer' | 'search' | 'git' | 'settings' | 'terminal'>('explorer');
+  const [isExplorerOpen, setIsExplorerOpen] = useState(true);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isGitOpen, setIsGitOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'source' | 'preview'>('preview');
+  const terminalPanelRef = useRef<ImperativePanelHandle>(null);
+  const lastTerminalSizeRef = useRef<number>((() => {
+    try {
+      // Ignore missing, stale or tiny saved sizes; fall back to 35%
+      const saved = parseFloat(localStorage.getItem('terminal-last-size') ?? '');
+      return saved >= 15 && saved <= 70 ? saved : 35;
+    } catch {
+      return 35;
+    }
+  })());
+  // Remember the open terminal size (never a mid-drag value on the way to closing)
+  const isDraggingTerminalRef = useRef(false);
+  const rememberTerminalSize = (size: number) => {
+    if (size < 15) return;
+    lastTerminalSizeRef.current = size;
+    localStorage.setItem('terminal-last-size', size.toString());
+  };
+  const [tabs, setTabs] = useState<Tab[]>(() => {
+    // Returning visitors land on about.tsx
+    const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+    if (hasSeenWelcome) {
+      return [
+        { id: 'me.rs', path: '/me.rs', name: 'me.rs', isDirty: false },
+        { id: '/portfolio/about.tsx', path: '/portfolio/about.tsx', name: 'about.tsx', isDirty: false }
+      ];
+    }
+    return [{ id: 'me.rs', path: '/me.rs', name: 'me.rs', isDirty: false }];
+  });
+  const [activeTab, setActiveTab] = useState(() => {
+    const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+    return hasSeenWelcome ? '/portfolio/about.tsx' : 'me.rs';
+  });
+  const [lineNumber, setLineNumber] = useState(1);
+  const [columnNumber, setColumnNumber] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  const editorRef = useRef<HTMLDivElement>(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
 
-  const getFileIcon = (filename: string) => {
-    const extension = filename.split('.').pop()?.toLowerCase();
-    switch (extension) {
-      case 'rs':
-        return <RustIcon className="w-4 h-4 text-orange-500" />;
-      case 'ts':
-      case 'tsx':
-        return <FileCode className="w-4 h-4 text-blue-400" />;
-      case 'png':
-      case 'jpg':
-      case 'jpeg':
-      case 'gif':
-      case 'svg':
-        return <Image className="w-4 h-4 text-green-400" />;
-      default:
-        return <FileText className="w-4 h-4 text-muted-foreground" />;
+  useEffect(() => {
+    // Skip boot animation for returning visitors
+    const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+    if (hasSeenWelcome) {
+      setShowBoot(false);
+    }
+  }, []);
+
+  const handleBootComplete = () => {
+    sessionStorage.setItem('hasSeenBoot', 'true');
+    setShowBoot(false);
+  };
+
+  const handleTypingComplete = () => {
+    handleFileSelect('/portfolio/about.tsx', 'about.tsx');
+  };
+
+  const handleSearchResultClick = (path: string, name: string) => {
+    handleFileSelect(path, name);
+  };
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setIsExplorerOpen(false);
+        setIsSearchOpen(false);
+      }
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Command Palette: Cmd/Ctrl+P or Cmd/Ctrl+K
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'p' || e.key === 'k')) {
+        e.preventDefault();
+        setCommandPaletteOpen(true);
+      }
+      
+      // Toggle Terminal: Ctrl+`
+      if (e.ctrlKey && e.key === '`') {
+        e.preventDefault();
+        setTerminalOpen(prev => !prev);
+      }
+      
+      // Toggle Sidebar: Cmd/Ctrl+B
+      if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+        e.preventDefault();
+        setIsExplorerOpen(prev => !prev);
+      }
+      
+      // Toggle Search: Cmd/Ctrl+Shift+F
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'f') {
+        e.preventDefault();
+        setIsSearchOpen(prev => !prev);
+        setActiveView('search');
+      }
+      
+      // Close Tab: Cmd/Ctrl+W
+      if ((e.metaKey || e.ctrlKey) && e.key === 'w') {
+        e.preventDefault();
+        if (tabs.length > 1) {
+          handleTabClose(activeTab);
+        }
+      }
+      
+      // Next Tab: Cmd/Ctrl+Tab
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Tab') {
+        e.preventDefault();
+        const currentIndex = tabs.findIndex(t => t.id === activeTab);
+        const nextIndex = (currentIndex + 1) % tabs.length;
+        setActiveTab(tabs[nextIndex].id);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTab, tabs]);
+
+  // Handle terminal panel expand/collapse
+  useEffect(() => {
+    if (terminalPanelRef.current && terminalOpen) {
+      // When opening, restore last known size
+      // Use double requestAnimationFrame to ensure Panel is fully ready
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!terminalPanelRef.current) return;
+          
+          const currentSize = terminalPanelRef.current.getSize();
+          if (currentSize < 5) {
+            // Panel is collapsed - restore to last known size
+            const sizeToRestore = lastTerminalSizeRef.current;
+            terminalPanelRef.current.resize(sizeToRestore);
+          }
+        });
+      });
+    } else if (terminalPanelRef.current && !terminalOpen) {
+      // Save current size before collapsing
+      const currentSize = terminalPanelRef.current.getSize();
+      rememberTerminalSize(currentSize);
+      terminalPanelRef.current.collapse();
+    }
+  }, [terminalOpen]);
+
+  const handleFileSelect = (path: string, name: string) => {
+    const existingTab = tabs.find(t => t.path === path);
+    
+    if (existingTab) {
+      setActiveTab(existingTab.id);
+    } else {
+      const newTab: Tab = {
+        id: path,
+        path,
+        name,
+        isDirty: false
+      };
+      setTabs(prev => [...prev, newTab]);
+      setActiveTab(newTab.id);
+    }
+    
+    // Close explorer on mobile after selection
+    if (isMobile) {
+      setIsExplorerOpen(false);
+    }
+    
+    // Reset view mode to preview when opening a new file
+    setViewMode('preview');
+  };
+
+  const handleTabClose = (tabId: string) => {
+    if (tabs.length === 1) return; // Don't close the last tab
+    
+    const tabIndex = tabs.findIndex(t => t.id === tabId);
+    const newTabs = tabs.filter(t => t.id !== tabId);
+    setTabs(newTabs);
+    
+    // If closing active tab, switch to adjacent tab
+    if (activeTab === tabId) {
+      const newActiveIndex = Math.max(0, tabIndex - 1);
+      setActiveTab(newTabs[newActiveIndex].id);
     }
   };
 
   const handlePictureClick = (picture: { id: string; title: string; description: string; imageUrl: string }) => {
-    const existingTab = pictureTabs.find(tab => tab.id === picture.id);
-    if (!existingTab) {
-      setPictureTabs(prev => [...prev, picture]);
-    }
-    setActiveTab(picture.id);
+    handleFileSelect(`/picture/${picture.id}`, picture.title);
+  };
+  
+  const handleProjectClick = (project: any) => {
+    const fileName = `${project.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.md`;
+    handleFileSelect(`/projects/${project.id}`, fileName);
   };
 
-  const closePictureTab = (pictureId: string) => {
-    setPictureTabs(prev => prev.filter(tab => tab.id !== pictureId));
-    if (activeTab === pictureId) {
-      setActiveTab('me.rs');
-    }
-  };
+  const currentTab = tabs.find(t => t.id === activeTab);
+  const currentPath = currentTab?.path || '';
+  const currentLanguage = currentTab?.name.split('.').pop()?.toUpperCase() || 'TEXT';
 
-  const intellisenseOptions = [
-    {
-      id: 'info',
-      label: 'info',
-      content: <InteractiveInfo />
-    },
-    {
-      id: 'work',
-      label: 'work',
-      content: <WorkTimeline />
-    },
-    {
-      id: 'pictures',
-      label: 'pictures',
-      content: <PicturesSection onPictureClick={handlePictureClick} />
-    },
-    {
-      id: 'awards',
-      label: 'awards',
-      content: <AwardsSection />
-    },
-    {
-      id: 'contact',
-      label: 'contact',
-      content: `Get In Touch
-
-📧 Email: gjw62@cornell.edu
-📍 Location: Ithaca, NY
-
-Available for:
-• Freelance projects
-• Full-time opportunities
-• Collaboration on open source
-• Speaking at events
-
-Let's build something amazing together!`
-    }
-  ];
-
-  const intellisenseOptionsWithProjects = [
-    intellisenseOptions[0], // info
-    intellisenseOptions[1], // work
-    {
-      id: 'projects',
-      label: 'projects',
-      content: (
-        <ProjectsError 
-          onGenerateArtifacts={() => {
-            setArtifactsGenerated(true);
-            setShowPortfolioTab(true);
-            setActiveTab('portfolio.ts');
-          }}
-          artifactsGenerated={artifactsGenerated}
-          onGoToPortfolio={() => {
-            setShowPortfolioTab(true);
-            setActiveTab('portfolio.ts');
-          }}
-        />
-      )
-    },
-    ...intellisenseOptions.slice(2) // pictures, awards, contact
-  ];
-
-  // Set initial selected option
+  // Update scroll measurements
   useEffect(() => {
-    if (!selectedOption) {
-      setSelectedOption(intellisenseOptions[0]);
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const updateMeasurements = () => {
+      setContainerHeight(editor.clientHeight);
+      setContentHeight(editor.scrollHeight);
+    };
+
+    updateMeasurements();
+    const resizeObserver = new ResizeObserver(updateMeasurements);
+    resizeObserver.observe(editor);
+
+    return () => resizeObserver.disconnect();
+  }, [activeTab]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    setScrollTop(e.currentTarget.scrollTop);
+  };
+
+  const handleMinimapScroll = (position: number) => {
+    if (editorRef.current) {
+      editorRef.current.scrollTop = position;
     }
-  }, [selectedOption]);
-
-  const handleDevComplete = () => {
-    // Immediately shift up, then wait 500ms before starting next animation
-    setStep('typing-me');
-    setTimeout(() => {
-      setStep('typing-me');
-    }, 500);
   };
-
-  const handleMeComplete = () => {
-    setStep('showing-intellisense');
-    setTimeout(() => {
-      setShowIntellisense(true);
-    }, 300);
-  };
-
-  const handleSelectionChange = useCallback((option: typeof intellisenseOptionsWithProjects[0]) => {
-    setSelectedOption(option);
-  }, []);
-
-  const handleHoverChange = useCallback((option: typeof intellisenseOptionsWithProjects[0] | null) => {
-    setHoveredOption(option);
-  }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-mono flex flex-col">
+    <div 
+      className="h-screen flex flex-col font-mono overflow-hidden"
+      style={{
+        height: '100dvh',
+        background: `var(--theme-background)`,
+        color: `var(--theme-foreground)`,
+      }}
+    >
       {/* VS Code Title Bar */}
-      <div className="h-6 sm:h-8 bg-[#323233] border-b border-[#2d2d30] flex items-center px-2">
+      <div 
+        className="h-8 flex items-center px-2 select-none"
+        style={{ background: 'var(--theme-titleBar)', borderBottom: `1px solid var(--theme-border)` }}
+      >
         <div className="flex items-center space-x-2">
-          <div className="flex space-x-1">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#ff5f56]"></div>
-            <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#ffbd2e]"></div>
-            <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#27ca3f]"></div>
+          <div className="flex space-x-1.5">
+            <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#27ca3f]"></div>
           </div>
-          <span className="text-xs text-muted-foreground ml-2 sm:ml-4 hidden sm:inline">Visual Studio Code</span>
+          <span className="text-xs ml-4 hidden sm:inline" style={{ color: 'var(--theme-foreground)' }}>
+            Gene's Portfolio - Visual Studio Code
+          </span>
         </div>
       </div>
 
       {/* Menu Bar */}
-      <div className="h-6 sm:h-8 bg-[#2d2d30] border-b border-[#2d2d30] flex items-center px-2 hidden sm:flex">
-        <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-          <span className="hover:text-foreground cursor-pointer">File</span>
-          <span className="hover:text-foreground cursor-pointer">Edit</span>
-          <span className="hover:text-foreground cursor-pointer">View</span>
-          <span className="hover:text-foreground cursor-pointer">Go</span>
-          <span className="hover:text-foreground cursor-pointer">Run</span>
-          <span className="hover:text-foreground cursor-pointer">Terminal</span>
-          <span className="hover:text-foreground cursor-pointer">Help</span>
+      <div 
+        className="h-8 hidden md:flex items-center px-4"
+        style={{ background: 'var(--theme-menuBar)', borderBottom: `1px solid var(--theme-border)` }}
+      >
+        <div className="flex items-center space-x-4 text-xs" style={{ color: 'var(--theme-foreground)' }}>
+          <span className="hover:opacity-80 cursor-pointer">File</span>
+          <span className="hover:opacity-80 cursor-pointer">Edit</span>
+          <span className="hover:opacity-80 cursor-pointer">View</span>
+          <span className="hover:opacity-80 cursor-pointer">Go</span>
+          <span className="hover:opacity-80 cursor-pointer">Run</span>
+          <span className="hover:opacity-80 cursor-pointer">Terminal</span>
+          <span className="hover:opacity-80 cursor-pointer">Help</span>
         </div>
       </div>
 
-      {/* File Tabs */}
-      <div className="h-8 sm:h-9 bg-[#252526] border-b border-border flex items-center overflow-x-auto overflow-y-hidden">
-        <div 
-          className={`border-r border-border px-2 sm:px-4 py-2 text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2 cursor-pointer transition-colors shrink-0 ${
-            activeTab === 'me.rs' ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
-          }`}
-          onClick={() => setActiveTab('me.rs')}
-        >
-          {getFileIcon('me.rs')}
-          <span>me.rs</span>
-          <span className="text-muted-foreground hover:text-foreground cursor-pointer hidden sm:inline">×</span>
-        </div>
-        {showPortfolioTab && (
-          <div 
-            className={`border-r border-border px-2 sm:px-4 py-2 text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2 cursor-pointer transition-colors shrink-0 ${
-              activeTab === 'portfolio.ts' ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
-            }`}
-            onClick={() => setActiveTab('portfolio.ts')}
-          >
-            {getFileIcon('portfolio.ts')}
-            <span>portfolio.ts</span>
-            <span 
-              className="text-muted-foreground hover:text-foreground cursor-pointer hidden sm:inline"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowPortfolioTab(false);
-                if (activeTab === 'portfolio.ts') {
-                  setActiveTab('me.rs');
-                }
-              }}
-            >
-              ×
-            </span>
+      {/* Main Content Area */}
+      <div className="flex flex-1 overflow-hidden min-h-0">
+        {/* Activity Bar */}
+        {!isMobile && (
+          <ActivityBar activeView={activeView} onViewChange={(view) => {
+            setActiveView(view);
+            if (view === 'terminal') {
+              setTerminalOpen(true);
+              setIsSearchOpen(false);
+              setIsGitOpen(false);
+            } else if (view === 'explorer') {
+              setIsExplorerOpen(true);
+              setIsSearchOpen(false);
+              setIsGitOpen(false);
+            } else if (view === 'search') {
+              setIsSearchOpen(true);
+              setIsExplorerOpen(false);
+              setIsGitOpen(false);
+            } else if (view === 'git') {
+              setIsGitOpen(true);
+              setIsExplorerOpen(false);
+              setIsSearchOpen(false);
+              setIsSettingsOpen(false);
+            } else if (view === 'settings') {
+              setIsSettingsOpen(true);
+              handleFileSelect('/settings', 'Settings');
+              setIsExplorerOpen(false);
+              setIsSearchOpen(false);
+              setIsGitOpen(false);
+            }
+          }} />
+        )}
+
+        {/* File Explorer Sidebar */}
+        {isExplorerOpen && !isMobile && (
+          <FileExplorer
+            onFileSelect={handleFileSelect}
+            selectedFile={currentPath}
+          />
+        )}
+        
+        {/* Search Panel */}
+        {isSearchOpen && !isMobile && (
+          <SearchPanel
+            isOpen={isSearchOpen}
+            onClose={() => setIsSearchOpen(false)}
+            onResultClick={handleSearchResultClick}
+          />
+        )}
+        
+        {/* Git Panel */}
+        {isGitOpen && !isMobile && (
+          <div className="w-80 bg-[var(--theme-sidebar)] border-r border-[var(--theme-border)] flex flex-col h-full overflow-y-auto">
+            <div className="p-3 border-b border-[var(--theme-border)] flex items-center justify-between">
+              <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--theme-foreground)' }}>Source Control</h3>
+              <button
+                onClick={() => setIsGitOpen(false)}
+                className="hover:opacity-80 transition-opacity"
+                style={{ color: 'var(--theme-foreground)' }}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <GitGraphTimeline />
           </div>
         )}
-        {pictureTabs.map((pictureTab) => (
-          <div 
-            key={pictureTab.id}
-            className={`border-r border-border px-2 sm:px-4 py-2 text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2 cursor-pointer transition-colors shrink-0 ${
-              activeTab === pictureTab.id ? 'bg-[#1e1e1e] text-foreground' : 'bg-[#252526] text-muted-foreground hover:text-foreground'
-            }`}
-            onClick={() => setActiveTab(pictureTab.id)}
-          >
-            {getFileIcon(pictureTab.title)}
-            <span>{pictureTab.title}</span>
-            <span 
-              className="text-muted-foreground hover:text-foreground cursor-pointer hidden sm:inline"
-              onClick={(e) => {
-                e.stopPropagation();
-                closePictureTab(pictureTab.id);
-              }}
+        
+        {/* Mobile Explorer Drawer */}
+        {isExplorerOpen && isMobile && (
+          <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setIsExplorerOpen(false)}>
+            <div 
+              className="w-64 h-full bg-[var(--theme-sidebar)] shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
             >
-              ×
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Main Editor Area */}
-      <div className="flex-1 flex">
-        {/* Line numbers */}
-        <div className="w-8 sm:w-12 bg-[#1e1e1e] border-r border-border">
-          <div className="text-editor-line-number text-sm p-2" style={{ lineHeight: '1.75rem' }}>
-            {/* Line numbers transition based on animation step */}
-            <div className={`transition-all duration-300 ${step === 'typing-dev' ? 'mt-[35vh] -translate-y-6' : ''}`}>
-              1
+              <div className="h-14 flex items-center justify-between px-4 border-b border-[var(--theme-border)]">
+                <span className="font-semibold text-[#cccccc]">Explorer</span>
+                <button onClick={() => setIsExplorerOpen(false)}>
+                  <X className="w-5 h-5 text-[#cccccc]" />
+                </button>
+              </div>
+              <FileExplorer
+                onFileSelect={handleFileSelect}
+                selectedFile={currentPath}
+              />
             </div>
-            {(step === 'typing-me' || step === 'showing-intellisense') && (
-              <div className="transition-all duration-300">
-                2
+          </div>
+        )}
+
+        {/* Editor Area */}
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+          {/* Tabs */}
+          <EditorTabs
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabClick={setActiveTab}
+            onTabClose={handleTabClose}
+          />
+
+          {/* Breadcrumbs */}
+          <div className="flex items-center justify-between">
+            <Breadcrumbs path={currentPath} fileName={currentTab?.name} />
+            {/* View Mode Toggle for applicable files */}
+            {(currentPath.includes('.tsx') || currentPath.includes('.md')) && (
+              <div className="pr-4">
+                <ViewModeToggle mode={viewMode} onModeChange={setViewMode} />
               </div>
             )}
           </div>
-        </div>
 
-        {/* Editor Content */}
-        <div className="flex-1 bg-[#1e1e1e] relative overflow-hidden">
-          <div className="absolute inset-0 overflow-y-auto p-2 sm:p-4">
-          {activeTab === 'me.rs' ? (
-            <>
-              {/* Dev declaration typing animation - starts in middle of screen */}
-              <div className={`text-sm sm:text-lg transition-all duration-300 ${
-                step === 'typing-dev' ? 'mt-[30vh] sm:mt-[35vh] -translate-y-6' : ''
-              }`} style={{ lineHeight: '1.5rem sm:1.75rem' }}>
-                {step === 'typing-dev' && (
-                  <TypewriterAnimation
-                    text='let mut me = Dev{name: String::from("Gene"), age: 19};'
-                    delay={38}
-                    onComplete={handleDevComplete}
-                    className="syntax-variable"
-                  />
-                )}
-                {(step === 'typing-me' || step === 'showing-intellisense') && (
-                  <>
-                    <span className="syntax-keyword">let</span>{' '}
-                    <span className="syntax-mut">mut</span>{' '}
-                    <span className="syntax-variable">me</span>{' '}
-                    <span className="text-white">=</span>{' '}
-                    <span className="syntax-type">Dev</span>
-                    <span className="text-white">{'{'}</span>
-                    <span className="text-orange-400">name</span>
-                    <span className="text-white">:</span>{' '}
-                    <span className="syntax-type">String</span>
-                    <span className="text-white">::</span>
-                    <span className="syntax-method">from</span>
-                    <span className="text-white">(</span>
-                    <span className="syntax-string">"Gene"</span>
-                    <span className="text-white">)</span>
-                    <span className="text-white">,</span>{' '}
-                    <span className="text-orange-400">age</span>
-                    <span className="text-white">:</span>{' '}
-                    <span className="syntax-number">19</span>
-                    <span className="text-white">{'}'}</span>
-                    <span className="text-white">;</span>
-                  </>
-                )}
-              </div>
-
-              {/* Me typing animation - appears on next line after delay */}
-              {(step === 'typing-me' || step === 'showing-intellisense') && (
-                <div className="text-sm sm:text-lg" style={{ lineHeight: '1.5rem sm:1.75rem' }}>
-                  {step === 'typing-me' && (
-                    <TypewriterAnimation
-                      text="me."
-                      delay={71}
-                      onComplete={handleMeComplete}
-                      className="syntax-variable"
-                    />
-                  )}
-                  {step === 'showing-intellisense' && selectedOption && (
-                    <div className="relative sm:relative static">
-                      {/* Desktop: show code text. Mobile: hide it since we use full-screen layout */}
-                      <span className="syntax-variable hidden sm:inline">me</span>
-                      <span className="text-white hidden sm:inline">.</span>
-                      <span className="syntax-method hidden sm:inline">
-                        {selectedOption.label}()
-                      </span>
-                      
-                      {/* Desktop Intellisense tooltips */}
-                      {showIntellisense && (
-                        <>
-                          {/* Desktop Layout */}
-                          <div className="absolute top-6 left-4 hidden sm:flex z-10">
-                            <Intellisense
-                              options={intellisenseOptionsWithProjects}
-                              onSelectionChange={handleSelectionChange}
-                              onHoverChange={handleHoverChange}
-                              isWorkComponentActive={isWorkComponentActive}
-                              onSetWorkComponentActive={setIsWorkComponentActive}
-                            />
-                            <IntellisenseContent
-                              content={selectedOption.content}
-                              className="w-[60vw] min-w-96"
-                              isWorkSelected={selectedOption.id === 'work' && isWorkComponentActive}
-                              onWorkNavigationRequest={(direction) => {
-                                if (direction === 'left') {
-                                  setIsWorkComponentActive(false);
-                                }
-                              }}
-                            />
-                          </div>
-
-                          {/* Mobile Layout - uses fixed positioning to span full viewport */}
-                          <div className="sm:hidden fixed inset-0 top-[88px] bottom-[24px] z-20 pointer-events-none">
-                            {/* Mobile Method Selector Button */}
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setShowMobileMethodSelector(!showMobileMethodSelector);
-                              }}
-                              onTouchEnd={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setShowMobileMethodSelector(!showMobileMethodSelector);
-                              }}
-                              className="absolute top-2 right-4 bg-[#2d2d30] border border-border rounded px-3 py-2 text-xs text-foreground hover:bg-[#3c3c3c] active:bg-[#3c3c3c] transition-colors touch-manipulation pointer-events-auto"
-                            >
-                              {selectedOption.label}() ▼
-                            </button>
-
-                            {/* Mobile Method Selector Overlay */}
-                            {showMobileMethodSelector && (
-                              <div className="absolute top-2 left-4 right-4 z-30 pointer-events-auto">
-                                <div className="intellisense-bg rounded shadow-lg p-1 min-w-48">
-                                  <div className="text-xs text-muted-foreground px-2 py-1 border-b border-border">
-                                    methods
-                                  </div>
-                                  {intellisenseOptionsWithProjects.map((option, index) => (
-                                    <div
-                                      key={option.id}
-                                      className={`flex items-center px-2 py-1 cursor-pointer text-sm ${
-                                        selectedOption.id === option.id ? 'intellisense-selected' : 'hover:bg-muted/50'
-                                      }`}
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        handleSelectionChange(option);
-                                        setShowMobileMethodSelector(false);
-                                      }}
-                                      onTouchEnd={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        handleSelectionChange(option);
-                                        setShowMobileMethodSelector(false);
-                                      }}
-                                    >
-                                      <Box className="w-4 h-4 mr-2 text-blue-400" />
-                                      <span className="text-[13px]">{option.label}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Mobile Content Display */}
-                            {!showMobileMethodSelector && (
-                              <div className="absolute top-12 left-2 right-2 bottom-0 overflow-y-auto overscroll-contain pointer-events-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-                                <IntellisenseContent
-                                  content={selectedOption.content}
-                                  className="w-full"
-                                  isWorkSelected={selectedOption.id === 'work' && isWorkComponentActive}
-                                  onWorkNavigationRequest={(direction) => {
-                                    if (direction === 'left') {
-                                      setIsWorkComponentActive(false);
-                                    }
-                                  }}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </>
-                      )}
+          {/* Editor Content and Terminal with Resizable Panels */}
+          <PanelGroup direction="vertical" className="flex-1" id="editor-terminal-group" autoSaveId="editor-terminal-layout">
+            <Panel 
+              defaultSize={terminalOpen ? 60 : 100} 
+              minSize={30} 
+              id="editor-panel"
+              order={1}
+            >
+              <div className="h-full flex overflow-hidden">
+                {/* Main Editor with Line Numbers */}
+                <div 
+                  ref={editorRef}
+                  className="flex-1 overflow-auto vscode-scrollbar"
+                  style={{ background: 'var(--theme-editor)' }}
+                  onScroll={handleScroll}
+                >
+                  <div className="flex">
+                    {/* Line numbers (scrolls with content) */}
+                    <div 
+                      className="w-12 flex-shrink-0 select-none sticky left-0"
+                      style={{ 
+                        background: 'var(--theme-editor)',
+                        borderRight: '1px solid var(--theme-border)',
+                      }}
+                    >
+                      <div className="text-xs text-right p-2 leading-6" style={{ color: 'var(--theme-foreground)', opacity: 0.4 }}>
+                        {Array.from({ length: 50 }, (_, i) => (
+                          <div key={i + 1}>{i + 1}</div>
+                        ))}
+                      </div>
                     </div>
-                  )}
+
+                    {/* File Content */}
+                    <div className="flex-1 min-w-0">
+                      <FileContentRenderer
+                        path={currentPath}
+                        theme={theme}
+                        onPictureClick={handlePictureClick}
+                        onProjectClick={handleProjectClick}
+                        viewMode={viewMode}
+                        onTypingComplete={handleTypingComplete}
+                      />
+                    </div>
+                  </div>
                 </div>
+              </div>
+            </Panel>
+
+            {/* Terminal Panel - Always in PanelGroup */}
+            <PanelResizeHandle 
+              id="terminal-resize-handle"
+              style={{ 
+                height: '8px',
+                minHeight: '8px',
+                background: 'var(--theme-border)',
+                cursor: 'ns-resize',
+                userSelect: 'none',
+                position: 'relative',
+                zIndex: 10
+              }}
+              className="hover:bg-[var(--theme-statusBar)] transition-colors"
+              hitAreaMargins={{ coarse: 15, fine: 10 }}
+              onDragging={(dragging) => {
+                isDraggingTerminalRef.current = dragging;
+                // Save where the drag ended; if it was dragged shut, keep the pre-drag size
+                if (!dragging) rememberTerminalSize(terminalPanelRef.current?.getSize() ?? 0);
+              }}
+            />
+            <Panel 
+              ref={terminalPanelRef}
+              defaultSize={0} 
+              minSize={15}
+              collapsedSize={0}
+              maxSize={70} 
+              id="terminal-panel"
+              order={2}
+              collapsible={true}
+              onCollapse={() => setTerminalOpen(false)}
+              onExpand={() => setTerminalOpen(true)}
+              onResize={(size) => {
+                if (!isDraggingTerminalRef.current) rememberTerminalSize(size);
+              }}
+            >
+              {terminalOpen && (
+                <IntegratedTerminal
+                  isOpen={terminalOpen}
+                  onClose={() => setTerminalOpen(false)}
+                  onFileOpen={handleFileSelect}
+                  onThemeChange={setTheme}
+                />
               )}
-            </>
-          ) : activeTab === 'portfolio.ts' ? (
-            <PortfolioContent />
-          ) : (
-            // Picture tab content
-            (() => {
-              const pictureTab = pictureTabs.find(tab => tab.id === activeTab);
-              return pictureTab ? (
-                <div className="flex flex-col h-full p-2 sm:p-4">
-                  <div className="mb-4">
-                    <h2 className="text-lg sm:text-xl font-semibold mb-2 text-foreground">{pictureTab.title}</h2>
-                    <p className="text-sm text-muted-foreground">{pictureTab.description}</p>
-                  </div>
-                  <div className="flex-1 flex items-center justify-center">
-                    <img 
-                      src={pictureTab.imageUrl} 
-                      alt={pictureTab.title}
-                      className="max-w-full max-h-full object-contain rounded-lg border border-border"
-                    />
-                  </div>
-                </div>
-              ) : null;
-            })()
-          )}
-          </div>
+            </Panel>
+          </PanelGroup>
         </div>
       </div>
 
-      {/* VS Code Status Bar */}
-      <div className="h-6 bg-[#007ACC] flex items-center justify-between px-2 sm:px-4 text-xs text-white shrink-0">
-        <div className="flex items-center space-x-2 sm:space-x-4">
-          <span>Rust</span>
-          <span className="hidden sm:inline">UTF-8</span>
-          <span className="hidden sm:inline">LF</span>
-          <span>Ln 3, Col 18</span>
-        </div>
-        <div className="flex items-center space-x-2 sm:space-x-4">
-          <span className="hidden sm:inline">✓ Prettier</span>
-          <span>⚡ Auto Save</span>
-        </div>
-      </div>
+      {/* Status Bar */}
+      <EnhancedStatusBar
+        currentFile={currentTab?.name || ''}
+        lineNumber={lineNumber}
+        columnNumber={columnNumber}
+        language={currentLanguage}
+        theme={theme.name}
+      />
 
-      {/* Footer with instructions - hidden on mobile */}
-      {showIntellisense && activeTab === 'me.rs' && (
-        <div className="hidden sm:block absolute bottom-8 left-16 text-sm text-muted-foreground">
-          {isWorkComponentActive ? 
-            'Use ↑↓ to navigate work experiences • ← to return to methods' : 
-            'Use ↑↓ arrow keys to navigate • → to enter work mode'
-          }
-        </div>
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        onFileOpen={handleFileSelect}
+        onThemeChange={setTheme}
+        onTerminalOpen={() => setTerminalOpen(true)}
+        currentTheme={theme.id}
+      />
+
+      {/* Mobile FAB for command palette */}
+      {isMobile && !commandPaletteOpen && (
+        <button
+          onClick={() => setCommandPaletteOpen(true)}
+          className="fixed bottom-20 right-4 w-14 h-14 rounded-full bg-[var(--theme-statusBar)] text-white shadow-lg flex items-center justify-center z-30"
+        >
+          <span className="text-2xl">⌘</span>
+        </button>
+      )}
+
+      {/* Mobile menu button */}
+      {isMobile && !isExplorerOpen && (
+        <button
+          onClick={() => setIsExplorerOpen(true)}
+          className="fixed bottom-4 right-4 w-14 h-14 rounded-full bg-[var(--theme-statusBar)] text-white shadow-lg flex items-center justify-center z-30"
+        >
+          <span className="text-xl">☰</span>
+        </button>
       )}
     </div>
+  );
+};
+
+export const CodeEditor = () => {
+  return (
+    <ThemeProvider>
+      <CodeEditorInner />
+    </ThemeProvider>
   );
 };

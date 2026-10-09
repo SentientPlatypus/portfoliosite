@@ -5,21 +5,34 @@ import { SOCIAL, publicDataUrl } from './socialConfig';
 /* -------------------------------------------------------------------------- */
 
 async function getJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init);
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText} — ${url}`);
-  return (await res.json()) as T;
+  try {
+    const res = await fetch(url, init);
+    if (!res.ok) {
+      throw new Error(`${res.status} ${res.statusText} — ${url}`);
+    }
+    return (await res.json()) as T;
+  } catch (error) {
+    // Only log network errors, not HTTP errors (those are logged by firstOk)
+    if (error instanceof TypeError) {
+      console.warn(`Network error fetching ${url}:`, error.message);
+    }
+    throw error;
+  }
 }
 
 /** Tries each loader in order and returns the first one that resolves. */
 async function firstOk<T>(loaders: Array<() => Promise<T>>): Promise<T> {
-  let lastError: unknown;
+  const errors: unknown[] = [];
   for (const load of loaders) {
     try {
       return await load();
     } catch (error) {
-      lastError = error;
+      errors.push(error);
     }
   }
+  // Only log once at the end if all loaders failed
+  const lastError = errors[errors.length - 1];
+  console.warn(`All ${errors.length} loader(s) failed. Last error:`, lastError);
   throw lastError instanceof Error ? lastError : new Error('All sources failed');
 }
 
@@ -387,6 +400,17 @@ function fetchLatestVideo(channelId: string): Promise<YouTubeVideo | null> {
         publishedAt: new Date(entry.querySelector('published')?.textContent ?? Date.now()),
       };
     },
+    // Final fallback: return static placeholder
+    async () => {
+      console.warn('YouTube feed fetch failed, using fallback');
+      return {
+        id: '',
+        title: 'Latest Video',
+        url: `https://www.youtube.com/channel/${channelId}`,
+        thumbnail: '',
+        publishedAt: new Date(),
+      };
+    },
   ]);
 }
 
@@ -430,26 +454,31 @@ interface SpotifySnapshot {
 export async function fetchSpotifyTrack(): Promise<SpotifyTrack> {
   return firstOk<SpotifyTrack>([
     async () => {
-      const snapshot = await getJson<SpotifySnapshot>(
-        `${publicDataUrl('spotify.json')}?t=${Date.now()}`,
-        { cache: 'no-store' },
-      );
-      const track = snapshot.track;
-      if (!track?.id) throw new Error('Snapshot has no track');
+      try {
+        const snapshot = await getJson<SpotifySnapshot>(
+          `${publicDataUrl('spotify.json')}?t=${Date.now()}`,
+          { cache: 'no-store' },
+        );
+        const track = snapshot.track;
+        if (!track?.id) throw new Error('Snapshot has no track');
 
-      return {
-        id: track.id,
-        name: track.name,
-        artists: track.artists,
-        album: track.album ?? null,
-        albumImage: track.albumImage ?? null,
-        url: track.url ?? `https://open.spotify.com/track/${track.id}`,
-        durationMs: track.durationMs ?? null,
-        progressMs: track.progressMs ?? null,
-        isPlaying: Boolean(snapshot.isPlaying),
-        source: snapshot.source ?? 'now-playing',
-        updatedAt: snapshot.updatedAt ? new Date(snapshot.updatedAt) : null,
-      };
+        return {
+          id: track.id,
+          name: track.name,
+          artists: track.artists,
+          album: track.album ?? null,
+          albumImage: track.albumImage ?? null,
+          url: track.url ?? `https://open.spotify.com/track/${track.id}`,
+          durationMs: track.durationMs ?? null,
+          progressMs: track.progressMs ?? null,
+          isPlaying: Boolean(snapshot.isPlaying),
+          source: snapshot.source ?? 'now-playing',
+          updatedAt: snapshot.updatedAt ? new Date(snapshot.updatedAt) : null,
+        };
+      } catch (error) {
+        // Suppress repeated errors for missing spotify.json
+        throw error;
+      }
     },
     // No snapshot yet: fall back to the pinned track, hydrated through the
     // keyless oEmbed endpoint so the artwork and title stay correct.
@@ -465,6 +494,23 @@ export async function fetchSpotifyTrack(): Promise<SpotifyTrack> {
         artists,
         album: null,
         albumImage: data.thumbnail_url ?? null,
+        url: `https://open.spotify.com/track/${id}`,
+        durationMs: null,
+        progressMs: null,
+        isPlaying: false,
+        source: 'pinned',
+        updatedAt: null,
+      };
+    },
+    // Final fallback: static data
+    async () => {
+      const { id, artists } = SOCIAL.spotify.fallbackTrack;
+      return {
+        id,
+        name: 'Pinned Track',
+        artists,
+        album: null,
+        albumImage: null,
         url: `https://open.spotify.com/track/${id}`,
         durationMs: null,
         progressMs: null,

@@ -100,7 +100,7 @@ const getIcon = (iconType: string) => {
   }
 };
 export const AwardsSection = () => {
-  return <div className="p-4 h-full overflow-y-auto">
+  return <div className="p-6">
       <div className="max-w-4xl">
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-2 text-left">Awards & Recognition</h2>
@@ -108,38 +108,33 @@ export const AwardsSection = () => {
         </p>
         </div>
         
-        <div className="relative pr-4" style={{
-        maxHeight: '60vh',
-        overflowY: 'auto'
-      }}>
-          <div className="space-y-4">
-            {awards.map(award => (
-              <a 
-                key={award.id} 
-                href={award.link} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block border border-border rounded-lg p-4 bg-card hover:border-primary/50 hover:bg-card/80 transition-all duration-200 cursor-pointer group"
-              >
-                <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 mt-1">
-                    {getIcon(award.icon)}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-semibold text-yellow-400 group-hover:text-yellow-300 transition-colors">{award.title}</h3>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-purple-400 font-medium">{award.year}</span>
-                        <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </div>
-                    </div>
-                    <p className="text-sm text-primary font-medium mb-2">{award.organization}</p>
-                    <p className="text-sm text-muted-foreground">{award.description}</p>
-                  </div>
+        <div className="space-y-4">
+          {awards.map(award => (
+            <a 
+              key={award.id} 
+              href={award.link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block border border-border rounded-lg p-4 bg-card hover:border-primary/50 hover:bg-card/80 transition-all duration-200 cursor-pointer group"
+            >
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 mt-1">
+                  {getIcon(award.icon)}
                 </div>
-              </a>
-            ))}
-          </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="font-semibold text-yellow-400 group-hover:text-yellow-300 transition-colors">{award.title}</h3>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-purple-400 font-medium">{award.year}</span>
+                      <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-primary font-medium mb-2">{award.organization}</p>
+                  <p className="text-sm text-muted-foreground">{award.description}</p>
+                </div>
+              </div>
+            </a>
+          ))}
         </div>
       </div>
     </div>;
