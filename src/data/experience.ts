@@ -13,7 +13,7 @@ export const experiences: Experience[] = [
   {
     id: 'aws-sde-intern-2026',
     title: 'SDE Intern',
-    company: 'Amazon Web Services (AWS)',
+    company: 'AWS Secrets Manager',
     period: 'May 2026 – Aug 2026',
     location: 'Seattle, WA',
     type: 'internship',
@@ -21,7 +21,7 @@ export const experiences: Experience[] = [
   {
     id: 'aws-sde-intern-2025',
     title: 'SDE Intern',
-    company: 'Amazon Web Services (AWS)',
+    company: 'AWS Cryptography',
     period: 'May 2025 – Aug 2025',
     location: 'Seattle, WA',
     type: 'internship',
