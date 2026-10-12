@@ -270,6 +270,11 @@ const CodeEditorInner = () => {
       className="h-screen flex flex-col font-mono overflow-hidden"
       style={{
         height: '100dvh',
+        // Keep chrome clear of the notch / home indicator (0 on desktop)
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)',
         background: `var(--theme-background)`,
         color: `var(--theme-foreground)`,
       }}
@@ -435,13 +440,13 @@ const CodeEditorInner = () => {
                   <div className="flex">
                     {/* Line numbers (scrolls with content) */}
                     <div 
-                      className="w-12 flex-shrink-0 select-none sticky left-0"
+                      className="w-8 sm:w-12 flex-shrink-0 select-none sticky left-0"
                       style={{ 
                         background: 'var(--theme-editor)',
                         borderRight: '1px solid var(--theme-border)',
                       }}
                     >
-                      <div className="text-xs text-right p-2 leading-6" style={{ color: 'var(--theme-foreground)', opacity: 0.4 }}>
+                      <div className="text-xs text-right py-2 pr-1.5 sm:p-2 leading-6" style={{ color: 'var(--theme-foreground)', opacity: 0.4 }}>
                         {Array.from({ length: 50 }, (_, i) => (
                           <div key={i + 1}>{i + 1}</div>
                         ))}
@@ -449,7 +454,7 @@ const CodeEditorInner = () => {
                     </div>
 
                     {/* File Content */}
-                    <div className="flex-1 min-w-0">
+                    <div className={`flex-1 min-w-0 ${isMobile ? 'pb-36' : ''}`}>
                       <FileContentRenderer
                         path={currentPath}
                         theme={theme}
