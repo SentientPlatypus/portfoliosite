@@ -9,7 +9,7 @@ interface Award {
   link: string;
 }
 const awards: Award[] = [{
-  id: '2',
+  id: '9',
   title: 'Amazon Future Engineer',
   organization: 'Amazon',
   year: '2024',

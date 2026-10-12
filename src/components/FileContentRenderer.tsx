@@ -11,6 +11,49 @@ import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Settings } from './Settings';
+import { experienceAsJson } from '@/data/experience';
+
+const HighlightedExperienceJson = () => {
+  const json = JSON.stringify(experienceAsJson(), null, 2);
+  const lines = json.split('\n');
+  return (
+    <pre className="whitespace-pre-wrap">
+      {lines.map((line, lineIndex) => {
+        const keyMatch = line.match(/^(\s*)("(?:\\.|[^"\\])*")(\s*:\s*)(.*)$/);
+        if (keyMatch) {
+          const [, indent, key, colon, rest] = keyMatch;
+          const trailingComma = rest.endsWith(',');
+          const value = trailingComma ? rest.slice(0, -1) : rest;
+          return (
+            <div key={lineIndex}>
+              {indent}
+              <span className="text-[var(--theme-variable)]">{key}</span>
+              {colon}
+              {value.startsWith('"') ? (
+                <span className="text-[var(--theme-string)]">{value}</span>
+              ) : (
+                <span>{value}</span>
+              )}
+              {trailingComma ? ',' : ''}
+            </div>
+          );
+        }
+        const stringItem = line.match(/^(\s*)("(?:\\.|[^"\\])*")(,?)$/);
+        if (stringItem) {
+          const [, indent, value, comma] = stringItem;
+          return (
+            <div key={lineIndex}>
+              {indent}
+              <span className="text-[var(--theme-string)]">{value}</span>
+              {comma}
+            </div>
+          );
+        }
+        return <div key={lineIndex}>{line}</div>;
+      })}
+    </pre>
+  );
+};
 
 interface FileContentRendererProps {
   path: string;
@@ -269,67 +312,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
           <div className="p-6 font-mono text-sm leading-relaxed">
             <div className="text-[var(--theme-comment)]">// portfolio/experience.json</div>
             <div className="mt-4">
-              {'{'}
-            </div>
-            <div className="pl-4">
-              <span className="text-[var(--theme-variable)]">"experiences"</span>: [
-            </div>
-            <div className="pl-8">
-              {'{'}
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"title"</span>: <span className="text-[var(--theme-string)]">"Software Developer Intern, AWS Cryptography"</span>,
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"company"</span>: <span className="text-[var(--theme-string)]">"Amazon Web Services"</span>,
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"period"</span>: <span className="text-[var(--theme-string)]">"May 2025 — Present"</span>,
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"type"</span>: <span className="text-[var(--theme-string)]">"internship"</span>
-            </div>
-            <div className="pl-8">
-              {'}'},
-            </div>
-            <div className="pl-8">
-              {'{'}
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"title"</span>: <span className="text-[var(--theme-string)]">"Student"</span>,
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"organization"</span>: <span className="text-[var(--theme-string)]">"Cornell University"</span>,
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"degree"</span>: <span className="text-[var(--theme-string)]">"Electrical & Computer Engineering"</span>,
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"period"</span>: <span className="text-[var(--theme-string)]">"August 2022 — Present"</span>
-            </div>
-            <div className="pl-8">
-              {'}'},
-            </div>
-            <div className="pl-8">
-              {'{'}
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"title"</span>: <span className="text-[var(--theme-string)]">"FRC Robotics - Vision Systems"</span>,
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"team"</span>: <span className="text-[var(--theme-string)]">"Code Red Robotics"</span>,
-            </div>
-            <div className="pl-12">
-              <span className="text-[var(--theme-variable)]">"period"</span>: <span className="text-[var(--theme-string)]">"September 2020 — June 2024"</span>
-            </div>
-            <div className="pl-8">
-              {'}'}
-            </div>
-            <div className="pl-4">
-              ]
-            </div>
-            <div>
-              {'}'}
+              <HighlightedExperienceJson />
             </div>
           </div>
         );

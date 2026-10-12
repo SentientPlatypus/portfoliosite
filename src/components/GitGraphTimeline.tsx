@@ -1,43 +1,17 @@
-import { GitBranch, GitCommit, Circle } from 'lucide-react';
+import { GitBranch } from 'lucide-react';
 import { WorkTimeline } from './WorkTimeline';
 import { motion } from 'framer-motion';
+import { experiences } from '@/data/experience';
+
+const hashFromId = (id: string) => {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  }
+  return hash.toString(16).padStart(7, '0').slice(0, 7);
+};
 
 export const GitGraphTimeline = () => {
-  const experiences = [
-    {
-      date: '2025-05 — Present',
-      title: 'Software Developer Intern, AWS Cryptography',
-      company: 'Amazon Web Services',
-      commit: 'feat: AWS Cryptography internship',
-      hash: 'a7f3c9d',
-      branch: 'main'
-    },
-    {
-      date: '2022-08 — Present',
-      title: 'Student',
-      company: 'Cornell University',
-      commit: 'feat: Electrical & Computer Engineering @ Cornell',
-      hash: 'b2e4d1a',
-      branch: 'main'
-    },
-    {
-      date: '2020-09 — 2024-06',
-      title: 'FRC Robotics',
-      company: 'Code Red Robotics',
-      commit: 'feat: FRC Robotics - Vision Systems',
-      hash: 'c5a8f2b',
-      branch: 'main'
-    },
-    {
-      date: '2026-02',
-      title: '1st Place',
-      company: 'Cornell Makeathon 2026',
-      commit: 'feat: Won 1st Place at Cornell Makeathon with GroovyAR',
-      hash: 'd9c1e4f',
-      branch: 'main'
-    }
-  ];
-
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center gap-3">
@@ -52,7 +26,7 @@ export const GitGraphTimeline = () => {
 
         {experiences.map((exp, index) => (
           <motion.div
-            key={index}
+            key={exp.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
@@ -63,8 +37,8 @@ export const GitGraphTimeline = () => {
             {/* Content */}
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-[var(--theme-string)]">{exp.hash}</span>
-                <span className="text-xs text-[#858585]">{exp.date}</span>
+                <span className="text-xs font-mono text-[var(--theme-string)]">{hashFromId(exp.id)}</span>
+                <span className="text-xs text-[#858585]">{exp.period}</span>
               </div>
               <div className="text-sm font-semibold text-[var(--theme-foreground)]">
                 {exp.title}
@@ -72,9 +46,11 @@ export const GitGraphTimeline = () => {
               <div className="text-sm text-[var(--theme-variable)]">
                 {exp.company}
               </div>
-              <div className="text-xs text-[var(--theme-comment)] font-mono">
-                {exp.commit}
-              </div>
+              {exp.location && (
+                <div className="text-xs text-[var(--theme-comment)]">
+                  {exp.location}
+                </div>
+              )}
             </div>
           </motion.div>
         ))}
