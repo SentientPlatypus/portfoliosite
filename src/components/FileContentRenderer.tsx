@@ -265,7 +265,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
               <span className="text-[var(--theme-variable)]">university</span>: <span className="text-[var(--theme-string)]">"Cornell University"</span>,
             </div>
             <div className="pl-4">
-              <span className="text-[var(--theme-variable)]">currentPosition</span>: <span className="text-[var(--theme-string)]">"AWS Cryptography"</span>,
+              <span className="text-[var(--theme-variable)]">currentPosition</span>: <span className="text-[var(--theme-string)]">"AWS"</span>,
             </div>
             <div className="pl-4">
               <span className="text-[var(--theme-variable)]">location</span>: <span className="text-[var(--theme-string)]">"Ithaca, NY"</span>,

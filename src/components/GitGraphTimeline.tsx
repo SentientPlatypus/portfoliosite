@@ -3,12 +3,14 @@ import { WorkTimeline } from './WorkTimeline';
 import { motion } from 'framer-motion';
 import { experiences } from '@/data/experience';
 
-const hashFromId = (id: string) => {
+const hashFromId = (id: string, index: number) => {
+  const source = `${id}:${index}`;
   let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  for (let i = 0; i < source.length; i++) {
+    hash = (hash * 31 + source.charCodeAt(i)) >>> 0;
   }
-  return hash.toString(16).padStart(7, '0').slice(0, 7);
+  hash ^= (index + 1) * 0x9e3779b1;
+  return (hash >>> 0).toString(16).padStart(7, '0').slice(0, 7);
 };
 
 export const GitGraphTimeline = () => {
@@ -37,7 +39,7 @@ export const GitGraphTimeline = () => {
             {/* Content */}
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-[var(--theme-string)]">{hashFromId(exp.id)}</span>
+                <span className="text-xs font-mono text-[var(--theme-string)]">{hashFromId(exp.id, index)}</span>
                 <span className="text-xs text-[#858585]">{exp.period}</span>
               </div>
               <div className="text-sm font-semibold text-[var(--theme-foreground)]">
