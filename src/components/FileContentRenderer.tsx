@@ -301,7 +301,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
         );
       }
       return (
-        <div ref={contentRef} className="p-6">
+        <div ref={contentRef} className="p-4 sm:p-6">
           <InteractiveInfo />
         </div>
       );
