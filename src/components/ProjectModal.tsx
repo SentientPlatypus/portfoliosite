@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Github, ExternalLink, Calendar, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import type { InteractiveKind } from "./interactive/kinds";
 
 interface Project {
   id: number | string;
@@ -19,6 +20,7 @@ interface Project {
   images?: string[];
   videos?: string[];
   award?: string | null;
+  interactive?: InteractiveKind;
 }
 
 interface ProjectModalProps {

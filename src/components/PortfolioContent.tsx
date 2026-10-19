@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ProjectModal } from "./ProjectModal";
 import { TechTag } from "./TechTag";
 import { motion } from "framer-motion";
+import type { InteractiveKind } from "./interactive/kinds";
 interface Project {
   id: number | string;
   title: string;
@@ -17,6 +18,7 @@ interface Project {
   images?: string[];
   videos?: string[];
   award?: string | null;
+  interactive?: InteractiveKind;
 }
 const projects: Project[] = [
       {
@@ -33,7 +35,8 @@ const projects: Project[] = [
   image: "images/Fouriermesh.png",
   images: ["images/david_mesh_fourier_compare_k_30.png"],
   videos: ["david_fourier_smoothing.mp4", "visualize_eigen.mp4"],
-  award: "50 downloads on Blender Add-ons!"
+  award: "50 downloads on Blender Add-ons!",
+  interactive: "fouriermesh-david"
 },
       {
   id: 2,
