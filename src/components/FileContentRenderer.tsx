@@ -12,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Settings } from './Settings';
 import { experienceAsJson } from '@/data/experience';
+import { InteractiveProjectView } from './interactive/InteractiveMedia';
 
 const HighlightedExperienceJson = () => {
   const json = JSON.stringify(experienceAsJson(), null, 2);
@@ -503,7 +504,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
         
         if (project) {
           return (
-            <div className="p-8">
+            <div className="p-4 sm:p-8">
               <div className="max-w-4xl mx-auto">
                 {/* Project Header */}
                 <div className="mb-6">
@@ -519,18 +520,67 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
                   </div>
                 </div>
 
-                {/* Project Image */}
+                {/* Project Image / interactive */}
                 <div className="mb-6 rounded-lg overflow-hidden border border-[var(--theme-border)] bg-[var(--theme-sidebar)]">
-                  <img 
-                    src={project.image} 
-                    alt={project.title}
-                    className="w-full h-auto"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
+                  {project.interactive ? (
+                    <InteractiveProjectView
+                      kind={project.interactive}
+                      poster={project.image}
+                      title={project.title}
+                    />
+                  ) : (
+                    <img 
+                      src={project.image} 
+                      alt={project.title}
+                      className="w-full h-auto"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
+                    />
+                  )}
                 </div>
+
+                {project.videos && project.videos.length > 0 && (
+                  <div className="mb-6">
+                    <h2 className="text-xl font-semibold mb-3 text-[var(--theme-type)]">Videos</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {project.videos.map((src) => {
+                        const youtube = src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+                        if (youtube) {
+                          return (
+                            <div
+                              key={src}
+                              className="aspect-video overflow-hidden rounded-lg border border-[var(--theme-border)]"
+                            >
+                              <iframe
+                                src={`https://www.youtube.com/embed/${youtube[1]}`}
+                                title={`${project.title} video`}
+                                loading="lazy"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="h-full w-full"
+                              />
+                            </div>
+                          );
+                        }
+                        const file = src.startsWith('http') || src.startsWith('/')
+                          ? src
+                          : `/images/${src}`;
+                        return (
+                          <video
+                            key={src}
+                            src={file}
+                            controls
+                            preload="none"
+                            playsInline
+                            className="aspect-video w-full rounded-lg border border-[var(--theme-border)] bg-black"
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Description */}
                 <div className="mb-6">

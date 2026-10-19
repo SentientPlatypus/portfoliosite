@@ -1,0 +1,127 @@
+{
+ "N": 10611,
+ "M": 21234,
+ "Kmax": 128,
+ "KmaxI8": 256,
+ "min_k_recommended": 4,
+ "files": {
+  "vertices.f32.bin": {
+   "dtype": "float32",
+   "shape": [
+    10611,
+    3
+   ],
+   "bytes": 127332
+  },
+  "faces.u16.bin": {
+   "dtype": "uint16",
+   "shape": [
+    21234,
+    3
+   ],
+   "bytes": 127404
+  },
+  "modes.f16.bin": {
+   "dtype": "float16",
+   "shape": [
+    128,
+    10611
+   ],
+   "bytes": 2716416
+  },
+  "coeffs.f32.bin": {
+   "dtype": "float32",
+   "shape": [
+    256,
+    3
+   ],
+   "bytes": 3072
+  },
+  "lambdas.f32.bin": {
+   "dtype": "float32",
+   "shape": [
+    256
+   ],
+   "bytes": 1024
+  },
+  "modes256.head.f16.bin": {
+   "dtype": "float16",
+   "shape": [
+    16,
+    10611
+   ],
+   "bytes": 339552
+  },
+  "modes256.tail.i8.bin": {
+   "dtype": "int8",
+   "shape": [
+    240,
+    10611
+   ],
+   "bytes": 2546640
+  },
+  "modes256.tail.scales.f32.bin": {
+   "dtype": "float32",
+   "shape": [
+    240
+   ],
+   "bytes": 960
+  }
+ },
+ "center": [
+  -0.04319593185079626,
+  -0.023538281522223026,
+  -0.09488036765159617
+ ],
+ "bbox_min": [
+  -0.4206309914588928,
+  -0.30145201086997986,
+  -1.0
+ ],
+ "bbox_max": [
+  0.4206309914588928,
+  0.30145201086997986,
+  1.0
+ ],
+ "frame": "Blender frame: X right, Y away from camera (David faces -Y), Z up, height 2 (z in [-1,1]); three.js = (x, z, -y)",
+ "normalisation": {
+  "source": "tests/models/DavidStatue.stl (largest component, decimated)",
+  "src_bbox_min": [
+   -36.50480197803438,
+   -18.625027238539964,
+   -0.0037866415259958106
+  ],
+  "src_bbox_max": [
+   68.63918196548101,
+   56.72809444388149,
+   249.96369943560288
+  ],
+  "center": [
+   16.067189993723318,
+   19.051533602670762,
+   124.97995639703844
+  ],
+  "rotation_Rz_180": [
+   [
+    -1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "scale": 0.00800104058086534,
+  "formula": "v_blender = ((v_src - center) @ R.T) * scale ; three_xyz = (x, z, -y)"
+ },
+ "i8_format": "K=256 set: modes256.head.f16.bin = modes 0..15 as float16 [16,N]; modes256.tail.i8.bin = modes 16..255 as int8 [240,N] with modes[16+j,i] = q[j,i]*modes256.tail.scales.f32.bin[j]; mode-major",
+ "HeadModesF16": 16,
+ "note": "v_k = modes[:k].T @ coeffs[:k]; vertex order = FourierMesh.load_mesh_stl(david.stl); clay only: no uv, no colours, no texture; source: SentientPlatypus/FourierMesh tests/models/DavidStatue.stl (MIT repo)"
+}
