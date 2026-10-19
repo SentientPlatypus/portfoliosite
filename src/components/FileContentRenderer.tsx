@@ -504,7 +504,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
         
         if (project) {
           return (
-            <div className="p-8">
+            <div className="p-4 sm:p-8">
               <div className="max-w-4xl mx-auto">
                 {/* Project Header */}
                 <div className="mb-6">
@@ -574,7 +574,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
                             controls
                             preload="none"
                             playsInline
-                            className="w-full rounded-lg border border-[var(--theme-border)] bg-black"
+                            className="aspect-video w-full rounded-lg border border-[var(--theme-border)] bg-black"
                           />
                         );
                       })}

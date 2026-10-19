@@ -236,7 +236,7 @@ const FourierModes = ({ poster, title }: FourierModesProps) => {
           const err = k > kMax ? 0 : rmsError(pos, V0, n, bboxDiag);
           const detail = k > kMax ? 100 : Math.min(100, (k / kMax) * 100);
           if (labelRef.current) {
-            labelRef.current.textContent = k > kMax ? `all ${n} vertices modes` : `k = ${k} modes`;
+            labelRef.current.textContent = k > kMax ? 'all vertices' : `k = ${k} modes`;
           }
           if (metaRef.current) {
             metaRef.current.textContent =
@@ -296,7 +296,7 @@ const FourierModes = ({ poster, title }: FourierModesProps) => {
           const dy = e.clientY - sy;
           if (!dragging) {
             if (Math.abs(dx) < 7 && Math.abs(dy) < 7) return;
-            if (Math.abs(dy) > Math.abs(dx) * 1.2) {
+            if (e.pointerType === 'touch' && Math.abs(dy) > Math.abs(dx) * 1.2) {
               armed = false;
               return;
             }
@@ -434,9 +434,8 @@ const FourierModes = ({ poster, title }: FourierModesProps) => {
     >
       <div
         ref={hostRef}
-        className="relative w-full overflow-hidden rounded-t-lg"
+        className="relative w-full overflow-hidden rounded-t-lg aspect-[4/5] sm:aspect-[4/3]"
         style={{
-          aspectRatio: '4 / 3',
           background: 'var(--theme-editor)',
         }}
       >
@@ -484,7 +483,7 @@ const FourierModes = ({ poster, title }: FourierModesProps) => {
                 userTouched.current = false;
                 api.current?.startSweep();
               }}
-              className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-medium"
+              className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border px-2.5 py-1 text-[11px] font-medium"
               style={{
                 borderColor: 'var(--theme-border)',
                 color: 'var(--theme-foreground)',
@@ -562,23 +561,38 @@ const FourierModes = ({ poster, title }: FourierModesProps) => {
         .fm-range {
           -webkit-appearance: none;
           appearance: none;
+          height: 28px;
+          margin: -11px 0;
+          background: transparent;
+          outline: none;
+          cursor: pointer;
+          touch-action: pan-y;
+        }
+        .fm-range::-webkit-slider-runnable-track {
           height: 4px;
           border-radius: 999px;
           background: color-mix(in srgb, var(--theme-method) 55%, var(--theme-border));
-          outline: none;
         }
         .fm-range::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
+          box-sizing: border-box;
           width: 16px;
           height: 16px;
+          margin-top: -6px;
           border-radius: 999px;
           background: var(--theme-method);
           border: 2px solid var(--theme-sidebar);
           cursor: pointer;
           box-shadow: 0 0 0 1px var(--theme-border);
         }
+        .fm-range::-moz-range-track {
+          height: 4px;
+          border-radius: 999px;
+          background: color-mix(in srgb, var(--theme-method) 55%, var(--theme-border));
+        }
         .fm-range::-moz-range-thumb {
+          box-sizing: border-box;
           width: 16px;
           height: 16px;
           border-radius: 999px;
