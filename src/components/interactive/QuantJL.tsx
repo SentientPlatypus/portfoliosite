@@ -485,7 +485,7 @@ const QuantJL = ({ poster, title }: { poster: string; title: string }) => {
           s.i = Math.min(s.steps.length - 1, s.i + (reduced ? 999 : dt * 14));
         } else {
           s.dwell += dt;
-          if (s.steps && s.steps[Math.round(s.i)]?.terminal) s.flash = (s.flash + dt) % 1;
+          if (s.steps && s.steps[Math.round(s.i)]?.terminal) s.flash = reduced ? 0.25 : (s.flash + dt) % 1;
           if (autoRef.current && !userRef.current && s.dwell > 1.2) {
             autoRef.current = false;
             setAutoplay(false);
@@ -897,7 +897,7 @@ function drawVscore(
   const x1 = w - pad;
 
   font(ctx, 11, '600');
-  fillText(ctx, 'V-score  ·  z-score of GBM exceedance', pad, 14, pal.method);
+  fillText(ctx, w < 460 ? 'V-score' : 'V-score  ·  z-score of GBM exceedance', pad, 14, pal.method);
 
   if (!prices.length) return;
   const py = yScale(minMax(prices).lo, minMax(prices).hi, top, pBot);
@@ -1124,10 +1124,12 @@ function drawAgent(
   pack: FeaturePack | null,
 ) {
   font(ctx, 11, '600');
-  fillText(ctx, 'Agent step  ·  stand-in policy', 14, 14, pal.method);
-  rr(ctx, w - 168, 6, 154, 16, 4, hexAlpha(pal.string, 0.16), hexAlpha(pal.string, 0.5));
+  const narrow = w < 460;
+  fillText(ctx, narrow ? 'Agent step' : 'Agent step  ·  stand-in policy', 14, 14, pal.method);
+  const badgeW = narrow ? 176 : 154;
+  rr(ctx, w - 14 - badgeW, 6, badgeW, 16, 4, hexAlpha(pal.string, 0.16), hexAlpha(pal.string, 0.5));
   font(ctx, 8, '700');
-  fillText(ctx, 'NOT the trained actor', w - 91, 14, pal.string, 'center');
+  fillText(ctx, narrow ? 'stand-in · NOT the trained actor' : 'NOT the trained actor', w - 14 - badgeW / 2, 14, pal.string, 'center');
 
   if (!pack) {
     font(ctx, 11);
@@ -1201,7 +1203,7 @@ function drawAgent(
     midB - 4,
     pal.method,
   );
-  fillText(ctx, `cost ${step.cost.toFixed(4)}  mkt ${step.market.toFixed(4)}`, 14, midB - 4, pal.comment);
+  fillText(ctx, `cost ${step.cost.toFixed(4)}  mkt ${step.market.toFixed(4)}`, 14, midT + 50, pal.comment);
 
   const capT = h * 0.66;
   const capB = h - 28;
@@ -1230,7 +1232,9 @@ function drawAgent(
   font(ctx, 8);
   fillText(
     ctx,
-    `(s, a, r, s′, d) → replay  ${idx + 1} / 10000 FIFO · minibatch 256 uniform`,
+    narrow
+      ? `(s,a,r,s′,d) → replay ${idx + 1}/10k · batch 256`
+      : `(s, a, r, s′, d) → replay  ${idx + 1} / 10000 FIFO · minibatch 256 uniform`,
     14,
     h - 10,
     pal.comment,
