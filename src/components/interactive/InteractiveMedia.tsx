@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import type { InteractiveKind } from './kinds';
 
 const FourierModes = lazy(() => import('./FourierModes'));
+const QuantJL = lazy(() => import('./QuantJL'));
 
 export const PosterFallback = ({ src, title }: { src: string; title: string }) => (
   <img
@@ -27,6 +28,13 @@ export const InteractiveProjectView = ({
     return (
       <Suspense fallback={<PosterFallback src={poster} title={title} />}>
         <FourierModes poster={poster} title={title} />
+      </Suspense>
+    );
+  }
+  if (kind === 'quantjl') {
+    return (
+      <Suspense fallback={<PosterFallback src={poster} title={title} />}>
+        <QuantJL poster={poster} title={title} />
       </Suspense>
     );
   }
