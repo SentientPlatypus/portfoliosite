@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Play, RotateCcw } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import {
+  K_EXTEND,
   H_CODE,
   KERNEL,
   Pipeline,
@@ -414,7 +415,7 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
             {scene === 'smile' && (
               <p className="text-[10px] font-mono leading-snug" style={{ color: 'var(--theme-comment)' }}>
                 Newton σ₀=0.20, tol 1e−8, max 200 · smooth on row index i±{KERNEL} (NaNs poison neighbours) · SVI
-                w(k)=a+b(ρ(k−m)+√((k−m)²+σ²)) · k_extend=1e−4
+                w(k)=a+b(ρ(k−m)+√((k−m)²+σ²)) · k_extend={K_EXTEND}
               </p>
             )}
             {scene === 'butterfly' && (
@@ -826,9 +827,10 @@ function drawButterfly(
   const base = tentB;
   ctx.beginPath();
   ctx.moveTo(xAt(K - 2 * H_VISUAL), base);
-  ctx.lineTo(xAt(K - H_VISUAL), peak);
-  ctx.lineTo(xAt(K), base + (base - peak));
-  ctx.lineTo(xAt(K + H_VISUAL), peak);
+  // payoff of long K−h, short 2×K, long K+h: zero outside [K−h, K+h], peak h at K
+  ctx.lineTo(xAt(K - H_VISUAL), base);
+  ctx.lineTo(xAt(K), peak);
+  ctx.lineTo(xAt(K + H_VISUAL), base);
   ctx.lineTo(xAt(K + 2 * H_VISUAL), base);
   ctx.strokeStyle = pal.method;
   ctx.lineWidth = 1.5;
@@ -836,7 +838,7 @@ function drawButterfly(
   ctx.fillStyle = hexAlpha(pal.method, 0.12);
   ctx.fill();
   font(ctx, fs.small);
-  fillText(ctx, '+1 / −2 / +1  tent  (visual h)', left, tentT + fs.small, pal.comment);
+  fillText(ctx, 'payoff: +1 / −2 / +1 calls  (visual h)', left, tentT + fs.small, pal.comment);
 }
 
 function drawPdf(

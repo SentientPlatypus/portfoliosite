@@ -7,6 +7,8 @@ export const RATE = 0.01;
 export const H_CODE = 0.001;
 export const KERNEL = 5;
 export const K_EXTEND = 1e-4;
+/** svi_test.jl params read as annualized variance, x3 (ATM vol ~30%) so Newton from 0.20 converges on most strikes. */
+export const VAR_SCALE = 3;
 export const TRUE_SVI = { a: 0.01, b: 0.1, rho: -0.5, m: 0, sigma: 0.2 } as const;
 
 export function mulberry32(seed: number): () => number {
@@ -267,7 +269,7 @@ export function makeSyntheticChain(seed = SEED) {
   const puts: Quote[] = [];
   for (const K of strikes) {
     const kk = Math.log(K / F);
-    const w = sviW(kk, TRUE_SVI.a, TRUE_SVI.b, TRUE_SVI.rho, TRUE_SVI.m, TRUE_SVI.sigma);
+    const w = sviW(kk, TRUE_SVI.a, TRUE_SVI.b, TRUE_SVI.rho, TRUE_SVI.m, TRUE_SVI.sigma) * TAU * VAR_SCALE;
     const iv = Math.sqrt(Math.max(w, 0) / TAU);
     const c0 = bsCall(SPOT, K, TAU, RATE, iv);
     const p0 = bsPut(SPOT, K, TAU, RATE, iv);
@@ -303,7 +305,7 @@ export function paritize(calls: Quote[], puts: Quote[], spot = SPOT, tau = TAU, 
   }
   for (const p of puts) {
     if (!p.inTheMoney) {
-      const synth = Math.max(callFloor(spot, p.strike, tau, rate), p.mid + spot - p.strike * df);
+      const synth = p.mid + spot - p.strike * df;
       rows.push({ strike: p.strike, price: synth, from: 'put', raw: p.mid });
     }
   }
