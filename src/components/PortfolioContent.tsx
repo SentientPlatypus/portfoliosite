@@ -78,7 +78,8 @@ const projects: Project[] = [
   image: "images/oipd_logo.png",
   images: ["images/7_pdf_numerical.png"],
   videos: [],
-  award: "Registered Julia Package"
+  award: "Registered Julia Package",
+  interactive: "optionspdf"
 },
   {
   id: 5,

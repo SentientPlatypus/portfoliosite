@@ -3,6 +3,7 @@ import type { InteractiveKind } from './kinds';
 
 const FourierModes = lazy(() => import('./FourierModes'));
 const QuantJL = lazy(() => import('./QuantJL'));
+const OptionsPDF = lazy(() => import('./OptionsPDF'));
 
 export const PosterFallback = ({ src, title }: { src: string; title: string }) => (
   <img
@@ -35,6 +36,14 @@ export const InteractiveProjectView = ({
     return (
       <Suspense fallback={<PosterFallback src={poster} title={title} />}>
         <QuantJL poster={poster} title={title} />
+      </Suspense>
+    );
+  }
+  if (kind === 'optionspdf') {
+    const src = 'images/7_pdf_numerical.png';
+    return (
+      <Suspense fallback={<PosterFallback src={src} title={title} />}>
+        <OptionsPDF poster={src} title={title} />
       </Suspense>
     );
   }

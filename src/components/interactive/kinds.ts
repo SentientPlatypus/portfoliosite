@@ -1,1 +1,1 @@
-export type InteractiveKind = 'fouriermesh-david' | 'quantjl';
+export type InteractiveKind = 'fouriermesh-david' | 'quantjl' | 'optionspdf';
