@@ -123,6 +123,19 @@ const minMax = (xs: ArrayLike<number>) => {
   return { lo, hi };
 };
 
+/** CSS-pixel type scale: phones (~390) keep 8–11px; ~860px canvas (1440 window) hits 12 / 14–16. */
+const typeScale = (w: number) => {
+  const t = Math.max(0, Math.min(1, (w - 390) / 430));
+  return {
+    title: 11 + t * 5,
+    readout: 10 + t * 5,
+    label: 9 + t * 3.5,
+    small: 8 + t * 4,
+    t,
+  };
+};
+type TypeScale = ReturnType<typeof typeScale>;
+
 const font = (ctx: CanvasRenderingContext2D, px: number, weight = '500') => {
   ctx.font = `${weight} ${px}px ui-monospace, SFMono-Regular, Menlo, monospace`;
 };
@@ -504,10 +517,11 @@ const QuantJL = ({ poster, title }: { poster: string; title: string }) => {
       ctx.save();
       ctx.globalAlpha = fade.current;
       const sc = sceneRef.current;
-      if (sc === 'gbm') drawGbm(ctx, w, h, pal, gbm.current, obsRef.current);
-      else if (sc === 'vscore') drawVscore(ctx, w, h, pal, vs.current, rlRef.current);
-      else if (sc === 'state') drawState(ctx, w, h, pal, st.current, feat.current.pack);
-      else drawAgent(ctx, w, h, pal, ag.current, feat.current.pack);
+      const fs = typeScale(w);
+      if (sc === 'gbm') drawGbm(ctx, w, h, pal, gbm.current, obsRef.current, fs);
+      else if (sc === 'vscore') drawVscore(ctx, w, h, pal, vs.current, rlRef.current, fs);
+      else if (sc === 'state') drawState(ctx, w, h, pal, st.current, feat.current.pack, fs);
+      else drawAgent(ctx, w, h, pal, ag.current, feat.current.pack, fs);
       ctx.restore();
     };
 
@@ -555,12 +569,12 @@ const QuantJL = ({ poster, title }: { poster: string; title: string }) => {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="w-full min-w-0"
+      className="w-full min-w-0 lg:max-h-[85vh] lg:flex lg:flex-col"
       onPointerDownCapture={stopAuto}
     >
       <div
         ref={hostRef}
-        className="relative w-full min-w-0 overflow-hidden rounded-t-lg aspect-[4/5] sm:aspect-[4/3]"
+        className="relative w-full min-w-0 overflow-hidden rounded-t-lg aspect-[4/5] sm:aspect-[4/3] lg:aspect-[16/10] lg:min-h-0 lg:flex-1 lg:max-h-[calc(85vh-17rem)]"
         style={{ background: 'var(--theme-editor)' }}
       >
         {!visible && (
@@ -578,7 +592,7 @@ const QuantJL = ({ poster, title }: { poster: string; title: string }) => {
       </div>
 
       <div
-        className="space-y-2.5 border-t px-3 py-3 sm:px-4"
+        className="space-y-2.5 border-t px-3 py-3 sm:px-4 lg:shrink-0"
         style={{ background: 'var(--theme-sidebar)', borderColor: 'var(--theme-border)' }}
       >
         <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -796,13 +810,14 @@ function drawGbm(
   pal: Colors,
   st: GbmState,
   obs: number,
+  fs: TypeScale,
 ) {
   const pad = 14;
   const histW = Math.max(52, Math.min(78, w * 0.14));
   const plotR = w - pad - histW - 8;
   const plotL = pad;
-  const top = 28;
-  const bot = h - 22;
+  const top = Math.round(8 + fs.title * 1.45);
+  const bot = h - Math.round(8 + fs.small * 1.35);
   const win = windowAtEnd(obs);
   const walks = st.walks;
   const s0 = walks?.s0 ?? win[win.length - 1];
@@ -866,14 +881,14 @@ function drawGbm(
     }
   }
 
-  font(ctx, 11, '600');
-  fillText(ctx, 'Monte Carlo GBM', pad, 14, pal.method);
-  font(ctx, 10);
-  fillText(ctx, `s0  ${s0.toFixed(4)}`, w - pad, 14, pal.comment, 'right');
-  font(ctx, 9);
-  fillText(ctx, 'price', plotL, bot + 10, pal.comment);
-  fillText(ctx, '+EXT', xAt(histStart + EXT), bot + 10, pal.comment, 'right');
-  fillText(ctx, 'term', w - pad, bot + 10, pal.comment, 'right');
+  font(ctx, fs.title, '600');
+  fillText(ctx, 'Monte Carlo GBM', pad, pad + fs.title * 0.15, pal.method);
+  font(ctx, fs.readout);
+  fillText(ctx, `s0  ${s0.toFixed(4)}`, w - pad, pad + fs.title * 0.15, pal.comment, 'right');
+  font(ctx, fs.small);
+  fillText(ctx, 'price', plotL, bot + fs.small * 1.05, pal.comment);
+  fillText(ctx, '+EXT', xAt(histStart + EXT), bot + fs.small * 1.05, pal.comment, 'right');
+  fillText(ctx, 'term', w - pad, bot + fs.small * 1.05, pal.comment, 'right');
 }
 
 function drawVscore(
@@ -883,21 +898,22 @@ function drawVscore(
   pal: Colors,
   st: VsState,
   rl: boolean,
+  fs: TypeScale,
 ) {
   const pad = 14;
-  const top = 28;
+  const top = Math.round(8 + fs.title * 1.45);
   const pBot = h * 0.42;
   const vTop = h * 0.46;
   const vBot = h * 0.72;
   const cTop = h * 0.76;
-  const cBot = h - 16;
+  const cBot = h - Math.round(8 + fs.small);
   const nShow = st.raw.length;
   const prices = closes;
   const x0 = pad;
   const x1 = w - pad;
 
-  font(ctx, 11, '600');
-  fillText(ctx, w < 460 ? 'V-score' : 'V-score  ·  z-score of GBM exceedance', pad, 14, pal.method);
+  font(ctx, fs.title, '600');
+  fillText(ctx, w < 460 ? 'V-score' : 'V-score  ·  z-score of GBM exceedance', pad, pad + fs.title * 0.15, pal.method);
 
   if (!prices.length) return;
   const py = yScale(minMax(prices).lo, minMax(prices).hi, top, pBot);
@@ -976,8 +992,8 @@ function drawVscore(
       const y = yScale(lo, hi, vTop, vBot);
       strokeSkipNan(buy, y, pal.type);
       strokeSkipNan(sell, y, pal.keyword);
-      font(ctx, 9);
-      fillText(ctx, 'buy_sig  sell_sig', x0, vTop + 8, pal.comment);
+      font(ctx, fs.small);
+      fillText(ctx, 'buy_sig  sell_sig', x0, vTop + fs.small, pal.comment);
     } else {
       if (st.morph > 0.6) {
         lo = Math.min(lo, BUY_THRESH - 0.3);
@@ -998,12 +1014,12 @@ function drawVscore(
         ctx.lineTo(x1, y(SELL_THRESH));
         ctx.stroke();
         ctx.setLineDash([]);
-        font(ctx, 8);
-        fillText(ctx, '−2.0 buy', x1, y(BUY_THRESH) - 7, pal.type, 'right');
-        fillText(ctx, '1.72 sell', x1, y(SELL_THRESH) + 8, pal.keyword, 'right');
+        font(ctx, fs.small);
+        fillText(ctx, '−2.0 buy', x1, y(BUY_THRESH) + fs.small * 1.05, pal.type, 'right');
+        fillText(ctx, '1.72 sell', x1, y(SELL_THRESH) - fs.small * 1.05, pal.keyword, 'right');
       }
-      font(ctx, 9);
-      fillText(ctx, st.morph > 0.7 ? 'v  z-score' : 'v_raw  P(path > s0)', x0, vTop + 8, pal.comment);
+      font(ctx, fs.small);
+      fillText(ctx, st.morph > 0.7 ? 'v  z-score' : 'v_raw  P(path > s0)', x0, vTop + fs.small, pal.comment);
     }
   }
 
@@ -1033,13 +1049,13 @@ function drawVscore(
     };
     stroke(cap, pal.method, 1.5);
     stroke(ben, hexAlpha(pal.comment, 0.85), 1.1);
-    font(ctx, 9);
-    fillText(ctx, 'capital', x0, cTop + 8, pal.method);
-    fillText(ctx, 'buy & hold', x0 + 58, cTop + 8, pal.comment);
+    font(ctx, fs.small);
+    fillText(ctx, 'capital', x0, cTop + fs.small, pal.method);
+    fillText(ctx, 'buy & hold', x0 + fs.small * 7.2, cTop + fs.small, pal.comment);
   }
 
-  font(ctx, 9);
-  fillText(ctx, `${nShow} / ${closes.length - VS_OBS} windows`, w - pad, 14, pal.comment, 'right');
+  font(ctx, fs.small);
+  fillText(ctx, `${nShow} / ${closes.length - VS_OBS} windows`, w - pad, pad + fs.title * 0.15, pal.comment, 'right');
 }
 
 function drawState(
@@ -1049,11 +1065,12 @@ function drawState(
   pal: Colors,
   st: StState,
   pack: FeaturePack | null,
+  fs: TypeScale,
 ) {
-  font(ctx, 11, '600');
-  fillText(ctx, 'Environment state  ·  10 × 30 → ℝ³⁰¹', 14, 14, pal.method);
+  font(ctx, fs.title, '600');
+  fillText(ctx, 'Environment state  ·  10 × 30 → ℝ³⁰¹', 14, 10 + fs.title * 0.35, pal.method);
   if (!pack) {
-    font(ctx, 11);
+    font(ctx, fs.readout);
     fillText(ctx, 'calibrating features (GBM v-score)…', 14, h / 2, pal.comment);
     return;
   }
@@ -1061,12 +1078,12 @@ function drawState(
   const short = ['buy_sig', 'sell_sig', 'd buy', 'd sell', 'EMA', 'vol', 'RSI', '%B', 'sin', 'cos'];
   const end = Math.min(pack.cols[0].length - 1, Math.max(LOOK_BACK - 1, Math.floor(st.i)));
   const start = end - LOOK_BACK + 1;
-  const labelW = w < 420 ? 44 : 68;
+  const labelW = w < 420 ? 44 : Math.max(68, fs.label * 7.2);
   const pad = 12;
   const gridL = pad + labelW;
   const gridR = w - pad;
-  const gridT = 30;
-  const gridB = h - 36;
+  const gridT = Math.round(12 + fs.title * 1.35);
+  const gridB = h - Math.round(16 + fs.small * 1.4);
   const cols = LOOK_BACK;
   const rows = names.length;
   const f = st.flatten;
@@ -1095,7 +1112,7 @@ function drawState(
       ctx.fillRect(x, y, Math.max(cw, 0.8), Math.max(ch, 0.8));
     }
     if (f < 0.55) {
-      font(ctx, w < 420 ? 8 : 9);
+      font(ctx, w < 420 ? fs.small : fs.label);
       const z = FEATURE_Z.has(names[r]) ? ' z' : '';
       fillText(ctx, short[r] + z, pad, gridT + ((r + 0.5) / rows) * (gridB - gridT), pal.comment);
     }
@@ -1108,10 +1125,10 @@ function drawState(
   ctx.fillRect(allocX, allocY, Math.max(4, (w - pad * 2) / 40), 26);
   ctx.globalAlpha = 1;
   if (f > 0.4) {
-    font(ctx, 9);
-    fillText(ctx, 'alloc', allocX, h * 0.42 + 36, pal.method, 'center');
-    fillText(ctx, 's ∈ ℝ³⁰¹', pad, h - 14, pal.fg);
-    fillText(ctx, "s′ = shift 1", w - pad, h - 14, pal.comment, 'right');
+    font(ctx, fs.label);
+    fillText(ctx, 'alloc', allocX, h * 0.42 + 20 + fs.label, pal.method, 'center');
+    fillText(ctx, 's ∈ ℝ³⁰¹', pad, h - 8 - fs.small * 0.2, pal.fg);
+    fillText(ctx, "s′ = shift 1", w - pad, h - 8 - fs.small * 0.2, pal.comment, 'right');
   }
 }
 
@@ -1122,29 +1139,31 @@ function drawAgent(
   pal: Colors,
   st: AgState,
   pack: FeaturePack | null,
+  fs: TypeScale,
 ) {
-  font(ctx, 11, '600');
+  font(ctx, fs.title, '600');
   const narrow = w < 460;
-  fillText(ctx, narrow ? 'Agent step' : 'Agent step  ·  stand-in policy', 14, 14, pal.method);
-  const badgeW = narrow ? 176 : 154;
-  rr(ctx, w - 14 - badgeW, 6, badgeW, 16, 4, hexAlpha(pal.string, 0.16), hexAlpha(pal.string, 0.5));
-  font(ctx, 8, '700');
-  fillText(ctx, narrow ? 'stand-in · NOT the trained actor' : 'NOT the trained actor', w - 14 - badgeW / 2, 14, pal.string, 'center');
+  fillText(ctx, narrow ? 'Agent step' : 'Agent step  ·  stand-in policy', 14, 10 + fs.title * 0.25, pal.method);
+  const badgeH = Math.max(16, fs.small + 8);
+  const badgeW = narrow ? 176 : Math.max(154, 14 + fs.small * 16);
+  rr(ctx, w - 14 - badgeW, 6, badgeW, badgeH, 4, hexAlpha(pal.string, 0.16), hexAlpha(pal.string, 0.5));
+  font(ctx, fs.small, '700');
+  fillText(ctx, narrow ? 'stand-in · NOT the trained actor' : 'NOT the trained actor', w - 14 - badgeW / 2, 6 + badgeH / 2, pal.string, 'center');
 
   if (!pack) {
-    font(ctx, 11);
+    font(ctx, fs.readout);
     fillText(ctx, 'waiting on feature tape…', 14, h / 2, pal.comment);
     return;
   }
   if (!st.steps || !st.steps.length) {
-    font(ctx, 11);
+    font(ctx, fs.readout);
     fillText(ctx, 'rolling stand-in episode…', 14, h / 2, pal.comment);
     return;
   }
 
   const idx = Math.min(st.steps.length - 1, Math.round(st.i));
   const step = st.steps[idx];
-  const netT = 26;
+  const netT = Math.round(12 + fs.title * 1.2);
   const netB = h * 0.3;
   const maxW = Math.max(...ACTOR_WIDTHS);
   const boxW = (w - 28) / ACTOR_WIDTHS.length - 6;
@@ -1153,7 +1172,7 @@ function drawAgent(
     const hh = 16 + (n / maxW) * (netB - netT - 22);
     const y = netT + (netB - netT - hh) / 2;
     rr(ctx, x, y, boxW, hh, 4, hexAlpha(pal.variable, 0.12), hexAlpha(pal.variable, 0.45));
-    font(ctx, w < 400 ? 8 : 9);
+    font(ctx, w < 400 ? fs.small : fs.label);
     fillText(ctx, String(n), x + boxW / 2, y + hh / 2, pal.variable, 'center');
     if (i < ACTOR_WIDTHS.length - 1) {
       ctx.beginPath();
@@ -1163,21 +1182,23 @@ function drawAgent(
       ctx.stroke();
     }
   });
-  font(ctx, 8);
-  fillText(ctx, 'ReLU →  sigmoid', 14, netB + 2, pal.comment);
+  font(ctx, fs.small);
+  fillText(ctx, 'ReLU →  sigmoid', 14, netB + fs.small * 0.35, pal.comment);
 
   const midT = h * 0.36;
   const midB = h * 0.62;
-  font(ctx, 10);
-  fillText(ctx, `a = σ(−v) = ${step.a.toFixed(3)}`, 14, midT + 8, pal.fg);
-  fillText(ctx, `ε ~ OU  ${step.eps.toFixed(3)}`, 14, midT + 22, pal.number);
-  fillText(ctx, `v = ${step.v.toFixed(2)}`, 14, midT + 36, pal.comment);
+  font(ctx, fs.readout);
+  fillText(ctx, `a = σ(−v) = ${step.a.toFixed(3)}`, 14, midT + fs.readout * 0.8, pal.fg);
+  fillText(ctx, `ε ~ OU  ${step.eps.toFixed(3)}`, 14, midT + fs.readout * 2.15, pal.number);
+  fillText(ctx, `v = ${step.v.toFixed(2)}`, 14, midT + fs.readout * 3.5, pal.comment);
 
   const barX = w * 0.42;
   const barW = w - barX - 14;
-  rr(ctx, barX, midT + 4, barW, 14, 4, hexAlpha(pal.border, 0.6));
-  rr(ctx, barX, midT + 4, Math.max(2, barW * step.alloc), 14, 4, hexAlpha(pal.type, 0.85));
-  fillText(ctx, `alloc ${step.alloc.toFixed(2)}`, barX, midT + 28, pal.type);
+  const barH = Math.max(12, fs.label);
+  rr(ctx, barX, midT + 4, barW, barH, 4, hexAlpha(pal.border, 0.6));
+  rr(ctx, barX, midT + 4, Math.max(2, barW * step.alloc), barH, 4, hexAlpha(pal.type, 0.85));
+  font(ctx, fs.label);
+  fillText(ctx, `alloc ${step.alloc.toFixed(2)}`, barX, midT + 8 + barH + fs.label * 0.55, pal.type);
 
   const parts = [
     { k: 'return', v: step.ret, c: pal.type },
@@ -1188,14 +1209,14 @@ function drawAgent(
   parts.forEach((p, i) => {
     const x = barX + i * (barW / 3);
     const mag = (Math.abs(p.v) / maxAbs) * 28;
-    const y = midT + 58;
+    const y = midT + 36 + fs.label * 2;
     ctx.fillStyle = hexAlpha(p.c, 0.8);
     if (p.v >= 0) ctx.fillRect(x, y - mag, barW / 3 - 6, mag);
     else ctx.fillRect(x, y, barW / 3 - 6, mag);
-    font(ctx, 8);
-    fillText(ctx, p.k, x, y + 18, p.c);
+    font(ctx, fs.small);
+    fillText(ctx, p.k, x, y + fs.small * 1.5, p.c);
   });
-  font(ctx, 9);
+  font(ctx, fs.label);
   fillText(
     ctx,
     `r = ${step.reward.toFixed(4)}${step.reward < 0 ? '  ×0.75' : ''}${step.terminal ? '  +term' : ''}`,
@@ -1203,10 +1224,13 @@ function drawAgent(
     midB - 4,
     pal.method,
   );
-  fillText(ctx, `cost ${step.cost.toFixed(4)}  mkt ${step.market.toFixed(4)}`, 14, midT + 50, pal.comment);
+  font(ctx, fs.small);
+  fillText(ctx, `cost ${step.cost.toFixed(4)}  mkt ${step.market.toFixed(4)}`, 14, midT + fs.readout * 5, pal.comment);
 
+  const captionH = fs.small + 6;
+  const pillH = 10;
   const capT = h * 0.66;
-  const capB = h - 28;
+  const capB = h - captionH - pillH - 10;
   const caps = st.steps.slice(0, idx + 1).map((s) => s.capital);
   const bens = st.steps.slice(0, idx + 1).map((s) => s.bench);
   if (caps.length > 1) {
@@ -1218,32 +1242,33 @@ function drawAgent(
   if (step.terminal) {
     ctx.fillStyle = hexAlpha(pal.keyword, 0.12 + 0.12 * Math.sin(st.flash * Math.PI * 2));
     ctx.fillRect(0, capT, w, capB - capT);
-    font(ctx, 10, '700');
+    font(ctx, fs.label, '700');
     fillText(
       ctx,
       step.capital < 950 ? 'done  capital < 950' : 'day end  + 15·(C−1000)/1000',
       w / 2,
-      capT + 12,
+      capT + fs.label,
       pal.keyword,
       'center',
     );
   }
 
-  font(ctx, 8);
+  const pills = Math.min(narrow ? 10 : 18, idx + 1);
+  const pillY = h - captionH - pillH - 2;
+  for (let i = 0; i < pills; i++) {
+    ctx.fillStyle = hexAlpha(pal.variable, 0.25 + 0.6 * (i / pills));
+    ctx.fillRect(w - 14 - (pills - i) * 7, pillY, 5, 8);
+  }
+  font(ctx, fs.small);
   fillText(
     ctx,
     narrow
       ? `(s,a,r,s′,d) → replay ${idx + 1}/10k · batch 256`
       : `(s, a, r, s′, d) → replay  ${idx + 1} / 10000 FIFO · minibatch 256 uniform`,
     14,
-    h - 10,
+    h - captionH / 2 - 1,
     pal.comment,
   );
-  const pills = Math.min(18, idx + 1);
-  for (let i = 0; i < pills; i++) {
-    ctx.fillStyle = hexAlpha(pal.variable, 0.25 + 0.6 * (i / pills));
-    ctx.fillRect(w - 14 - (pills - i) * 7, h - 16, 5, 8);
-  }
 }
 
 export default QuantJL;
