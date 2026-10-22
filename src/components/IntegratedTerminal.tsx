@@ -263,7 +263,7 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
       { type: 'output', content: ' $$P      d$\'     ,    $$P    Shell: portfolio-bash v1.0.0', color: 'cyan' },
       { type: 'output', content: ' $$:      $$.   -    ,d$$\'    Name: Geneustace Wicaksono', color: 'cyan' },
       { type: 'output', content: ' $$;      Y$b._   _,d$P\'      University: Cornell (ECE)', color: 'cyan' },
-      { type: 'output', content: ' Y$$.    `.`"Y$$$$P"\'         Current: AWS', color: 'cyan' },
+      { type: 'output', content: ' Y$$.    `.`"Y$$$$P"\'         Current: AWS Secrets Manager', color: 'cyan' },
       { type: 'output', content: ' `$$b      "-.__              Location: Ithaca, NY', color: 'cyan' },
       { type: 'output', content: '  `Y$$                        Origin: Jakarta', color: 'cyan' },
       { type: 'output', content: '   `Y$$.                      Email: gjw62@cornell.edu', color: 'cyan' },
@@ -359,7 +359,7 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
   fullName: "Geneustace Wicaksono",
   title: "Electrical & Computer Engineering Student",
   university: "Cornell University",
-  currentPosition: "AWS",
+  currentPosition: "AWS Secrets Manager",
   location: "Ithaca, NY",
   origin: "Jakarta",
   bio: [
@@ -595,7 +595,7 @@ me.`
         setLines(prev => [...prev,
           { type: 'output', content: 'Geneustace Wicaksono' },
           { type: 'output', content: 'Electrical & Computer Engineering @ Cornell University' },
-          { type: 'output', content: 'Currently @ AWS' },
+          { type: 'output', content: 'Currently @ AWS Secrets Manager' },
           { type: 'output', content: 'Location: Ithaca, NY' },
           { type: 'output', content: '' },
         ]);

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Play, RotateCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, RotateCcw } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import {
-  K_EXTEND,
   H_CODE,
   KERNEL,
+  K_EXTEND,
   Pipeline,
   RATE,
   SEED,
@@ -15,23 +15,103 @@ import {
   bsCall,
   pBelow,
   runPipeline,
+  sviG,
+  sviW,
 } from './optionsPdfMath';
 
-type Scene = 'chain' | 'smile' | 'butterfly' | 'pdf';
-const SCENES: { id: Scene; label: string }[] = [
-  { id: 'chain', label: 'Chain' },
-  { id: 'smile', label: 'Smile' },
-  { id: 'butterfly', label: 'Butterfly' },
-  { id: 'pdf', label: 'PDF' },
+/** Every step maps to real code in OptionsImpliedPDF.jl (src/data.jl, functions.jl, svi.jl, bs.jl). */
+type Step = { title: string; caption: string; formula: string; dur: number };
+const STEPS: Step[] = [
+  {
+    title: 'The raw options chain',
+    caption:
+      'For each strike K, the chain lists what buyers bid and sellers ask, for calls and for puts. The package takes the middle of each quote as its price (or the last trade if a side has no quote).',
+    formula: 'mid = (bid + ask) / 2',
+    dur: 3.2,
+  },
+  {
+    title: 'Keep out-of-the-money options',
+    caption:
+      'In-the-money options trade thinly and their prices are noisy, so only rows yfinance marks inTheMoney = false are kept: calls with strikes above spot, puts with strikes below.',
+    formula: 'keep rows where inTheMoney == false',
+    dur: 2.8,
+  },
+  {
+    title: 'Turn puts into calls (put–call parity)',
+    caption:
+      'The math downstream needs one curve of call prices. Each kept put becomes the equivalent call price at the same strike, and the rows are sorted by strike.',
+    formula: 'C = P + S − K·e^(−rτ)   (r = 0.01, τ = 30/365)',
+    dur: 3,
+  },
+  {
+    title: 'Implied volatility by Newton’s method',
+    caption:
+      'Each price is run backwards through Black–Scholes: which volatility σ makes the model price match the market? Newton starts at σ = 0.20 and corrects by price error ÷ vega until the error is below 1e−8.',
+    formula: 'σ ← σ − (BS(σ) − C_mkt) / vega',
+    dur: 4.5,
+  },
+  {
+    title: 'Smooth the smile, drop failures',
+    caption:
+      'A Gaussian kernel averages each implied vol with up to 5 neighbouring rows on each side (by row, not strike distance) to wash out quote noise. A failed (NaN) vol is not skipped, so it turns every smoothed value within 5 rows into NaN too; all NaN rows are then removed.',
+    formula: 'σ̃ᵢ = Σⱼ wⱼσⱼ / Σⱼ wⱼ,   wⱼ = e^(−(i−j)²/(2·5²)),  |i−j| ≤ 5',
+    dur: 4,
+  },
+  {
+    title: 'Switch to SVI coordinates',
+    caption:
+      'SVI is fit in log-moneyness against total variance. F is the forward price; in these units the smile becomes a smooth, almost hyperbolic curve.',
+    formula: 'k = ln(K/F),   w = σ²τ,   F = S·e^(rτ)',
+    dur: 2.8,
+  },
+  {
+    title: 'Fit the SVI curve (Nelder–Mead)',
+    caption:
+      'A 5-parameter SVI curve is fit to the points by least squares with Nelder–Mead (4000 iterations), with heavy penalties if the fitted variance would go negative.',
+    formula: 'w(k) = a + b(ρ(k−m) + √((k−m)² + σ²))',
+    dur: 4.5,
+  },
+  {
+    title: 'Check for butterfly arbitrage',
+    caption:
+      'A smile can fit the data yet still imply negative probabilities. The package evaluates g(k) on 401 points across the data range; if any value is below 0 it throws an error instead of returning a PDF.',
+    formula: 'g(k) = (1 − k·w′/2w)² − (w′²/4)(1/w + 1/4) + w″/2 ≥ 0',
+    dur: 3.2,
+  },
+  {
+    title: 'Back to clean call prices',
+    caption:
+      'With a smooth σ(K) from SVI, Black–Scholes now gives a clean call price at any strike. This smooth curve, not the noisy quotes, is what gets differentiated next.',
+    formula: 'C(K) = BS(S, K, τ, r, σ_SVI(K)),   σ_SVI = √(w(ln K/F)/τ)',
+    dur: 3,
+  },
+  {
+    title: 'Breeden–Litzenberger: curvature = density',
+    caption:
+      'Buy a call at K−h and one at K+h, sell two at K: this butterfly only pays if the stock ends near K, so its cost measures the probability of ending there. Dividing by h² gives the density. Code uses h = 0.001; drawn with h = 6 so you can see it.',
+    formula: 'f(K) = e^(rτ) · (C(K+h) − 2C(K) + C(K−h)) / h²',
+    dur: 5,
+  },
+  {
+    title: 'Read off probabilities',
+    caption:
+      'Adding up the density from K = 1 to your strike (trapezoid rule, 10,000 steps) gives the market-implied chance the stock finishes below it; one minus that is the chance it finishes at or above.',
+    formula: 'P(S_T < K) = ∫₁ᴷ f(x) dx,   P(S_T ≥ K) = 1 − P(S_T < K)',
+    dur: 3.5,
+  },
 ];
-
+const N_STEPS = STEPS.length;
 const H_VISUAL = 6;
+const K_MIN_UI = 84;
+const K_MAX_UI = 116;
+
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const hexAlpha = (hex: string, a: number) => {
+  if (!hex.startsWith('#')) return hex;
   const h = hex.replace('#', '');
-  const n = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+  const n = h.length === 3 ? h.split('').map((c) => c + c).join('') : h.slice(0, 6);
   return `rgba(${parseInt(n.slice(0, 2), 16)},${parseInt(n.slice(2, 4), 16)},${parseInt(n.slice(4, 6), 16)},${a})`;
 };
 
@@ -40,7 +120,6 @@ type Colors = {
   comment: string;
   method: string;
   editor: string;
-  sidebar: string;
   border: string;
   string: string;
   keyword: string;
@@ -49,18 +128,19 @@ type Colors = {
   type: string;
 };
 
+/** ≥12px labels from ~700px wide (desktop panel); smaller only on phones. */
 const typeScale = (w: number) => {
-  const t = Math.max(0, Math.min(1, (w - 390) / 430));
-  return { title: 11 + t * 5, readout: 10 + t * 5, label: 9 + t * 3.5, small: 8 + t * 4, t };
+  const t = Math.max(0, Math.min(1, (w - 390) / 310));
+  return { title: 12 + t * 3, label: 10 + t * 3, small: 10 + t * 2 };
 };
 type TypeScale = ReturnType<typeof typeScale>;
 
 const font = (ctx: CanvasRenderingContext2D, px: number, weight = '500') => {
   ctx.font = `${weight} ${px}px ui-monospace, SFMono-Regular, Menlo, monospace`;
 };
-const fillText = (
+const text = (
   ctx: CanvasRenderingContext2D,
-  text: string,
+  s: string,
   x: number,
   y: number,
   color: string,
@@ -69,20 +149,582 @@ const fillText = (
   ctx.fillStyle = color;
   ctx.textAlign = align;
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, x, y);
+  ctx.fillText(s, x, y);
+};
+const lin = (d0: number, d1: number, r0: number, r1: number) => (v: number) =>
+  r0 + ((v - d0) / (d1 - d0 || 1)) * (r1 - r0);
+const pad = (lo: number, hi: number, f = 0.08) => {
+  const s = hi - lo || 1;
+  return [lo - s * f, hi + s * f] as const;
+};
+const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
+const phase = (t: number, a: number, b: number) => clamp01((t - a) / (b - a));
+const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);
+const mix = (a: number, b: number, u: number) => a + (b - a) * u;
+const dot = (ctx: CanvasRenderingContext2D, x: number, y: number, r: number, c: string) => {
+  ctx.beginPath();
+  ctx.fillStyle = c;
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fill();
+};
+const line = (ctx: CanvasRenderingContext2D, pts: [number, number][], c: string, lw = 1.6, dash?: number[]) => {
+  if (!pts.length) return;
+  ctx.beginPath();
+  ctx.strokeStyle = c;
+  ctx.lineWidth = lw;
+  ctx.setLineDash(dash ?? []);
+  pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+  ctx.stroke();
+  ctx.setLineDash([]);
 };
 
-const yScale = (min: number, max: number, top: number, bot: number) => {
-  const span = max - min || 1;
-  const lo = min - span * 0.08;
-  const hi = max + span * 0.08;
-  return (v: number) => bot - ((v - lo) / (hi - lo)) * (bot - top);
+type Box = { l: number; r: number; t: number; b: number };
+const frame = (w: number, h: number, fs: TypeScale): Box => ({
+  l: 16 + fs.small * 2.6,
+  r: w - 14,
+  t: 14 + fs.label * 1.6 + fs.small * 1.6,
+  b: h - 14 - fs.small * 1.6,
+});
+const axes = (ctx: CanvasRenderingContext2D, bx: Box, pal: Colors, fs: TypeScale, xl: string, yl: string, alpha = 1) => {
+  ctx.globalAlpha = alpha;
+  line(ctx, [[bx.l, bx.t], [bx.l, bx.b], [bx.r, bx.b]], hexAlpha(pal.comment, 0.5), 1);
+  font(ctx, fs.small);
+  text(ctx, xl, bx.r, bx.b + fs.small * 1.1, pal.comment, 'right');
+  text(ctx, yl, bx.l - 4, bx.t - fs.small * 1.1, pal.comment, 'left');
+  ctx.globalAlpha = 1;
+};
+const legend = (ctx: CanvasRenderingContext2D, items: [string, string][], x: number, y: number, fs: TypeScale) => {
+  font(ctx, fs.small);
+  let cx = x;
+  for (let i = items.length - 1; i >= 0; i--) {
+    const [label, c] = items[i];
+    const wd = ctx.measureText(label).width;
+    text(ctx, label, cx, y, c, 'right');
+    dot(ctx, cx - wd - 8, y, 3.5, c);
+    cx -= wd + 22;
+  }
 };
 
-const xScale = (min: number, max: number, left: number, right: number) => {
-  const span = max - min || 1;
-  return (v: number) => left + ((v - min) / span) * (right - left);
+type Extra = {
+  kPts: { k: number; w: number; K: number; iv: number }[];
+  dropped: number[];
+  gK: number[];
+  gV: number[];
+  cumBelow: number[];
+  pdfMax: number;
 };
+
+function buildExtra(p: Pipeline): Extra {
+  const kPts = p.filtered.map((r) => ({ K: r.strike, iv: r.iv, k: Math.log(r.strike / p.F), w: r.iv * r.iv * TAU }));
+  const dropped = p.withIv.map((_, i) => i).filter((i) => !Number.isFinite(p.smoothed[i]));
+  const ks = kPts.map((q) => q.k);
+  const k0 = Math.min(...ks) - K_EXTEND;
+  const k1 = Math.max(...ks) + K_EXTEND;
+  const gK: number[] = [];
+  const gV: number[] = [];
+  const f = p.fit;
+  for (let i = 0; i < 401; i++) {
+    const k = k0 + ((k1 - k0) * i) / 400;
+    gK.push(k);
+    gV.push(sviG(k, f.a, f.b, f.rho, f.m, f.sigma));
+  }
+  const cumBelow = [pBelow(p.pdfK[0], p.ivFun)];
+  for (let i = 1; i < p.pdfK.length; i++) {
+    cumBelow.push(cumBelow[i - 1] + 0.5 * (p.pdfY[i] + p.pdfY[i - 1]) * (p.pdfK[i] - p.pdfK[i - 1]));
+  }
+  return { kPts, dropped, gK, gV, cumBelow, pdfMax: Math.max(...p.pdfY) };
+}
+
+type DrawArgs = {
+  ctx: CanvasRenderingContext2D;
+  w: number;
+  h: number;
+  pal: Colors;
+  p: Pipeline;
+  x: Extra;
+  t: number;
+  fs: TypeScale;
+  K: number;
+};
+
+// ---- shared scales ----
+const strikeX = (bx: Box) => lin(60, 140, bx.l + 4, bx.r - 4);
+const priceY = (p: Pipeline, bx: Box) => {
+  const hi = Math.max(...p.calls.map((c) => c.ask), ...p.puts.map((q) => q.ask), ...p.paritized.map((r) => r.price));
+  return lin(0, hi * 1.05, bx.b, bx.t);
+};
+const ivY = (p: Pipeline, bx: Box) => {
+  const ivs = p.withIv.map((r) => r.iv).filter(Number.isFinite);
+  const [lo, hi] = pad(Math.min(...ivs), Math.max(...ivs), 0.12);
+  return lin(lo, hi, bx.b, bx.t);
+};
+const kwScales = (x: Extra, bx: Box) => {
+  const ks = x.kPts.map((q) => q.k);
+  const ws = x.kPts.map((q) => q.w);
+  const [k0, k1] = pad(Math.min(...ks), Math.max(...ks), 0.04);
+  const [w0, w1] = pad(Math.min(...ws), Math.max(...ws), 0.12);
+  return { kx: lin(k0, k1, bx.l + 4, bx.r - 4), wy: lin(w0, w1, bx.b, bx.t), k0, k1 };
+};
+
+function header(a: DrawArgs, i: number, right?: string) {
+  const { ctx, pal, fs, w } = a;
+  font(ctx, fs.label, '600');
+  text(ctx, `${i + 1}/${N_STEPS}  ${STEPS[i].title}`, 14, 12 + fs.label * 0.5, pal.method);
+  if (right && w > 520) {
+    font(ctx, fs.small);
+    text(ctx, right, w - 14, 12 + fs.label * 0.5, pal.comment, 'right');
+  }
+}
+
+function spotLine(a: DrawArgs, bx: Box, X: (v: number) => number) {
+  line(a.ctx, [[X(SPOT), bx.t], [X(SPOT), bx.b]], hexAlpha(a.pal.method, 0.6), 1, [4, 4]);
+  font(a.ctx, a.fs.small);
+  text(a.ctx, `spot ${SPOT}`, X(SPOT) + 4, bx.t + a.fs.small * 0.6, a.pal.method);
+}
+
+// 1. raw chain: bars grow, then mids pop in
+function drawRaw(a: DrawArgs) {
+  const { ctx, p, pal, fs, t } = a;
+  const bx = frame(a.w, a.h, fs);
+  header(a, 0, 'synthetic chain');
+  axes(ctx, bx, pal, fs, 'strike K', 'price');
+  const X = strikeX(bx);
+  const Y = priceY(p, bx);
+  const grow = ease(phase(t, 0, 0.55));
+  const mids = phase(t, 0.55, 0.85);
+  const bw = Math.max(1.5, (bx.r - bx.l) / 33 / 4);
+  for (const q of [...p.calls, ...p.puts]) {
+    const c = q.kind === 'call' ? pal.type : pal.keyword;
+    const xx = X(q.strike) + (q.kind === 'call' ? -bw : bw);
+    const m = Y(q.mid);
+    ctx.globalAlpha = 1 - 0.55 * mids;
+    line(ctx, [[xx, mix(m, Y(q.bid), grow)], [xx, mix(m, Y(q.ask), grow)]], c, bw * 1.2);
+    ctx.globalAlpha = 1;
+    if (mids > 0) dot(ctx, xx, m, 2.8 * mids, c);
+  }
+  spotLine(a, bx, X);
+  legend(ctx, [['call', pal.type], ['put', pal.keyword]], bx.r, bx.t + fs.small * 0.6 + (a.w > 520 ? 0 : fs.small * 1.4), fs);
+  if (mids > 0.5) {
+    font(ctx, fs.small);
+    ctx.globalAlpha = phase(mids, 0.5, 1);
+    text(ctx, 'bar = bid→ask   dot = mid', bx.l + 8, bx.b - fs.small, pal.fg);
+    ctx.globalAlpha = 1;
+  }
+}
+
+// 2. ITM fade out
+function drawOtm(a: DrawArgs) {
+  const { ctx, p, pal, fs, t } = a;
+  const bx = frame(a.w, a.h, fs);
+  header(a, 1, 'synthetic chain');
+  axes(ctx, bx, pal, fs, 'strike K', 'price');
+  const X = strikeX(bx);
+  const Y = priceY(p, bx);
+  const f = ease(phase(t, 0.15, 0.75));
+  for (const q of [...p.calls, ...p.puts]) {
+    const c = q.kind === 'call' ? pal.type : pal.keyword;
+    const al = q.inTheMoney ? 1 - 0.9 * f : 1;
+    ctx.globalAlpha = al;
+    dot(ctx, X(q.strike), Y(q.mid), q.inTheMoney ? 2.8 : 2.8 + 0.8 * f, c);
+    ctx.globalAlpha = 1;
+  }
+  // shade ITM regions
+  ctx.fillStyle = hexAlpha(pal.comment, 0.08 * f);
+  ctx.fillRect(bx.l, bx.t, X(SPOT) - bx.l, bx.b - bx.t);
+  ctx.fillRect(X(SPOT), bx.t, bx.r - X(SPOT), bx.b - bx.t);
+  spotLine(a, bx, X);
+  font(ctx, fs.small);
+  ctx.globalAlpha = f;
+  text(ctx, 'OTM puts (K < S)', mix(bx.l, X(SPOT), 0.5), bx.b - fs.small * 3.2, pal.keyword, 'center');
+  text(ctx, 'OTM calls (K > S)', mix(X(SPOT), bx.r, 0.5), bx.b - fs.small * 3.2, pal.type, 'center');
+  text(ctx, 'ITM rows dropped', mix(bx.l, X(SPOT), 0.5), bx.t + fs.small * 2.4, pal.comment, 'center');
+  ctx.globalAlpha = 1;
+  legend(ctx, [['call', pal.type], ['put', pal.keyword]], bx.r, bx.t + fs.small * 0.6 + (a.w > 520 ? 0 : fs.small * 1.4), fs);
+}
+
+// 3. puts fly up via parity, line joins
+function drawParity(a: DrawArgs) {
+  const { ctx, p, pal, fs, t } = a;
+  const bx = frame(a.w, a.h, fs);
+  header(a, 2, 'synthetic chain');
+  axes(ctx, bx, pal, fs, 'strike K', 'call price');
+  const X = strikeX(bx);
+  const Y = priceY(p, bx);
+  const fly = ease(phase(t, 0.1, 0.65));
+  const join = phase(t, 0.65, 0.95);
+  for (const r of p.paritized) {
+    const y = r.from === 'put' ? mix(Y(r.raw), Y(r.price), fly) : Y(r.price);
+    if (r.from === 'put' && fly > 0 && fly < 1) {
+      line(ctx, [[X(r.strike), Y(r.raw)], [X(r.strike), y]], hexAlpha(pal.string, 0.35), 1, [2, 3]);
+    }
+    const c = r.from === 'put' ? (fly < 1 ? pal.keyword : pal.string) : pal.type;
+    dot(ctx, X(r.strike), y, 3.4, c);
+  }
+  if (join > 0) {
+    const n = Math.max(2, Math.floor(join * p.paritized.length));
+    line(ctx, p.paritized.slice(0, n).map((r) => [X(r.strike), Y(r.price)]), pal.variable, 1.6);
+  }
+  spotLine(a, bx, X);
+  legend(ctx, [['OTM call', pal.type], ['put → call', pal.string]], bx.r, bx.t + fs.small * 0.6 + (a.w > 520 ? 0 : fs.small * 1.4), fs);
+}
+
+// 4. Newton: dots morph price -> sigma sequentially, inset trace
+function drawNewton(a: DrawArgs) {
+  const { ctx, p, pal, fs, t } = a;
+  const bx = frame(a.w, a.h, fs);
+  header(a, 3);
+  const X = strikeX(bx);
+  const PY = priceY(p, bx);
+  const VY = ivY(p, bx);
+  const n = p.withIv.length;
+  const prog = phase(t, 0.05, 0.85) * n;
+  axes(ctx, bx, pal, fs, 'strike K', prog < n / 2 ? 'call price → implied vol σ' : 'implied vol σ');
+  let cur = -1;
+  p.withIv.forEach((r, i) => {
+    const u = ease(clamp01(prog - i));
+    if (u > 0 && u < 1) cur = i;
+    if (!Number.isFinite(r.iv)) {
+      ctx.globalAlpha = 1 - u * 0.4;
+      dot(ctx, X(r.strike), PY(r.price), 3, u > 0.5 ? pal.keyword : pal.variable);
+      ctx.globalAlpha = 1;
+      if (u > 0.5) {
+        font(ctx, fs.small);
+        text(ctx, 'NaN', X(r.strike), PY(r.price) - fs.small, pal.keyword, 'center');
+      }
+      return;
+    }
+    dot(ctx, X(r.strike), mix(PY(r.price), VY(r.iv), u), 3.2, u >= 1 ? pal.number : pal.variable);
+  });
+  if (cur < 0 && prog < n) cur = Math.min(n - 1, Math.floor(prog));
+  if (cur >= 0 && prog < n) {
+    const r = p.withIv[cur];
+    const tr = r.trace;
+    const iw = Math.min(230, (bx.r - bx.l) * 0.5);
+    const ih = Math.min(110, (bx.b - bx.t) * 0.38);
+    const ix = bx.r - iw;
+    const iy = bx.t + fs.small * 1.8;
+    ctx.fillStyle = hexAlpha(pal.editor, 0.92);
+    ctx.fillRect(ix, iy, iw, ih);
+    ctx.strokeStyle = hexAlpha(pal.number, 0.6);
+    ctx.lineWidth = 1;
+    ctx.strokeRect(ix, iy, iw, ih);
+    font(ctx, fs.small);
+    text(ctx, iw > 200 ? `K=${r.strike}  σ per Newton step` : `K=${r.strike}  σ steps`, ix + 6, iy + fs.small * 0.9, pal.fg);
+    const sv = tr.sigma;
+    const shown = Math.max(1, Math.ceil(clamp01(prog - cur) * sv.length));
+    const sMax = Math.max(0.5, ...sv);
+    const sx = lin(0, Math.max(1, sv.length - 1), ix + 8, ix + iw - 8);
+    const sy = lin(0, sMax, iy + ih - fs.small * 1.6, iy + fs.small * 2);
+    line(ctx, sv.slice(0, shown).map((s, j) => [sx(j), sy(s)]), pal.number, 1.6);
+    sv.slice(0, shown).forEach((s, j) => dot(ctx, sx(j), sy(s), 2.4, pal.number));
+    text(
+      ctx,
+      `0.20 → ${Number.isFinite(r.iv) ? r.iv.toFixed(3) : 'NaN'} in ${tr.iters} it`,
+      ix + 6,
+      iy + ih - fs.small * 0.8,
+      Number.isFinite(r.iv) ? pal.number : pal.keyword,
+    );
+  }
+}
+
+// 5. smoothing sweep + NaN drop
+function drawSmooth(a: DrawArgs) {
+  const { ctx, p, x, pal, fs, t } = a;
+  const bx = frame(a.w, a.h, fs);
+  header(a, 4);
+  axes(ctx, bx, pal, fs, 'strike K', 'implied vol σ');
+  const X = strikeX(bx);
+  const Y = ivY(p, bx);
+  const n = p.withIv.length;
+  const sweep = phase(t, 0.05, 0.75);
+  const drop = phase(t, 0.78, 0.95);
+  const center = Math.min(n - 1, Math.floor(sweep * n));
+  p.withIv.forEach((r, i) => {
+    if (Number.isFinite(r.iv)) dot(ctx, X(r.strike), Y(r.iv), 2.6, hexAlpha(pal.number, 0.45));
+  });
+  if (sweep < 1) {
+    const j0 = Math.max(0, center - KERNEL);
+    const j1 = Math.min(n - 1, center + KERNEL);
+    ctx.fillStyle = hexAlpha(pal.method, 0.1);
+    ctx.fillRect(X(p.withIv[j0].strike) - 4, bx.t, X(p.withIv[j1].strike) - X(p.withIv[j0].strike) + 8, bx.b - bx.t);
+    const bh = (bx.b - bx.t) * 0.18;
+    const pts: [number, number][] = [];
+    for (let j = j0; j <= j1; j++) {
+      const wt = Math.exp(-((center - j) ** 2) / (2 * KERNEL * KERNEL));
+      const xx = X(p.withIv[j].strike);
+      line(ctx, [[xx, bx.b], [xx, bx.b - wt * bh]], hexAlpha(pal.method, 0.7), 2);
+      pts.push([xx, bx.b - wt * bh]);
+    }
+    line(ctx, pts, pal.method, 1.2);
+    font(ctx, fs.small);
+    text(ctx, 'kernel weights, rows i±5', X(p.withIv[center].strike), bx.b - bh - fs.small, pal.method, 'center');
+  }
+  const upto = sweep >= 1 ? n - 1 : center;
+  for (let i = 0; i <= upto; i++) {
+    const v = p.smoothed[i];
+    if (Number.isFinite(v)) dot(ctx, X(p.withIv[i].strike), Y(v), 3.2, pal.type);
+    else if (drop < 1) {
+      ctx.globalAlpha = 1 - drop;
+      const xx = X(p.withIv[i].strike);
+      const yy = bx.t + (bx.b - bx.t) * 0.5;
+      font(ctx, fs.small);
+      text(ctx, '×', xx, yy + drop * 30, pal.keyword, 'center');
+      ctx.globalAlpha = 1;
+    }
+  }
+  legend(ctx, [['raw σ', hexAlpha(pal.number, 0.6)], ['smoothed', pal.type]], bx.r, bx.t + fs.small * 0.6, fs);
+  if (drop > 0) {
+    font(ctx, fs.small);
+    text(
+      ctx,
+      `${x.dropped.length} NaN row${x.dropped.length === 1 ? '' : 's'} dropped · ${x.kPts.length} left`,
+      bx.l + 8,
+      bx.t + fs.small * 2.2,
+      pal.fg,
+    );
+  }
+}
+
+// 6. morph (K, σ) -> (k, w)
+function drawCoords(a: DrawArgs) {
+  const { ctx, p, x, pal, fs, t } = a;
+  const bx = frame(a.w, a.h, fs);
+  header(a, 5);
+  const u = ease(phase(t, 0.1, 0.8));
+  const X = strikeX(bx);
+  const Y = ivY(p, bx);
+  const { kx, wy } = kwScales(x, bx);
+  axes(ctx, bx, pal, fs, u < 0.5 ? 'strike K' : 'k = ln(K/F)', u < 0.5 ? 'implied vol σ' : 'total variance w = σ²τ');
+  for (const q of x.kPts) dot(ctx, mix(X(q.K), kx(q.k), u), mix(Y(q.iv), wy(q.w), u), 3.2, pal.type);
+  if (u > 0.95) {
+    line(ctx, [[kx(0), bx.t], [kx(0), bx.b]], hexAlpha(pal.method, 0.6), 1, [4, 4]);
+    font(ctx, fs.small);
+    text(ctx, 'k = 0 (at the forward)', kx(0) + 4, bx.t + fs.small * 0.6, pal.method);
+  }
+}
+
+// 7. Nelder-Mead SVI fit animates
+function drawSvi(a: DrawArgs) {
+  const { ctx, p, x, pal, fs, t } = a;
+  const bx = frame(a.w, a.h, fs);
+  header(a, 6);
+  axes(ctx, bx, pal, fs, 'k = ln(K/F)', 'total variance w');
+  const { kx, wy, k0, k1 } = kwScales(x, bx);
+  for (const q of x.kPts) dot(ctx, kx(q.k), wy(q.w), 3.2, pal.type);
+  const hp = p.history;
+  const u = phase(t, 0.08, 0.9);
+  const idx = Math.min(hp.length - 1, Math.floor(Math.pow(u, 2.2) * (hp.length - 1)));
+  const s = hp[idx];
+  const pts: [number, number][] = [];
+  for (let i = 0; i <= 120; i++) {
+    const k = k0 + ((k1 - k0) * i) / 120;
+    const wv = sviW(k, s.a, s.b, s.rho, s.m, s.sigma);
+    pts.push([kx(k), Math.max(bx.t - 10, Math.min(bx.b + 10, wy(wv)))]);
+  }
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(bx.l, bx.t - 4, bx.r - bx.l, bx.b - bx.t + 4);
+  ctx.clip();
+  line(ctx, pts, pal.method, 2.2);
+  ctx.restore();
+  let sse = 0;
+  for (const q of x.kPts) sse += (sviW(q.k, s.a, s.b, s.rho, s.m, s.sigma) - q.w) ** 2;
+  font(ctx, fs.small);
+  const lines = [
+    `iter ${Math.round((idx / Math.max(1, hp.length - 1)) * 4000)}/4000   SSE ${sse.toExponential(2)}`,
+    `a=${s.a.toFixed(4)} b=${s.b.toFixed(3)} ρ=${s.rho.toFixed(2)}`,
+    `m=${s.m.toFixed(3)} σ=${s.sigma.toFixed(3)}`,
+  ];
+  const cx = (bx.l + bx.r) / 2;
+  lines.forEach((l, i) => text(ctx, l, cx, bx.t + fs.small * (0.8 + i * 1.35), i ? pal.fg : pal.number, 'center'));
+}
+
+// 8. g(k) full plot
+function drawG(a: DrawArgs) {
+  const { ctx, x, pal, fs, t } = a;
+  const bx = frame(a.w, a.h, fs);
+  header(a, 7);
+  axes(ctx, bx, pal, fs, 'k = ln(K/F)  (401 check points)', 'g(k)');
+  const gmin = Math.min(...x.gV);
+  const gmax = Math.max(...x.gV);
+  const Y = lin(Math.min(0, gmin) - 0.1 * (gmax - Math.min(0, gmin)), gmax * 1.08, bx.b, bx.t);
+  const X = lin(x.gK[0], x.gK[x.gK.length - 1], bx.l + 4, bx.r - 4);
+  ctx.fillStyle = hexAlpha(pal.keyword, 0.08);
+  ctx.fillRect(bx.l, Y(0), bx.r - bx.l, bx.b - Y(0));
+  line(ctx, [[bx.l, Y(0)], [bx.r, Y(0)]], hexAlpha(pal.keyword, 0.8), 1, [5, 4]);
+  font(ctx, fs.small);
+  text(ctx, 'g < 0 → arbitrage → error', bx.r - 4, Y(0) + fs.small, pal.keyword, 'right');
+  const n = Math.max(2, Math.floor(ease(phase(t, 0.05, 0.75)) * x.gK.length));
+  const ok = gmin >= 0;
+  line(ctx, x.gK.slice(0, n).map((k, i) => [X(k), Y(x.gV[i])]), ok ? pal.type : pal.keyword, 2.2);
+  if (n >= x.gK.length) {
+    const im = x.gV.indexOf(gmin);
+    dot(ctx, X(x.gK[im]), Y(gmin), 4.5, ok ? pal.type : pal.keyword);
+    font(ctx, fs.label, '600');
+    text(
+      ctx,
+      ok ? `min g = ${gmin.toFixed(3)} ≥ 0  ✓ passes` : `min g = ${gmin.toFixed(3)} < 0  ✗`,
+      Math.min(Math.max(X(x.gK[im]), bx.l + 120), bx.r - 120),
+      Y(gmin) - fs.label * 1.4,
+      ok ? pal.type : pal.keyword,
+      'center',
+    );
+  }
+}
+
+// 9. reprice: market dots vs smooth BS curve drawn across
+function drawReprice(a: DrawArgs) {
+  const { ctx, p, pal, fs, t } = a;
+  const bx = frame(a.w, a.h, fs);
+  header(a, 8);
+  axes(ctx, bx, pal, fs, 'strike K', 'call price');
+  const X = strikeX(bx);
+  const Y = priceY(p, bx);
+  for (const r of p.paritized) dot(ctx, X(r.strike), Y(r.price), 3, hexAlpha(pal.comment, 0.75));
+  const u = ease(phase(t, 0.1, 0.85));
+  const kEnd = 60 + 80 * u;
+  const pts: [number, number][] = [];
+  for (let K = 60; K <= kEnd; K += 0.5) pts.push([X(K), Y(bsCall(SPOT, K, TAU, RATE, p.ivFun(K)))]);
+  line(ctx, pts, pal.variable, 2.2);
+  if (u < 1 && pts.length) {
+    const [lx, ly] = pts[pts.length - 1];
+    dot(ctx, lx, ly, 4, pal.variable);
+    font(ctx, fs.small);
+    text(ctx, `σ_SVI=${p.ivFun(kEnd).toFixed(3)}`, lx + 6, ly - fs.small, pal.variable);
+  }
+  for (const r of p.repriced) if (r.strike <= kEnd) dot(ctx, X(r.strike), Y(r.price), 2, pal.method);
+  spotLine(a, bx, X);
+  legend(ctx, [['market (parity)', hexAlpha(pal.comment, 0.9)], ['SVI repriced', pal.variable]], bx.r, bx.t + fs.small * 2, fs);
+}
+
+// 10. BL: butterfly on curve + density trace
+function drawBL(a: DrawArgs, Kfixed: number | null) {
+  const { ctx, p, pal, fs, t, w, h } = a;
+  header(a, 9, `drawn h = ${H_VISUAL} · code h = ${H_CODE}`);
+  const top = 14 + fs.label * 1.6;
+  const split = top + (h - top) * 0.52;
+  const b1: Box = { l: 16 + fs.small * 2.6, r: w - 14, t: top + fs.small * 1.8, b: split - 6 };
+  const b2: Box = { l: b1.l, r: b1.r, t: split + fs.small * 1.6, b: h - 14 - fs.small * 1.6 };
+  const lo = 76;
+  const hi = 124;
+  const X = lin(lo, hi, b1.l + 4, b1.r - 4);
+  const C = (K: number) => bsCall(SPOT, K, TAU, RATE, p.ivFun(K));
+  const cs: number[] = [];
+  for (let K = lo; K <= hi; K += 0.5) cs.push(C(K));
+  const Y1 = lin(Math.min(...cs), Math.max(...cs) * 1.04, b1.b, b1.t);
+  const K = Kfixed ?? mix(K_MIN_UI, K_MAX_UI, ease(phase(t, 0.05, 0.92)));
+  axes(ctx, b1, pal, fs, '', 'call price C(K)');
+  const curve: [number, number][] = [];
+  for (let k = lo; k <= hi; k += 0.5) curve.push([X(k), Y1(C(k))]);
+  line(ctx, curve, pal.variable, 1.8);
+  const kl = K - H_VISUAL;
+  const kr = K + H_VISUAL;
+  const pL: [number, number] = [X(kl), Y1(C(kl))];
+  const pM: [number, number] = [X(K), Y1(C(K))];
+  const pR: [number, number] = [X(kr), Y1(C(kr))];
+  line(ctx, [pL, pR], hexAlpha(pal.string, 0.9), 1.4, [4, 3]);
+  const chordY = (pL[1] + pR[1]) / 2;
+  ctx.fillStyle = hexAlpha(pal.string, 0.35);
+  ctx.fillRect(pM[0] - 3, chordY, 6, pM[1] - chordY);
+  dot(ctx, ...pL, 4.2, pal.type);
+  dot(ctx, ...pR, 4.2, pal.type);
+  dot(ctx, ...pM, 4.2, pal.keyword);
+  font(ctx, fs.small);
+  text(ctx, 'buy 1', pL[0] - 6, pL[1] - fs.small * 0.6, pal.type, 'right');
+  text(ctx, 'sell 2', pM[0] - 6, pM[1] + fs.small * 0.9, pal.keyword, 'right');
+  text(ctx, 'buy 1', pR[0] + 6, pR[1] - fs.small * 0.6, pal.type, 'left');
+  // butterfly payoff tent inset (top-right, over the flat tail)
+  const tw = Math.min(170, (b1.r - b1.l) * 0.34);
+  const th = Math.min(70, (b1.b - b1.t) * 0.45);
+  const tx = b1.r - tw;
+  const ty = b1.t;
+  ctx.fillStyle = hexAlpha(pal.editor, 0.9);
+  ctx.fillRect(tx, ty, tw, th);
+  ctx.strokeStyle = hexAlpha(pal.border, 1);
+  ctx.lineWidth = 1;
+  ctx.strokeRect(tx, ty, tw, th);
+  const TX = lin(-2, 2, tx + 6, tx + tw - 6);
+  const base = ty + th - 8;
+  const peak = ty + fs.small * 1.8;
+  line(ctx, [[TX(-2), base], [TX(-1), base], [TX(0), peak], [TX(1), base], [TX(2), base]], pal.method, 1.8);
+  font(ctx, fs.small);
+  text(ctx, tw > 150 ? 'payoff at expiry' : 'payoff', tx + 6, ty + fs.small * 0.8, pal.comment);
+  text(ctx, 'K', TX(0), base + 1, pal.method, 'center');
+
+  // density panel
+  const ys = p.pdfY;
+  const Y2 = lin(0, Math.max(...ys) * 1.12, b2.b, b2.t);
+  axes(ctx, b2, pal, fs, 'strike K', 'density f(K)');
+  const tr: [number, number][] = [];
+  const done = Kfixed !== null;
+  p.pdfK.forEach((k, i) => {
+    if (k >= lo && k <= hi && (done || k <= K)) tr.push([X(k), Y2(ys[i])]);
+  });
+  line(ctx, tr, pal.type, 2.2);
+  const fK = breedenLitzenberger(K, p.ivFun);
+  line(ctx, [[pM[0], pM[1]], [pM[0], Y2(fK)]], hexAlpha(pal.string, 0.5), 1, [2, 3]);
+  dot(ctx, X(K), Y2(fK), 4.5, pal.string);
+  font(ctx, fs.small);
+  const lab = `K=${K.toFixed(1)}  f(K)=${fK.toFixed(4)}`;
+  const lw = ctx.measureText(lab).width;
+  text(ctx, lab, Math.min(Math.max(X(K) - lw / 2, b2.l + 4), b2.r - lw), b2.t + fs.small * 0.2, pal.string);
+}
+
+// 11. probabilities
+function drawProb(a: DrawArgs, K: number) {
+  const { ctx, p, x, pal, fs, t } = a;
+  const bx = frame(a.w, a.h, fs);
+  header(a, 10, 'synthetic chain');
+  axes(ctx, bx, pal, fs, 'price at expiry', 'density');
+  const ks = p.pdfK;
+  const ys = p.pdfY;
+  const X = lin(ks[0], ks[ks.length - 1], bx.l + 4, bx.r - 4);
+  const Y = lin(0, x.pdfMax * 1.25, bx.b, bx.t);
+  const target = ks.findIndex((k) => k >= K);
+  const cut = target < 0 ? ks.length - 1 : target;
+  const fill = Math.round(mix(0, cut, ease(phase(t, 0.1, 0.8))));
+  ctx.beginPath();
+  ctx.moveTo(X(ks[0]), Y(0));
+  for (let i = 0; i <= fill; i++) ctx.lineTo(X(ks[i]), Y(ys[i]));
+  ctx.lineTo(X(ks[fill]), Y(0));
+  ctx.closePath();
+  ctx.fillStyle = hexAlpha(pal.type, 0.3);
+  ctx.fill();
+  const showAbove = phase(t, 0.82, 1);
+  if (showAbove > 0) {
+    ctx.beginPath();
+    ctx.moveTo(X(ks[cut]), Y(0));
+    for (let i = cut; i < ks.length; i++) ctx.lineTo(X(ks[i]), Y(ys[i]));
+    ctx.lineTo(X(ks[ks.length - 1]), Y(0));
+    ctx.closePath();
+    ctx.fillStyle = hexAlpha(pal.keyword, 0.24 * showAbove);
+    ctx.fill();
+  }
+  line(ctx, ks.map((k, i) => [X(k), Y(ys[i])]), pal.variable, 2.2);
+  line(ctx, [[X(SPOT), bx.t], [X(SPOT), bx.b]], hexAlpha(pal.method, 0.5), 1, [4, 4]);
+  line(ctx, [[X(K), bx.t], [X(K), bx.b]], pal.string, 1.4, [2, 3]);
+  const pb = x.cumBelow[fill];
+  font(ctx, fs.label, '600');
+  const yLab = bx.t + fs.label * 0.8;
+  const nearL = X(K) - bx.l < 150;
+  const nearR = bx.r - X(K) < 150;
+  text(ctx, `P(below ${K.toFixed(1)}) = ${pb.toFixed(3)}`, X(K) + (nearL ? 6 : -6), yLab, pal.type, nearL ? 'left' : 'right');
+  if (showAbove > 0) {
+    ctx.globalAlpha = showAbove;
+    text(
+      ctx,
+      `P(at/above) = ${(1 - x.cumBelow[cut]).toFixed(3)}`,
+      X(K) + (nearR ? -6 : 6),
+      yLab + fs.label * 1.5,
+      pal.keyword,
+      nearR ? 'right' : 'left',
+    );
+    ctx.globalAlpha = 1;
+  }
+  font(ctx, fs.small);
+  text(ctx, `K=${K.toFixed(1)}`, X(K), bx.b + fs.small * 1.1, pal.string, 'center');
+  text(ctx, `spot ${SPOT}`, X(SPOT) + 4, bx.b - fs.small, pal.method);
+}
 
 type Anim = { t: number; dwell: number };
 
@@ -91,75 +733,48 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [visible, setVisible] = useState(false);
-  const [scene, setScene] = useState<Scene>('chain');
+  const [step, setStep] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
-  const [strikeC, setStrikeC] = useState(100);
-  const [strikeD, setStrikeD] = useState(100);
+  const [strike, setStrike] = useState(96);
   const [ready, setReady] = useState(false);
-  const [pRead, setPRead] = useState({ below: 0, above: 1, dens: 0 });
 
-  const sceneRef = useRef<Scene>('chain');
+  const stepRef = useRef(0);
   const autoRef = useRef(true);
   const userRef = useRef(false);
   const inViewRef = useRef(true);
   const reducedRef = useRef(false);
   const colorsRef = useRef<Colors | null>(null);
-  const pipeRef = useRef<Pipeline | null>(null);
-  const anim = useRef<Record<Scene, Anim>>({
-    chain: { t: 0, dwell: 0 },
-    smile: { t: 0, dwell: 0 },
-    butterfly: { t: 0, dwell: 0 },
-    pdf: { t: 0, dwell: 0 },
-  });
-  const strikeCRef = useRef(100);
-  const strikeDRef = useRef(100);
-  const pCache = useRef(new Map<number, number>());
+  const dataRef = useRef<{ p: Pipeline; x: Extra } | null>(null);
+  const anim = useRef<Anim>({ t: 0, dwell: 0 });
+  const strikeRef = useRef(96);
+  const touchedRef = useRef(false);
   const fade = useRef(1);
 
-  const pipe = useMemo(() => {
+  const data = useMemo(() => {
     if (!visible) return null;
-    return runPipeline(SEED);
+    const p = runPipeline(SEED);
+    return { p, x: buildExtra(p) };
   }, [visible]);
 
   useEffect(() => {
-    pipeRef.current = pipe;
-    if (pipe) {
-      setReady(true);
-      const dens = breedenLitzenberger(100, pipe.ivFun);
-      const below = pBelow(100, pipe.ivFun);
-      pCache.current.set(100, below);
-      setPRead({ below, above: 1 - below, dens });
-    }
-  }, [pipe]);
-
+    dataRef.current = data;
+    if (data) setReady(true);
+  }, [data]);
   useEffect(() => {
-    sceneRef.current = scene;
-  }, [scene]);
+    stepRef.current = step;
+  }, [step]);
   useEffect(() => {
     autoRef.current = autoplay;
   }, [autoplay]);
   useEffect(() => {
-    strikeCRef.current = strikeC;
-  }, [strikeC]);
-  useEffect(() => {
-    strikeDRef.current = strikeD;
-    const p = pipeRef.current;
-    if (!p) return;
-    const key = Math.round(strikeD * 10) / 10;
-    let below = pCache.current.get(key);
-    if (below === undefined) {
-      below = pBelow(key, p.ivFun);
-      pCache.current.set(key, below);
-    }
-    setPRead({ below, above: 1 - below, dens: breedenLitzenberger(key, p.ivFun) });
-  }, [strikeD]);
+    strikeRef.current = strike;
+  }, [strike]);
   useEffect(() => {
     colorsRef.current = {
       fg: theme.colors.foreground,
       comment: theme.colors.comment,
       method: theme.colors.method,
       editor: theme.colors.editor,
-      sidebar: theme.colors.sidebar,
       border: theme.colors.border,
       string: theme.colors.string,
       keyword: theme.colors.keyword,
@@ -174,24 +789,20 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
     autoRef.current = false;
     setAutoplay(false);
   };
-
-  const resetScene = (id: Scene, reduced: boolean) => {
-    fade.current = 0;
-    anim.current[id] = { t: reduced ? 1 : 0, dwell: 0 };
-  };
-
-  const goScene = (id: Scene, fromUser: boolean) => {
+  const goStep = (i: number, fromUser: boolean) => {
+    const j = Math.max(0, Math.min(N_STEPS - 1, i));
     if (fromUser) stopAuto();
-    resetScene(id, reducedRef.current);
-    setScene(id);
+    fade.current = 0;
+    anim.current = { t: reducedRef.current ? 1 : 0, dwell: 0 };
+    touchedRef.current = false;
+    stepRef.current = j;
+    setStep(j);
   };
-
   const replay = () => {
     userRef.current = false;
     autoRef.current = !reducedRef.current;
     setAutoplay(!reducedRef.current);
-    resetScene('chain', reducedRef.current);
-    setScene('chain');
+    goStep(0, false);
   };
 
   useEffect(() => {
@@ -216,11 +827,9 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
     if (reducedRef.current) {
       autoRef.current = false;
       setAutoplay(false);
-      (Object.keys(anim.current) as Scene[]).forEach((k) => {
-        anim.current[k] = { t: 1, dwell: 0 };
-      });
+      anim.current = { t: 1, dwell: 0 };
+      fade.current = 1;
     }
-
     let disposed = false;
     let raf = 0;
     let running = false;
@@ -241,20 +850,18 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
     const ro = new ResizeObserver(fit);
     ro.observe(host);
 
-    const order: Scene[] = ['chain', 'smile', 'butterfly', 'pdf'];
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      fade.current = Math.min(1, fade.current + dt * 3.2);
-      const sc = sceneRef.current;
-      const a = anim.current[sc];
       const reduced = reducedRef.current;
-      if (a.t < 1) a.t = Math.min(1, a.t + dt * (reduced ? 8 : sc === 'smile' ? 0.16 : 0.22));
+      fade.current = reduced ? 1 : Math.min(1, fade.current + dt * 3.2);
+      const a = anim.current;
+      const s = stepRef.current;
+      if (a.t < 1) a.t = Math.min(1, a.t + dt / (reduced ? 0.01 : STEPS[s].dur));
       else {
         a.dwell += dt;
-        if (autoRef.current && !userRef.current && a.dwell > 0.85) {
-          const i = order.indexOf(sc);
-          if (i < order.length - 1) goScene(order[i + 1], false);
+        if (autoRef.current && !userRef.current && a.dwell > 1.6) {
+          if (s < N_STEPS - 1) goStep(s + 1, false);
           else {
             autoRef.current = false;
             setAutoplay(false);
@@ -266,25 +873,24 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
     const draw = () => {
       const ctx = canvas.getContext('2d');
       const pal = colorsRef.current;
-      const p = pipeRef.current;
+      const d = dataRef.current;
       if (!ctx || !pal) return;
       const w = host.clientWidth || 640;
       const h = host.clientHeight || 420;
       ctx.clearRect(0, 0, w, h);
-      if (!p) {
+      if (!d) {
         font(ctx, 12);
-        fillText(ctx, 'building synthetic chain…', 16, h / 2, pal.comment);
+        text(ctx, 'building synthetic chain…', 16, h / 2, pal.comment);
         return;
       }
       ctx.save();
       ctx.globalAlpha = fade.current;
-      const fs = typeScale(w);
-      const sc = sceneRef.current;
-      const t = anim.current[sc].t;
-      if (sc === 'chain') drawChain(ctx, w, h, pal, p, t, fs);
-      else if (sc === 'smile') drawSmile(ctx, w, h, pal, p, t, fs);
-      else if (sc === 'butterfly') drawButterfly(ctx, w, h, pal, p, strikeCRef.current, fs);
-      else drawPdf(ctx, w, h, pal, p, strikeDRef.current, fs);
+      const s = stepRef.current;
+      const args: DrawArgs = { ctx, w, h, pal, p: d.p, x: d.x, t: anim.current.t, fs: typeScale(w), K: strikeRef.current };
+      const fns = [drawRaw, drawOtm, drawParity, drawNewton, drawSmooth, drawCoords, drawSvi, drawG, drawReprice];
+      if (s < fns.length) fns[s](args);
+      else if (s === 9) drawBL(args, anim.current.t >= 1 || touchedRef.current ? strikeRef.current : null);
+      else drawProb(args, strikeRef.current);
       ctx.restore();
     };
 
@@ -323,7 +929,13 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  const densC = pipe ? breedenLitzenberger(strikeC, pipe.ivFun) : 0;
+  const st = STEPS[step];
+  const btn = 'rounded-md border text-[11px] lg:text-[12px] font-medium';
+  const chipStyle = (on: boolean) => ({
+    borderColor: on ? 'var(--theme-method)' : 'var(--theme-border)',
+    color: on ? 'var(--theme-editor)' : 'var(--theme-foreground)',
+    background: on ? 'var(--theme-method)' : 'var(--theme-editor)',
+  });
 
   return (
     <motion.div
@@ -335,7 +947,7 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
     >
       <div
         ref={hostRef}
-        className="relative w-full min-w-0 overflow-hidden rounded-t-lg aspect-[4/5] sm:aspect-[4/3] lg:aspect-[16/10] lg:min-h-0 lg:flex-1 lg:max-h-[calc(85vh-17rem)]"
+        className="relative w-full min-w-0 overflow-hidden rounded-t-lg aspect-[4/5] sm:aspect-[4/3] lg:aspect-[16/10] lg:min-h-0 lg:flex-1 lg:max-h-[calc(85vh-16rem)]"
         style={{ background: 'var(--theme-editor)' }}
       >
         {(!visible || !ready) && (
@@ -353,31 +965,48 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
       </div>
 
       <div
-        className="space-y-2.5 border-t px-3 py-3 sm:px-4 lg:shrink-0"
+        className="space-y-2 border-t px-3 py-2.5 sm:px-4 lg:shrink-0"
         style={{ background: 'var(--theme-sidebar)', borderColor: 'var(--theme-border)' }}
       >
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
-            {SCENES.map((s) => {
-              const on = scene === s.id;
-              return (
-                <motion.button
-                  key={s.id}
-                  type="button"
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => goScene(s.id, true)}
-                  className="rounded-md border px-2.5 py-1 text-[11px] font-medium"
-                  style={{
-                    borderColor: on ? 'var(--theme-method)' : 'var(--theme-border)',
-                    color: on ? 'var(--theme-editor)' : 'var(--theme-foreground)',
-                    background: on ? 'var(--theme-method)' : 'var(--theme-editor)',
-                  }}
-                >
-                  {s.label}
-                </motion.button>
-              );
-            })}
+        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.94 }}
+            aria-label="Previous step"
+            disabled={step === 0}
+            onClick={() => goStep(step - 1, true)}
+            className={`${btn} shrink-0 px-1.5 py-1 disabled:opacity-40`}
+            style={chipStyle(false)}
+          >
+            <ChevronLeft className="h-3.5 w-3.5" />
+          </motion.button>
+          <div className="order-first flex w-full min-w-0 flex-wrap gap-[3px] sm:order-none sm:w-auto sm:flex-1 sm:gap-1">
+            {STEPS.map((s, i) => (
+              <motion.button
+                key={s.title}
+                type="button"
+                whileTap={{ scale: 0.94 }}
+                aria-label={`Step ${i + 1}: ${s.title}`}
+                aria-current={step === i ? 'step' : undefined}
+                onClick={() => goStep(i, true)}
+                className={`${btn} min-w-[1.45rem] px-0.5 py-0.5 tabular-nums sm:min-w-[1.6rem] sm:px-1`}
+                style={chipStyle(step === i)}
+              >
+                {i + 1}
+              </motion.button>
+            ))}
           </div>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.94 }}
+            aria-label="Next step"
+            disabled={step === N_STEPS - 1}
+            onClick={() => goStep(step + 1, true)}
+            className={`${btn} shrink-0 px-1.5 py-1 disabled:opacity-40`}
+            style={chipStyle(false)}
+          >
+            <ChevronRight className="h-3.5 w-3.5" />
+          </motion.button>
           <motion.button
             type="button"
             whileTap={{ scale: 0.94 }}
@@ -385,12 +1014,8 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
               e.stopPropagation();
               replay();
             }}
-            className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border px-2.5 py-1 text-[11px] font-medium"
-            style={{
-              borderColor: 'var(--theme-border)',
-              color: 'var(--theme-foreground)',
-              background: 'var(--theme-editor)',
-            }}
+            className={`${btn} ml-auto inline-flex shrink-0 items-center gap-1 whitespace-nowrap px-2 py-1 sm:ml-0`}
+            style={chipStyle(false)}
           >
             {autoplay ? <RotateCcw className="h-3 w-3" /> : <Play className="h-3 w-3" />}
             {autoplay ? 'playing' : 'replay'}
@@ -399,81 +1024,50 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={scene}
+            key={step}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-2"
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="space-y-1"
+            data-step={step + 1}
           >
-            {scene === 'chain' && (
-              <p className="text-[10px] font-mono leading-snug" style={{ color: 'var(--theme-comment)' }}>
-                OTM only (yfinance inTheMoney=false) · OTM put → C = P + S − K e<sup>−rτ</sup> · r = 0.01 · τ = 30/365
-                · synthetic chain
-              </p>
-            )}
-            {scene === 'smile' && (
-              <p className="text-[10px] font-mono leading-snug" style={{ color: 'var(--theme-comment)' }}>
-                Newton σ₀=0.20, tol 1e−8, max 200 · smooth on row index i±{KERNEL} (NaNs poison neighbours) · SVI
-                w(k)=a+b(ρ(k−m)+√((k−m)²+σ²)) · k_extend={K_EXTEND}
-              </p>
-            )}
-            {scene === 'butterfly' && (
-              <>
-                <label className="block min-w-0">
-                  <div className="mb-0.5 flex justify-between text-[10px] font-mono" style={{ color: 'var(--theme-comment)' }}>
-                    <span>strike K</span>
-                    <span>{strikeC.toFixed(1)}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={76}
-                    max={124}
-                    step={0.5}
-                    value={strikeC}
-                    aria-label="Butterfly strike"
-                    onChange={(e) => setStrikeC(Number(e.target.value))}
-                    className="op-range w-full"
-                  />
-                </label>
-                <p className="text-[10px] font-mono leading-snug" style={{ color: 'var(--theme-comment)' }}>
-                  exp(rτ)(C(K+h)−2C(K)+C(K−h))/h² = {densC.toFixed(4)} · code h={H_CODE} · visual h={H_VISUAL}{' '}
-                  (enlarged h) · density at K
-                </p>
-              </>
-            )}
-            {scene === 'pdf' && (
-              <>
-                <label className="block min-w-0">
-                  <div className="mb-0.5 flex justify-between text-[10px] font-mono" style={{ color: 'var(--theme-comment)' }}>
-                    <span>strike K</span>
-                    <span>{strikeD.toFixed(1)}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={76}
-                    max={124}
-                    step={0.5}
-                    value={strikeD}
-                    aria-label="PDF strike"
-                    onChange={(e) => setStrikeD(Number(e.target.value))}
-                    className="op-range w-full"
-                  />
-                </label>
-                <p className="text-[10px] font-mono leading-snug" style={{ color: 'var(--theme-foreground)' }}>
-                  p_below = {pRead.below.toFixed(4)} · 1 − p_below = {pRead.above.toFixed(4)}
-                  <span style={{ color: 'var(--theme-comment)' }}>
-                    {' '}
-                    · trapezoid 10,000 steps from K=1 · exp(rτ) d²C/dK²
-                  </span>
-                </p>
-              </>
+            <div className="text-[12px] lg:text-[13px] font-semibold" style={{ color: 'var(--theme-method)' }}>
+              Step {step + 1} of {N_STEPS} · {st.title}
+            </div>
+            <p className="text-[11.5px] lg:text-[12.5px] leading-snug" style={{ color: 'var(--theme-foreground)' }}>
+              {st.caption}
+            </p>
+            <p className="font-mono text-[11px] lg:text-[12px] leading-snug break-words" style={{ color: 'var(--theme-string)' }}>
+              {st.formula}
+            </p>
+            {step >= 9 && (
+              <label className="block min-w-0 pt-1">
+                <div className="mb-0.5 flex justify-between font-mono text-[11px] lg:text-[12px]" style={{ color: 'var(--theme-comment)' }}>
+                  <span>drag strike K</span>
+                  <span>{strike.toFixed(1)}</span>
+                </div>
+                <input
+                  type="range"
+                  min={K_MIN_UI}
+                  max={K_MAX_UI}
+                  step={0.5}
+                  value={strike}
+                  aria-label="Strike"
+                  onChange={(e) => {
+                    touchedRef.current = true;
+                    anim.current.t = Math.max(anim.current.t, step === 10 ? 1 : 0);
+                    setStrike(Number(e.target.value));
+                  }}
+                  className="op-range w-full"
+                />
+              </label>
             )}
           </motion.div>
         </AnimatePresence>
 
-        <div className="text-[10px] leading-snug" style={{ color: 'var(--theme-comment)' }}>
-          synthetic chain · S={SPOT} · seed {SEED} ·{' '}
+        <div className="text-[11px] lg:text-[12px] leading-snug" style={{ color: 'var(--theme-comment)' }}>
+          synthetic chain (not market data) · S={SPOT} · seed {SEED} ·{' '}
           <a
             href="https://github.com/SentientPlatypus/OptionsImpliedPDF.jl"
             target="_blank"
@@ -487,432 +1081,14 @@ const OptionsPDF = ({ poster, title }: { poster: string; title: string }) => {
       </div>
 
       <style>{`
-        .op-range {
-          -webkit-appearance: none;
-          appearance: none;
-          height: 28px;
-          margin: -11px 0;
-          background: transparent;
-          outline: none;
-          cursor: pointer;
-          touch-action: pan-y;
-        }
-        .op-range::-webkit-slider-runnable-track {
-          height: 4px;
-          border-radius: 999px;
-          background: color-mix(in srgb, var(--theme-method) 55%, var(--theme-border));
-        }
-        .op-range::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          box-sizing: border-box;
-          width: 16px;
-          height: 16px;
-          margin-top: -6px;
-          border-radius: 999px;
-          background: var(--theme-method);
-          border: 2px solid var(--theme-sidebar);
-          cursor: pointer;
-          box-shadow: 0 0 0 1px var(--theme-border);
-        }
-        .op-range::-moz-range-track {
-          height: 4px;
-          border-radius: 999px;
-          background: color-mix(in srgb, var(--theme-method) 55%, var(--theme-border));
-        }
-        .op-range::-moz-range-thumb {
-          box-sizing: border-box;
-          width: 16px;
-          height: 16px;
-          border-radius: 999px;
-          background: var(--theme-method);
-          border: 2px solid var(--theme-sidebar);
-          cursor: pointer;
-        }
+        .op-range { -webkit-appearance: none; appearance: none; height: 28px; margin: -8px 0; background: transparent; outline: none; cursor: pointer; touch-action: pan-y; }
+        .op-range::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: color-mix(in srgb, var(--theme-method) 55%, var(--theme-border)); }
+        .op-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; box-sizing: border-box; width: 16px; height: 16px; margin-top: -6px; border-radius: 999px; background: var(--theme-method); border: 2px solid var(--theme-sidebar); cursor: pointer; box-shadow: 0 0 0 1px var(--theme-border); }
+        .op-range::-moz-range-track { height: 4px; border-radius: 999px; background: color-mix(in srgb, var(--theme-method) 55%, var(--theme-border)); }
+        .op-range::-moz-range-thumb { box-sizing: border-box; width: 16px; height: 16px; border-radius: 999px; background: var(--theme-method); border: 2px solid var(--theme-sidebar); cursor: pointer; }
       `}</style>
     </motion.div>
   );
 };
-
-function drawChain(
-  ctx: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  pal: Colors,
-  p: Pipeline,
-  t: number,
-  fs: TypeScale,
-) {
-  const pad = 14;
-  const top = Math.round(10 + fs.title * 1.4);
-  const bot = h - Math.round(10 + fs.small * 1.4);
-  const left = pad + 8;
-  const right = w - pad;
-  const ks = p.calls.map((c) => c.strike);
-  const px = [...p.calls.map((c) => c.ask), ...p.puts.map((q) => q.ask), ...p.paritized.map((r) => r.price)];
-  const xAt = xScale(Math.min(...ks), Math.max(...ks), left, right);
-  const yAt = yScale(0, Math.max(...px), top, bot);
-
-  font(ctx, fs.title, '600');
-  fillText(ctx, 'Chain  →  paritized calls', pad, pad + fs.title * 0.2, pal.method);
-  font(ctx, fs.small);
-  fillText(ctx, 'synthetic chain', w - pad, pad + fs.title * 0.2, pal.comment, 'right');
-
-  const fadeItm = Math.max(0, Math.min(1, (t - 0.12) / 0.22));
-  const toDots = Math.max(0, Math.min(1, (t - 0.34) / 0.16));
-  const fly = Math.max(0, Math.min(1, (t - 0.52) / 0.32));
-
-  const barW = Math.max(3, (right - left) / ks.length / 3);
-  for (const q of [...p.calls, ...p.puts]) {
-    const itm = q.inTheMoney;
-    const a = itm ? 1 - fadeItm : 1;
-    if (a < 0.02) continue;
-    const x = xAt(q.strike) + (q.kind === 'call' ? -barW * 0.7 : barW * 0.7);
-    ctx.globalAlpha = a * (1 - toDots * 0.85);
-    ctx.strokeStyle = q.kind === 'call' ? pal.type : pal.keyword;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(x, yAt(q.bid));
-    ctx.lineTo(x, yAt(q.ask));
-    ctx.stroke();
-    ctx.fillStyle = q.kind === 'call' ? pal.type : pal.keyword;
-    ctx.fillRect(x - 2, yAt(q.mid) - 1.5, 4, 3);
-  }
-  ctx.globalAlpha = 1;
-
-  for (const q of [...p.calls, ...p.puts]) {
-    if (q.inTheMoney && fadeItm > 0.95) continue;
-    const a = q.inTheMoney ? 1 - fadeItm : toDots;
-    if (a < 0.02) continue;
-    ctx.globalAlpha = a;
-    ctx.beginPath();
-    ctx.fillStyle = q.kind === 'call' ? pal.type : pal.keyword;
-    ctx.arc(xAt(q.strike), yAt(q.mid), 3.2, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-
-  for (const row of p.paritized) {
-    if (row.from !== 'put') continue;
-    const y0 = yAt(row.raw);
-    const y1 = yAt(row.price);
-    const y = y0 + (y1 - y0) * fly;
-    ctx.beginPath();
-    ctx.fillStyle = hexAlpha(pal.string, 0.35 + 0.65 * fly);
-    ctx.arc(xAt(row.strike), y, 3.4, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  if (t > 0.72) {
-    ctx.beginPath();
-    ctx.strokeStyle = pal.variable;
-    ctx.lineWidth = 1.6;
-    p.paritized.forEach((row, i) => {
-      const x = xAt(row.strike);
-      const y = yAt(row.price);
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-  }
-
-  ctx.setLineDash([4, 4]);
-  ctx.strokeStyle = hexAlpha(pal.method, 0.75);
-  ctx.beginPath();
-  ctx.moveTo(xAt(SPOT), top);
-  ctx.lineTo(xAt(SPOT), bot);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  font(ctx, fs.small);
-  fillText(ctx, `S=${SPOT}`, xAt(SPOT) + 4, top + fs.small, pal.method);
-  fillText(ctx, 'strike', left, bot + fs.small, pal.comment);
-  fillText(ctx, 'call  put  parity', w - pad, bot + fs.small, pal.comment, 'right');
-}
-
-function drawSmile(
-  ctx: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  pal: Colors,
-  p: Pipeline,
-  t: number,
-  fs: TypeScale,
-) {
-  const pad = 14;
-  const top = Math.round(10 + fs.title * 1.4);
-  const bot = h - Math.round(28 + fs.small);
-  const left = pad + 6;
-  const right = w - pad;
-  const Ks = p.withIv.map((r) => r.strike);
-  const ivs = p.withIv.map((r) => r.iv).filter(Number.isFinite);
-  const xAt = xScale(Math.min(...Ks), Math.max(...Ks), left, right);
-  const yAt = yScale(Math.min(...ivs) * 0.92, Math.max(...ivs) * 1.08, top, bot);
-
-  font(ctx, fs.title, '600');
-  fillText(ctx, 'Smile  ·  IV → smooth → SVI', pad, pad + fs.title * 0.2, pal.method);
-
-  const n = p.withIv.length;
-  const newtonN = Math.min(n, Math.floor(Math.max(0, t / 0.34) * n));
-  const sweep = Math.max(0, Math.min(1, (t - 0.34) / 0.2));
-  const drop = Math.max(0, Math.min(1, (t - 0.54) / 0.1));
-  const sviT = Math.max(0, Math.min(1, (t - 0.64) / 0.3));
-
-  for (let i = 0; i < newtonN; i++) {
-    const row = p.withIv[i];
-    if (!Number.isFinite(row.iv)) continue;
-    ctx.beginPath();
-    ctx.fillStyle = pal.variable;
-    ctx.arc(xAt(row.strike), yAt(row.iv), 3.1, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  if (newtonN > 0 && newtonN <= n && t < 0.36) {
-    const row = p.withIv[Math.min(n - 1, newtonN - 1)];
-    const tr = row.trace;
-    font(ctx, fs.readout);
-    fillText(
-      ctx,
-      `Newton  K=${row.strike}  iters=${tr.iters}  σ=${Number.isFinite(row.iv) ? row.iv.toFixed(3) : 'NaN'}  vega=${tr.vega.toExponential(2)}`,
-      pad,
-      top + fs.readout * 0.2,
-      pal.number,
-    );
-    const boxX = w - pad - 88;
-    const boxY = top + 8;
-    ctx.strokeStyle = hexAlpha(pal.number, 0.5);
-    ctx.strokeRect(boxX, boxY, 80, 36);
-    if (tr.sigma.length > 1) {
-      ctx.beginPath();
-      ctx.strokeStyle = pal.number;
-      tr.sigma.forEach((s, i) => {
-        const x = boxX + 4 + (72 * i) / (tr.sigma.length - 1);
-        const y = boxY + 32 - (s / 1.2) * 28;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-    }
-  }
-
-  if (sweep > 0) {
-    const center = Math.min(n - 1, Math.floor(sweep * n));
-    const j0 = Math.max(0, center - KERNEL);
-    const j1 = Math.min(n - 1, center + KERNEL);
-    ctx.fillStyle = hexAlpha(pal.method, 0.1);
-    ctx.fillRect(xAt(p.withIv[j0].strike), top, xAt(p.withIv[j1].strike) - xAt(p.withIv[j0].strike), bot - top);
-    const bellX = xAt(p.withIv[center].strike);
-    ctx.beginPath();
-    ctx.strokeStyle = hexAlpha(pal.method, 0.7);
-    for (let j = j0; j <= j1; j++) {
-      const wt = Math.exp(-((center - j) ** 2) / (2 * KERNEL * KERNEL));
-      const x = xAt(p.withIv[j].strike);
-      const y = top + 8 + (1 - wt) * 22;
-      if (j === j0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-    for (let i = 0; i <= center; i++) {
-      const iv = p.smoothed[i];
-      if (!Number.isFinite(iv)) continue;
-      ctx.beginPath();
-      ctx.fillStyle = pal.type;
-      ctx.arc(xAt(p.withIv[i].strike), yAt(iv), 2.6, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    void bellX;
-  }
-
-  if (drop > 0) {
-    p.withIv.forEach((row, i) => {
-      if (Number.isFinite(p.smoothed[i])) return;
-      ctx.globalAlpha = 1 - drop;
-      ctx.beginPath();
-      ctx.strokeStyle = pal.keyword;
-      ctx.arc(xAt(row.strike), yAt(Number.isFinite(row.iv) ? row.iv : Math.min(...ivs)), 4, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-    });
-  }
-
-  if (sviT > 0 && p.history.length) {
-    const hist = p.history[Math.min(p.history.length - 1, Math.floor(sviT * (p.history.length - 1)))];
-    const dens = 80;
-    ctx.beginPath();
-    ctx.strokeStyle = pal.method;
-    ctx.lineWidth = 2;
-    for (let i = 0; i < dens; i++) {
-      const K = 60 + (80 * i) / (dens - 1);
-      const k = Math.log(K / p.F);
-      const iv = Math.sqrt(Math.max(0, (hist.a + hist.b * (hist.rho * (k - hist.m) + Math.sqrt((k - hist.m) ** 2 + hist.sigma ** 2))) / TAU));
-      const x = xAt(K);
-      const y = yAt(iv);
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-    font(ctx, fs.small);
-    fillText(
-      ctx,
-      `a=${hist.a.toFixed(3)}  b=${hist.b.toFixed(3)}  ρ=${hist.rho.toFixed(2)}  m=${hist.m.toFixed(2)}  σ=${hist.sigma.toFixed(2)}`,
-      pad,
-      bot + fs.small * 1.1,
-      pal.fg,
-    );
-    const gW = Math.min(120, w * 0.28);
-    const gX = w - pad - gW;
-    const gY = bot + 2;
-    ctx.fillStyle = hexAlpha(pal.border, 0.5);
-    ctx.fillRect(gX, gY, gW, 10);
-    const ok = hist.minG >= 0;
-    ctx.fillStyle = hexAlpha(ok ? pal.type : pal.keyword, 0.85);
-    ctx.fillRect(gX, gY, gW * Math.max(0.08, Math.min(1, 0.5 + hist.minG)), 10);
-    font(ctx, fs.small);
-    fillText(ctx, ok ? `g(k)≥0  min ${hist.minG.toFixed(2)}` : `min g ${hist.minG.toFixed(2)}`, gX, gY + 16, ok ? pal.type : pal.keyword);
-  }
-}
-
-function drawButterfly(
-  ctx: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  pal: Colors,
-  p: Pipeline,
-  K: number,
-  fs: TypeScale,
-) {
-  const pad = 14;
-  const top = Math.round(10 + fs.title * 1.35);
-  const mid = h * 0.58;
-  const bot = h - Math.round(12 + fs.small);
-  const left = pad;
-  const right = w - pad;
-  const prices = p.repriced.map((r) => r.price);
-  const xAt = xScale(60, 140, left, right);
-  const yAt = yScale(Math.min(...prices), Math.max(...prices), top, mid - 8);
-
-  font(ctx, fs.title, '600');
-  fillText(ctx, 'Butterfly  ·  Breeden–Litzenberger', pad, pad + fs.title * 0.2, pal.method);
-  font(ctx, fs.small);
-  fillText(ctx, `enlarged h = ${H_VISUAL}   (code h = ${H_CODE})`, w - pad, pad + fs.title * 0.2, pal.string, 'right');
-
-  ctx.beginPath();
-  ctx.strokeStyle = pal.variable;
-  ctx.lineWidth = 1.6;
-  p.repriced.forEach((r, i) => {
-    const x = xAt(r.strike);
-    const y = yAt(r.price);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-  ctx.stroke();
-
-  const pts = [
-    { k: K - H_VISUAL, w: 1, c: pal.type },
-    { k: K, w: -2, c: pal.keyword },
-    { k: K + H_VISUAL, w: 1, c: pal.type },
-  ];
-  for (const pt of pts) {
-    const px = bsCall(SPOT, pt.k, TAU, RATE, p.ivFun(pt.k));
-    ctx.beginPath();
-    ctx.fillStyle = pt.c;
-    ctx.arc(xAt(pt.k), yAt(px), 4.2, 0, Math.PI * 2);
-    ctx.fill();
-    font(ctx, fs.small);
-    fillText(ctx, `${pt.w > 0 ? '+' : ''}${pt.w}`, xAt(pt.k), yAt(px) - fs.small, pt.c, 'center');
-  }
-
-  const tentT = mid + 8;
-  const tentB = bot - 4;
-  const peak = tentT + 8;
-  const base = tentB;
-  ctx.beginPath();
-  ctx.moveTo(xAt(K - 2 * H_VISUAL), base);
-  // payoff of long K−h, short 2×K, long K+h: zero outside [K−h, K+h], peak h at K
-  ctx.lineTo(xAt(K - H_VISUAL), base);
-  ctx.lineTo(xAt(K), peak);
-  ctx.lineTo(xAt(K + H_VISUAL), base);
-  ctx.lineTo(xAt(K + 2 * H_VISUAL), base);
-  ctx.strokeStyle = pal.method;
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-  ctx.fillStyle = hexAlpha(pal.method, 0.12);
-  ctx.fill();
-  font(ctx, fs.small);
-  fillText(ctx, 'payoff: +1 / −2 / +1 calls  (visual h)', left, tentT + fs.small, pal.comment);
-}
-
-function drawPdf(
-  ctx: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  pal: Colors,
-  p: Pipeline,
-  K: number,
-  fs: TypeScale,
-) {
-  const pad = 14;
-  const top = Math.round(10 + fs.title * 1.4);
-  const bot = h - Math.round(16 + fs.small);
-  const left = pad;
-  const right = w - pad;
-  const ys = p.pdfY;
-  const xAt = xScale(p.pdfK[0], p.pdfK[p.pdfK.length - 1], left, right);
-  const yAt = yScale(0, Math.max(...ys), top, bot);
-
-  font(ctx, fs.title, '600');
-  fillText(ctx, 'Implied PDF  ·  exp(rτ) d²C/dK²', pad, pad + fs.title * 0.2, pal.method);
-  font(ctx, fs.small);
-  fillText(ctx, 'synthetic chain', w - pad, pad + fs.title * 0.2, pal.comment, 'right');
-
-  const iCut = p.pdfK.findIndex((k) => k >= K);
-  const cut = iCut < 0 ? p.pdfK.length - 1 : iCut;
-
-  ctx.beginPath();
-  ctx.fillStyle = hexAlpha(pal.type, 0.28);
-  ctx.moveTo(xAt(p.pdfK[0]), yAt(0));
-  for (let i = 0; i <= cut; i++) ctx.lineTo(xAt(p.pdfK[i]), yAt(ys[i]));
-  ctx.lineTo(xAt(p.pdfK[cut]), yAt(0));
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.fillStyle = hexAlpha(pal.keyword, 0.22);
-  ctx.moveTo(xAt(p.pdfK[cut]), yAt(0));
-  for (let i = cut; i < p.pdfK.length; i++) ctx.lineTo(xAt(p.pdfK[i]), yAt(ys[i]));
-  ctx.lineTo(xAt(p.pdfK[p.pdfK.length - 1]), yAt(0));
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.strokeStyle = pal.variable;
-  ctx.lineWidth = 2;
-  p.pdfK.forEach((k, i) => {
-    const x = xAt(k);
-    const y = yAt(ys[i]);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-  ctx.stroke();
-
-  ctx.setLineDash([4, 4]);
-  ctx.strokeStyle = hexAlpha(pal.method, 0.8);
-  ctx.beginPath();
-  ctx.moveTo(xAt(SPOT), top);
-  ctx.lineTo(xAt(SPOT), bot);
-  ctx.stroke();
-  ctx.setLineDash([2, 3]);
-  ctx.strokeStyle = pal.string;
-  ctx.beginPath();
-  ctx.moveTo(xAt(K), top);
-  ctx.lineTo(xAt(K), bot);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  font(ctx, fs.label);
-  fillText(ctx, 'p_below', xAt((p.pdfK[0] + K) / 2), top + fs.label, pal.type, 'center');
-  fillText(ctx, '1 − p_below', xAt((K + p.pdfK[p.pdfK.length - 1]) / 2), top + fs.label, pal.keyword, 'center');
-  font(ctx, fs.small);
-  fillText(ctx, `S=${SPOT}`, xAt(SPOT) + 4, bot - fs.small, pal.method);
-}
 
 export default OptionsPDF;
