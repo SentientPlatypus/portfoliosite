@@ -1,3 +1,4 @@
+import { MILLENNIUM_BLUE } from '@/data/experience';
 import { useState, useRef, useEffect } from 'react';
 import { X, Minus, Square, Terminal as TerminalIcon } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -7,6 +8,7 @@ interface TerminalLine {
   type: 'command' | 'output' | 'error' | 'syntax';
   content: string | React.ReactNode;
   color?: 'blue' | 'cyan' | 'red' | 'green' | 'yellow' | 'mixed';
+  brand?: string;
 }
 
 interface IntegratedTerminalProps {
@@ -263,7 +265,7 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
       { type: 'output', content: ' $$P      d$\'     ,    $$P    Shell: portfolio-bash v1.0.0', color: 'cyan' },
       { type: 'output', content: ' $$:      $$.   -    ,d$$\'    Name: Geneustace Wicaksono', color: 'cyan' },
       { type: 'output', content: ' $$;      Y$b._   _,d$P\'      University: Cornell (ECE)', color: 'cyan' },
-      { type: 'output', content: ' Y$$.    `.`"Y$$$$P"\'         Current: AWS Secrets Manager', color: 'cyan' },
+      { type: 'output', content: ' Y$$.    `.`"Y$$$$P"\'         Current: Incoming Applied AI Engineer @ Millennium', color: 'cyan', brand: 'Millennium' },
       { type: 'output', content: ' `$$b      "-.__              Location: Ithaca, NY', color: 'cyan' },
       { type: 'output', content: '  `Y$$                        Origin: Jakarta', color: 'cyan' },
       { type: 'output', content: '   `Y$$.                      Email: gjw62@cornell.edu', color: 'cyan' },
@@ -359,7 +361,7 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
   fullName: "Geneustace Wicaksono",
   title: "Electrical & Computer Engineering Student",
   university: "Cornell University",
-  currentPosition: "AWS Secrets Manager",
+  currentPosition: "Incoming Applied AI Engineer @ Millennium",
   location: "Ithaca, NY",
   origin: "Jakarta",
   bio: [
@@ -595,7 +597,7 @@ me.`
         setLines(prev => [...prev,
           { type: 'output', content: 'Geneustace Wicaksono' },
           { type: 'output', content: 'Electrical & Computer Engineering @ Cornell University' },
-          { type: 'output', content: 'Currently @ AWS Secrets Manager' },
+          { type: 'output', content: 'Currently: Incoming Applied AI Engineer @ Millennium', brand: 'Millennium' },
           { type: 'output', content: 'Location: Ithaca, NY' },
           { type: 'output', content: '' },
         ]);
@@ -902,7 +904,13 @@ me.`
           
           return (
             <div key={index} className={colorClass} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-              {content}
+              {line.brand && typeof content === 'string' && content.includes(line.brand) ? (
+                <>
+                  {content.slice(0, content.lastIndexOf(line.brand))}
+                  <span className="rounded px-1 font-semibold text-white" style={{ backgroundColor: MILLENNIUM_BLUE }}>{line.brand}</span>
+                  {content.slice(content.lastIndexOf(line.brand) + line.brand.length)}
+                </>
+              ) : content}
             </div>
           );
         })}

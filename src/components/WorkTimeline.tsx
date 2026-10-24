@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { experiences } from '@/data/experience';
+import { motion, useReducedMotion } from 'framer-motion';
+import { experiences as allExperiences, experienceCategories } from '@/data/experience';
+import { CompanyLogo, CompanyName } from './CompanyLogo';
+
+// Flat list ordered by branch so keyboard navigation follows the visual order.
+const experiences = experienceCategories.flatMap((cat) => allExperiences.filter((e) => e.category === cat.id));
+const sectionStart = new Map(
+  experienceCategories.map((cat) => [experiences.findIndex((e) => e.category === cat.id), cat]),
+);
 
 interface WorkTimelineProps {
   isSelected?: boolean;
@@ -11,6 +19,7 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
   const [isInWorkMode, setIsInWorkMode] = useState(false);
   const experienceRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
 
   // Scroll to active experience
   useEffect(() => {
@@ -67,67 +76,86 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
   return (
     <div className="relative pt-2 pb-8">
       <div className="w-full max-w-4xl mx-auto">
-        <h2 className="text-lg font-semibold mb-2 text-left">Professional Experience</h2>
+        <h2 className="text-lg font-semibold mb-2 text-left">Experience</h2>
         <p className="text-sm text-green-400 mb-6 font-mono">"Ain't no rest for the wicked, money don't grow on trees"</p>
-        
-        {/* Vertical timeline */}
-        <div className="relative" ref={containerRef} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-          {/* Vertical timeline line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
-          
-          {experiences.map((experience, index) => (
-            <div
-              key={experience.id}
-              ref={el => experienceRefs.current[index] = el}
-              className="relative flex items-start mb-12 last:mb-0"
-            >
-              {/* Timeline dot */}
-              <div className={`w-4 h-4 rounded-full border-2 bg-background flex-shrink-0 mt-2 z-10 ${
-                (isInWorkMode && activeIndex === index) ? 'border-primary bg-primary' : 'border-border'
-              }`}></div>
-              
-              {/* Experience content */}
-              <div className="ml-8 space-y-4 flex-1">
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold text-yellow-400">
-                    {experience.title}
-                  </h3>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium text-primary">{experience.company}</span>
+
+        <div className="relative" ref={containerRef} style={{ maxHeight: '60vh', overflowY: 'auto', overflowX: 'hidden' }}>
+          {experiences.map((experience, index) => {
+            const section = sectionStart.get(index);
+            const lineColor = experience.category === 'research' ? 'var(--theme-string)' : 'var(--theme-method)';
+            const active = isInWorkMode && activeIndex === index;
+            return (
+              <div key={experience.id}>
+                {section && (
+                  <div className={`flex items-center gap-2 mb-5 ${index > 0 ? 'mt-4' : ''}`} data-timeline-section={section.id}>
+                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: lineColor }} />
+                    <span className="text-xs font-mono uppercase tracking-wider" style={{ color: lineColor }}>
+                      {section.label}
+                    </span>
+                    <span className="hidden sm:inline text-xs font-mono text-muted-foreground">({section.branch})</span>
+                    <span className="h-px flex-1 bg-border" />
                   </div>
-                  <div className="text-sm font-medium text-purple-400">
-                    {experience.period}
-                  </div>
-                  {(experience.location || experience.type) && (
-                    <div className="text-sm text-muted-foreground">
-                      {[experience.location, experience.type].filter(Boolean).join(' · ')}
+                )}
+                <motion.div
+                  ref={(el) => (experienceRefs.current[index] = el)}
+                  initial={reduce ? false : { opacity: 0, y: 14 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative flex items-start gap-4 sm:gap-6 pb-10"
+                  data-timeline-entry={experience.id}
+                >
+                  {/* Branch line segment + logo node */}
+                  <div className="relative flex flex-col items-center self-stretch">
+                    <span
+                      className="absolute top-12 bottom-0 w-0.5 rounded-full"
+                      style={{ backgroundColor: lineColor, opacity: 0.35 }}
+                      aria-hidden="true"
+                    />
+                    <div
+                      className={`relative z-10 rounded-xl transition-shadow duration-300 ${active ? 'shadow-[0_0_0_3px_hsl(var(--primary))]' : ''}`}
+                    >
+                      <CompanyLogo src={experience.logo} company={experience.company} size={44} />
                     </div>
-                  )}
-                </div>
-                
-                {experience.description ? (
-                  <p className="text-muted-foreground leading-relaxed">
-                    {experience.description}
-                  </p>
-                ) : (
-                  <div className="h-px w-12 bg-border" aria-hidden="true" />
-                )}
-                
-                {experience.skills && experience.skills.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {experience.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-3 py-1 text-xs bg-orange-500/10 text-orange-400 rounded-full border border-orange-500/20"
-                      >
-                        {skill}
-                      </span>
-                    ))}
                   </div>
-                )}
+
+                  <div className="space-y-3 flex-1 min-w-0">
+                    <div className="space-y-1.5">
+                      <h3 className="text-lg sm:text-xl font-semibold text-yellow-400">{experience.title}</h3>
+                      <div className="font-medium text-primary">
+                        <CompanyName company={experience.company} brandColor={experience.brandColor} />
+                      </div>
+                      <div className="text-sm font-medium text-purple-400">{experience.period}</div>
+                      {(experience.location || experience.type) && (
+                        <div className="text-sm text-muted-foreground">
+                          {[experience.location, experience.type].filter(Boolean).join(' · ')}
+                        </div>
+                      )}
+                    </div>
+
+                    {experience.description ? (
+                      <p className="text-muted-foreground leading-relaxed">{experience.description}</p>
+                    ) : (
+                      <div className="h-px w-12 bg-border" aria-hidden="true" />
+                    )}
+
+                    {experience.skills && experience.skills.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        {experience.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="px-3 py-1 text-xs bg-orange-500/10 text-orange-400 rounded-full border border-orange-500/20"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
