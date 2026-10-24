@@ -2,7 +2,7 @@ import { GitBranch } from 'lucide-react';
 import { WorkTimeline } from './WorkTimeline';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLayoutEffect, useRef, useState } from 'react';
-import { experiences, experienceCategories, type ExperienceCategory } from '@/data/experience';
+import { experiences, experienceCategories, isUpcoming, type ExperienceCategory } from '@/data/experience';
 import { CompanyLogo, CompanyName } from './CompanyLogo';
 
 export const hashFromId = (id: string, index: number) => {
@@ -28,7 +28,7 @@ const laneColor: Record<ExperienceCategory | 'main', string> = {
 };
 const GUTTER = laneX(2) + 22;
 
-export const GitGraphTimeline = () => {
+export const GitGraphTimeline = ({ compact = false }: { compact?: boolean } = {}) => {
   const reduce = useReducedMotion();
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -67,10 +67,10 @@ export const GitGraphTimeline = () => {
   const mainTop = ready ? ys[0] : 0;
 
   return (
-    <div className="p-6">
+    <div className={compact ? 'p-4' : 'p-6'} data-git-graph={compact ? 'sidebar' : 'editor'}>
       <div className="mb-4 flex items-center gap-3">
         <GitBranch className="w-5 h-5 text-[var(--theme-method)]" />
-        <h2 className="text-xl font-bold text-[var(--theme-method)]">Experience Timeline</h2>
+        <h2 className={`${compact ? 'text-base' : 'text-xl'} font-bold text-[var(--theme-method)]`}>Experience Timeline</h2>
         <span className="text-xs text-[#858585] ml-auto">main</span>
       </div>
 
@@ -151,6 +151,7 @@ export const GitGraphTimeline = () => {
                       {branch}
                     </span>
                     <span className="text-xs text-[#858585]">{exp.period}</span>
+                    {isUpcoming(exp) && <span className="text-[10px] font-mono uppercase tracking-wide px-1.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30" data-upcoming>upcoming</span>}
                   </div>
                   <div className="text-sm font-semibold text-[var(--theme-foreground)]">{exp.title}</div>
                   <div className="text-sm text-[var(--theme-variable)]">
@@ -183,6 +184,7 @@ export const GitGraphTimeline = () => {
         </div>
       </div>
 
+      {!compact && (
       <div className="mt-8 pt-6 border-t border-[var(--theme-border)]">
         <details className="cursor-pointer">
           <summary className="text-sm font-semibold text-[var(--theme-method)] hover:text-[var(--theme-string)] transition-colors">
@@ -193,6 +195,7 @@ export const GitGraphTimeline = () => {
           </div>
         </details>
       </div>
+      )}
     </div>
   );
 };

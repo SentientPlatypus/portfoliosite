@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { experiences as allExperiences, experienceCategories } from '@/data/experience';
+import { experiences as allExperiences, experienceCategories, isUpcoming } from '@/data/experience';
 import { CompanyLogo, CompanyName } from './CompanyLogo';
 import { TimelineTwoColumn } from './TimelineTwoColumn';
 
-const WIDE_MIN = 860; // px of available content width
+export const WIDE_MIN = 860; // px of available content width
 
 // Flat list ordered by branch so keyboard navigation follows the visual order.
 const experiences = experienceCategories.flatMap((cat) => allExperiences.filter((e) => e.category === cat.id));
@@ -15,9 +15,11 @@ const sectionStart = new Map(
 interface WorkTimelineProps {
   isSelected?: boolean;
   onNavigationRequest?: (direction: 'left' | 'right') => void;
+  /** Standalone page: flow with the editor scroll instead of an inner scroller. */
+  fill?: boolean;
 }
 
-export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTimelineProps = {}) => {
+export const WorkTimeline = ({ isSelected = false, onNavigationRequest, fill = false }: WorkTimelineProps = {}) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isInWorkMode, setIsInWorkMode] = useState(false);
   const experienceRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -92,7 +94,7 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
         <p className="text-sm text-green-400 mb-6 font-mono">"Ain't no rest for the wicked, money don't grow on trees"</p>
 
         {wide ? (
-          <div style={{ maxHeight: '70vh', overflowY: 'auto', overflowX: 'hidden' }} className="pt-2">
+          <div style={fill ? { overflowX: 'hidden' } : { maxHeight: '70vh', overflowY: 'auto', overflowX: 'hidden' }} className="pt-2">
             <TimelineTwoColumn />
           </div>
         ) : (
@@ -142,7 +144,8 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
                       <div className="font-medium text-primary">
                         <CompanyName company={experience.company} />
                       </div>
-                      <div className="text-sm font-medium text-purple-400">{experience.period}</div>
+                      <div className="flex items-center gap-2 text-sm font-medium text-purple-400">{experience.period}
+                        {isUpcoming(experience) && <span className="text-[10px] font-mono uppercase tracking-wide px-1.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30" data-upcoming>upcoming</span>}</div>
                       {(experience.location || experience.type) && (
                         <div className="text-sm text-muted-foreground">
                           {[experience.location, experience.type].filter(Boolean).join(' · ')}

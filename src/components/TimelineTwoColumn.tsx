@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLayoutEffect, useRef, useState } from 'react';
-import { experiences, experienceCategories, monthLabel, periodRange, type Experience } from '@/data/experience';
+import { experiences, experienceCategories, isUpcoming, monthLabel, periodRange, type Experience } from '@/data/experience';
 import { CompanyLogo, CompanyName } from './CompanyLogo';
 import { hashFromId } from './GitGraphTimeline';
 
@@ -41,10 +41,12 @@ export const TimelineTwoColumn = () => {
   experiences.forEach((exp, index) => {
     if (!periodRange(exp.period)) placed.push({ exp, index, top: UNDATED, bottom: newest });
   });
+  const today = new Date();
+  const nowLine = today.getFullYear() * 12 + today.getMonth() + 1; // boundary after the current month
   const lines = [...new Set(placed.flatMap((p) => [p.top, p.bottom]))].sort((a, b) => b - a);
   const line = (v: number) => lines.indexOf(v) + 1;
   const axisLabel = (v: number) =>
-    v === UNDATED ? 'Incoming' : v === newest ? 'Now' : monthLabel(placed.some((p) => p.bottom === v) ? v : v - 1);
+    v === UNDATED ? 'Incoming' : v === nowLine ? 'Now' : monthLabel(placed.some((p) => p.bottom === v) ? v : v - 1);
   const rootRow = lines.length; // extra track for the initial commit
 
   useLayoutEffect(() => {
@@ -174,6 +176,7 @@ export const TimelineTwoColumn = () => {
                       <span className="text-xs font-mono" style={{ color }} data-hash>{hashFromId(exp.id, index)}</span>
                       <span className="text-[11px] font-mono px-1.5 rounded-full border" style={{ color, borderColor: color }} data-branch-tag>{branch}</span>
                       <span className="text-xs text-purple-400">{exp.period}</span>
+                      {isUpcoming(exp) && <span className="text-[10px] font-mono uppercase tracking-wide px-1.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30" data-upcoming>upcoming</span>}
                     </div>
                     <h3 className="text-base font-semibold text-yellow-400 leading-snug">{exp.title}</h3>
                     <div className="text-sm font-medium text-primary"><CompanyName company={exp.company} /></div>

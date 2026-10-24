@@ -1,5 +1,5 @@
 import { InteractiveInfo } from './InteractiveWidgets';
-import { WorkTimeline } from './WorkTimeline';
+import { WorkTimeline, WIDE_MIN } from './WorkTimeline';
 import { PicturesSection } from './PicturesSection';
 import { AwardsSection } from './AwardsSection';
 import { PortfolioContent, projects, Project } from './PortfolioContent';
@@ -7,12 +7,35 @@ import { TypewriterAnimation } from './TypewriterAnimation';
 import { GitGraphTimeline } from './GitGraphTimeline';
 import { TechTag } from './TechTag';
 import { ExternalLink, Github, FileText } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Settings } from './Settings';
 import { experienceAsJson } from '@/data/experience';
 import { InteractiveProjectView } from './interactive/InteractiveMedia';
+
+/**
+ * experience.json preview: when there's room for the two-column commit tree,
+ * the detailed timeline is the whole page (the branch graph lives in the
+ * Source Control sidebar). Narrower, keep the branch graph + expandable timeline.
+ */
+const ExperienceView = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [wide, setWide] = useState<boolean | null>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setWide(el.clientWidth >= WIDE_MIN);
+    const ro = new ResizeObserver(([e]) => setWide(e.contentRect.width >= WIDE_MIN));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <div ref={ref} data-experience-view={wide === null ? 'pending' : wide ? 'timeline' : 'graph'}>
+      {wide === null ? null : wide ? <WorkTimeline fill /> : <div className="-m-6"><GitGraphTimeline /></div>}
+    </div>
+  );
+};
 
 const HighlightedExperienceJson = () => {
   const json = JSON.stringify(experienceAsJson(), null, 2);
@@ -320,7 +343,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
       }
       return (
         <div ref={contentRef} className="p-6">
-          <GitGraphTimeline />
+          <ExperienceView />
         </div>
       );
       

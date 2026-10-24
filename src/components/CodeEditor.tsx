@@ -375,7 +375,7 @@ const CodeEditorInner = () => {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <GitGraphTimeline />
+            <GitGraphTimeline compact />
           </div>
         )}
         

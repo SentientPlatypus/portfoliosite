@@ -28,7 +28,7 @@ export const experiences: Experience[] = [
     id: 'millennium-applied-ai-engineer',
     title: 'Applied AI Engineer',
     company: 'Millennium',
-    period: 'Incoming',
+    period: 'Jun 2027 – Aug 2027', // Jun 7 – Aug 13, 2027
     category: 'professional',
     logo: '/logos/millennium.png',
     logoFullBleed: true,
@@ -124,6 +124,12 @@ export function periodRange(period: string, now = new Date()): { start: number; 
 
 export const monthLabel = (idx: number) =>
   `${MONTHS[idx % 12][0].toUpperCase()}${MONTHS[idx % 12].slice(1)} ${Math.floor(idx / 12)}`;
+
+/** True when the role starts after the current month. */
+export const isUpcoming = (exp: { period: string }, now = new Date()) => {
+  const r = periodRange(exp.period, now);
+  return !!r && r.start > now.getFullYear() * 12 + now.getMonth();
+};
 
 export function experienceAsJson() {
   return {
