@@ -11,8 +11,8 @@ export interface Experience {
   category: ExperienceCategory;
   /** Logo served from /public/logos (official favicon / Wikimedia Commons). */
   logo?: string;
-  /** Optional brand accent (used for the company name chip). */
-  brandColor?: string;
+  /** Logo fills its own square (full-bleed in the chip, no white padding). */
+  logoFullBleed?: boolean;
 }
 
 export type ExperienceCategory = 'professional' | 'research';
@@ -22,18 +22,16 @@ export const experienceCategories: { id: ExperienceCategory; label: string; bran
   { id: 'research', label: 'Research Labs', branch: 'research-labs' },
 ];
 
-/** Millennium Management brand blue: the `--wp--preset--color--blue` token on mlp.com. */
-export const MILLENNIUM_BLUE = '#1434cb';
 
 export const experiences: Experience[] = [
   {
     id: 'millennium-applied-ai-engineer',
-    title: 'Incoming Applied AI Engineer',
+    title: 'Applied AI Engineer',
     company: 'Millennium',
     period: 'Incoming',
     category: 'professional',
     logo: '/logos/millennium.png',
-    brandColor: MILLENNIUM_BLUE,
+    logoFullBleed: true,
   },
   {
     id: 'aws-sde-intern-2026',
@@ -56,6 +54,17 @@ export const experiences: Experience[] = [
     type: 'internship',
   },
   {
+    id: 'cornell-arl-student-researcher',
+    category: 'research',
+    logo: '/logos/cornell.png',
+    title: 'Student Researcher',
+    company: 'Cornell Architectural Robotics Lab',
+    period: 'Dec 2025 – Present',
+    location: 'Ithaca, NY',
+    description:
+      'Improved the Home+ mobile manipulator platform by installing a dedicated voltage regulator for the companion computer and servos, redesigning servo power distribution, and streamlining wire management for greater reliability. Applied generative design to optimize 3D-printed components and reduce mechanical load, and designed an amplifier circuit for LED control. Also contributing to ongoing manuscript development.',
+  },
+  {
     id: 'cornell-asl-research-intern',
     category: 'research',
     logo: '/logos/cornell.png',
@@ -71,6 +80,7 @@ export const experiences: Experience[] = [
     id: 'lockheed-martin-systems-intern',
     category: 'professional',
     logo: '/logos/lockheed-martin.png',
+    logoFullBleed: true,
     title: 'Systems Engineering Intern',
     company: 'Lockheed Martin',
     period: 'Jul 2023 – Aug 2023',
@@ -90,6 +100,30 @@ export const experiences: Experience[] = [
       'Helped organize activities, and taught students Cornet and Alto Horn one on one.',
   },
 ];
+
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+const parseMonth = (txt: string): number | null => {
+  const m = txt.trim().match(/^([A-Za-z]{3})[a-z]*\.?\s+(\d{4})$/);
+  if (!m) return null;
+  const mi = MONTHS.indexOf(m[1].toLowerCase());
+  return mi < 0 ? null : Number(m[2]) * 12 + mi;
+};
+
+/**
+ * Month indices (year*12+month) parsed from `period`. "Present" = the current month.
+ * Returns null for periods without real dates (e.g. "Incoming").
+ */
+export function periodRange(period: string, now = new Date()): { start: number; end: number } | null {
+  const [a, b] = period.split(/\s+[–-]\s+/);
+  const start = a ? parseMonth(a) : null;
+  if (start === null) return null;
+  const nowIdx = now.getFullYear() * 12 + now.getMonth();
+  const end = !b ? start : /present/i.test(b) ? nowIdx : parseMonth(b);
+  return end === null ? null : { start, end: Math.max(end, start) };
+}
+
+export const monthLabel = (idx: number) =>
+  `${MONTHS[idx % 12][0].toUpperCase()}${MONTHS[idx % 12].slice(1)} ${Math.floor(idx / 12)}`;
 
 export function experienceAsJson() {
   return {

@@ -1,5 +1,3 @@
-import { CompanyName } from './CompanyLogo';
-import { MILLENNIUM_BLUE } from '@/data/experience';
 import { useEffect, useState, type ReactNode } from 'react';
 import {
   ChevronDown,
@@ -999,8 +997,7 @@ export const InteractiveInfo = () => {
             spread the love and learn something new in the process.
           </p>
           <p className="text-sm font-medium text-yellow-400 mb-4">
-            Incoming Applied AI Engineer @{' '}
-            <CompanyName company="Millennium" brandColor={MILLENNIUM_BLUE} />
+            Applied AI Engineer @ Millennium
           </p>
         </div>
         <div className="w-32 h-40 md:w-48 md:h-64 rounded-lg overflow-hidden flex-shrink-0 mx-auto md:mx-0 order-1 md:order-2 bg-muted/10">

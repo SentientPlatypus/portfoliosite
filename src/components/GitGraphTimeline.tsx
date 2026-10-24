@@ -143,10 +143,10 @@ export const GitGraphTimeline = () => {
                 style={{ left: laneX(lane) - 7 + 8, top: DOT_Y - 7 + 8, borderColor: color }}
               />
               <div className="flex items-start gap-3">
-                <CompanyLogo src={exp.logo} company={exp.company} size={32} className="mt-0.5 transition-transform group-hover:scale-105" />
+                <CompanyLogo src={exp.logo} fullBleed={exp.logoFullBleed} company={exp.company} size={32} className="mt-0.5 transition-transform group-hover:scale-105" />
                 <div className="space-y-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                    <span className="text-xs font-mono text-[var(--theme-string)]">{hashFromId(exp.id, index)}</span>
+                    <span className="text-xs font-mono" style={{ color }} data-hash>{hashFromId(exp.id, index)}</span>
                     <span className="text-[11px] font-mono px-1.5 rounded-full border" style={{ color, borderColor: color }}>
                       {branch}
                     </span>
@@ -154,7 +154,7 @@ export const GitGraphTimeline = () => {
                   </div>
                   <div className="text-sm font-semibold text-[var(--theme-foreground)]">{exp.title}</div>
                   <div className="text-sm text-[var(--theme-variable)]">
-                    <CompanyName company={exp.company} brandColor={exp.brandColor} />
+                    <CompanyName company={exp.company} />
                   </div>
                   {exp.location && <div className="text-xs text-[var(--theme-comment)]">{exp.location}</div>}
                 </div>

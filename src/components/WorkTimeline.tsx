@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { experiences as allExperiences, experienceCategories } from '@/data/experience';
 import { CompanyLogo, CompanyName } from './CompanyLogo';
+import { TimelineTwoColumn } from './TimelineTwoColumn';
+
+const WIDE_MIN = 860; // px of available content width
 
 // Flat list ordered by branch so keyboard navigation follows the visual order.
 const experiences = experienceCategories.flatMap((cat) => allExperiences.filter((e) => e.category === cat.id));
@@ -20,6 +23,15 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
   const experienceRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
+  const outerRef = useRef<HTMLDivElement>(null);
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const el = outerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setWide(e.contentRect.width >= WIDE_MIN));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // Scroll to active experience
   useEffect(() => {
@@ -74,11 +86,16 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
   }, [isSelected, isInWorkMode, onNavigationRequest]);
 
   return (
-    <div className="relative pt-2 pb-8">
-      <div className="w-full max-w-4xl mx-auto">
+    <div className="relative pt-2 pb-8" ref={outerRef}>
+      <div className={`w-full mx-auto ${wide ? 'max-w-6xl' : 'max-w-4xl'}`}>
         <h2 className="text-lg font-semibold mb-2 text-left">Experience</h2>
         <p className="text-sm text-green-400 mb-6 font-mono">"Ain't no rest for the wicked, money don't grow on trees"</p>
 
+        {wide ? (
+          <div style={{ maxHeight: '70vh', overflowY: 'auto', overflowX: 'hidden' }} className="pt-2">
+            <TimelineTwoColumn />
+          </div>
+        ) : (
         <div className="relative" ref={containerRef} style={{ maxHeight: '60vh', overflowY: 'auto', overflowX: 'hidden' }}>
           {experiences.map((experience, index) => {
             const section = sectionStart.get(index);
@@ -115,7 +132,7 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
                     <div
                       className={`relative z-10 rounded-xl transition-shadow duration-300 ${active ? 'shadow-[0_0_0_3px_hsl(var(--primary))]' : ''}`}
                     >
-                      <CompanyLogo src={experience.logo} company={experience.company} size={44} />
+                      <CompanyLogo src={experience.logo} fullBleed={experience.logoFullBleed} company={experience.company} size={44} />
                     </div>
                   </div>
 
@@ -123,7 +140,7 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
                     <div className="space-y-1.5">
                       <h3 className="text-lg sm:text-xl font-semibold text-yellow-400">{experience.title}</h3>
                       <div className="font-medium text-primary">
-                        <CompanyName company={experience.company} brandColor={experience.brandColor} />
+                        <CompanyName company={experience.company} />
                       </div>
                       <div className="text-sm font-medium text-purple-400">{experience.period}</div>
                       {(experience.location || experience.type) && (
@@ -157,6 +174,7 @@ export const WorkTimeline = ({ isSelected = false, onNavigationRequest }: WorkTi
             );
           })}
         </div>
+        )}
       </div>
     </div>
   );
