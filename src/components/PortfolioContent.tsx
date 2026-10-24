@@ -35,7 +35,7 @@ const projects: Project[] = [
   image: "images/Fouriermesh.png",
   images: ["images/david_mesh_fourier_compare_k_30.png"],
   videos: ["david_fourier_smoothing.mp4", "visualize_eigen.mp4"],
-  award: "50 downloads on Blender Add-ons!",
+  award: "500 downloads on Blender Add-ons!",
   interactive: "fouriermesh-david"
 },
       {
@@ -95,7 +95,7 @@ const projects: Project[] = [
   videos: [
     "images/nextodunk1.mp4", "images/nextodunk2.mp4", "images/walldash.mp4","images/Flick_over.mp4", "images/wavedash.mp4", "images/speedflip_flick.mp4"
   ],
-  award: "RLBOT Element Eliminator"
+  award: "RLBOT Nexto Nullifier (GC2)"
 },
   {
   id: 6,
