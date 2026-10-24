@@ -5,7 +5,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { experiences, experienceCategories, type ExperienceCategory } from '@/data/experience';
 import { CompanyLogo, CompanyName } from './CompanyLogo';
 
-const hashFromId = (id: string, index: number) => {
+export const hashFromId = (id: string, index: number) => {
   const source = `${id}:${index}`;
   let hash = 0;
   for (let i = 0; i < source.length; i++) {
