@@ -3,25 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Github, ExternalLink, Calendar, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import type { InteractiveKind } from "./interactive/kinds";
-
-interface Project {
-  id: number | string;
-  title: string;
-  description: string;
-  technologies: string[];
-  githubUrl: string;
-  liveUrl?: string;
-  liveUrlLabel?: string;
-  pypiUrl?: string;
-  paperUrl?: string | null;
-  date: string;
-  image: string;
-  images?: string[];
-  videos?: string[];
-  award?: string | null;
-  interactive?: InteractiveKind;
-}
+import type { Project } from "./PortfolioContent";
+import { ProjectResultsTable } from "./ProjectResultsTable";
 
 interface ProjectModalProps {
   project: Project | null;
@@ -40,6 +23,7 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
     return `/images/${src}`;
   };
   const loopingHighlight = project.title === 'Indonesian Coconut';
+  const [intro, ...restParas] = project.description.split('\n\n');
 
   // Get all available media (images + videos)
   const mediaItems: Array<{ type: 'image' | 'video', url: string }> = [];
@@ -146,9 +130,20 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
               </div>
             </div>
 
-            <p className="text-muted-foreground leading-relaxed">
-              {project.description}
-            </p>
+            {project.resultsTable ? (
+              <>
+                <p className="text-muted-foreground leading-relaxed">{intro}</p>
+                <h3 className="font-semibold">Bots beaten</h3>
+                <ProjectResultsTable table={project.resultsTable} />
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {restParas.join('\n\n')}
+                </p>
+              </>
+            ) : (
+              <p className="text-muted-foreground leading-relaxed">
+                {project.description}
+              </p>
+            )}
 
             {/* Technologies */}
             <div>

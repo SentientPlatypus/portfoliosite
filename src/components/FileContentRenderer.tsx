@@ -13,6 +13,7 @@ import remarkGfm from 'remark-gfm';
 import { Settings } from './Settings';
 import { experienceAsJson } from '@/data/experience';
 import { InteractiveProjectView } from './interactive/InteractiveMedia';
+import { ProjectResultsTable } from './ProjectResultsTable';
 
 const youtubeId = (src: string) =>
   src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/)?.[1] ?? null;
@@ -541,6 +542,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
             ? videos
             : [...fileVideos.slice(1), ...videos.filter((src) => youtubeId(src))];
           const heroLoop = !project.interactive ? fileVideos[0] : undefined;
+          const [intro, ...restParas] = project.description.split('\n\n');
           return (
             <div className="p-4 sm:p-8">
               <div className="max-w-4xl mx-auto">
@@ -630,9 +632,22 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
                 {/* Description */}
                 <div className="mb-6">
                   <h2 className="text-xl font-semibold mb-3 text-[var(--theme-type)]">Overview</h2>
-                  <p className="text-[var(--theme-foreground)] leading-relaxed whitespace-pre-line">
-                    {project.description}
-                  </p>
+                  {project.resultsTable ? (
+                    <>
+                      <p className="text-[var(--theme-foreground)] leading-relaxed mb-4">
+                        {intro}
+                      </p>
+                      <h3 className="text-lg font-semibold mb-2 text-[var(--theme-type)]">Bots beaten</h3>
+                      <ProjectResultsTable table={project.resultsTable} />
+                      <p className="text-[var(--theme-foreground)] leading-relaxed whitespace-pre-line">
+                        {restParas.join('\n\n')}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-[var(--theme-foreground)] leading-relaxed whitespace-pre-line">
+                      {project.description}
+                    </p>
+                  )}
                 </div>
 
                 {/* Technologies */}
