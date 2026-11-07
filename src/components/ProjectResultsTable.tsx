@@ -1,7 +1,22 @@
+import type { ReactNode } from 'react';
 import type { ProjectTable, ProjectTableCell } from './PortfolioContent';
 
+const renderInline = (text: string): ReactNode => {
+  const parts = text.split(/(`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('`') && part.endsWith('`') && part.length >= 2) {
+      return (
+        <code key={i} className="font-mono text-xs">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return part;
+  });
+};
+
 const renderCell = (cell: ProjectTableCell) => {
-  if (typeof cell === 'string') return cell;
+  if (typeof cell === 'string') return renderInline(cell);
   return (
     <a
       href={cell.href}
@@ -9,7 +24,7 @@ const renderCell = (cell: ProjectTableCell) => {
       rel="noopener noreferrer"
       className="text-[var(--theme-statusBar)] hover:underline"
     >
-      {cell.text}
+      {renderInline(cell.text)}
     </a>
   );
 };
