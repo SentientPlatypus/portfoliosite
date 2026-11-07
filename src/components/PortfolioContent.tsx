@@ -84,17 +84,16 @@ const projects: Project[] = [
   {
   id: 5,
   title: "Indonesian Coconut",
-  description: "Indonesian Coconut is a reinforcement-learning–driven Rocket League bot made with RLGYM. It is designed around a highly specialized reward architecture that emphasizes possession safety, controlled mechanical execution, and game-theoretic decision making. Unlike continuous-control RL agents, Indonesian Coconut operates in a discrete, lookup-table action space, making the policy more interpretable while still enabling advanced mechanics such as controlled air dribbles, stable dribble→flick transitions, walldashes, adaptive defensive rotations, and pressure-aware ball touches. Performance was validated against Element, one of the strongest S-tier bots in the RLBot competitive ecosystem. Using a binomial scoring model (n=69 total goals, p=0.5 under the null hypothesis of equal skill), statistical significance requires winning at least 42–28 to achieve p < 0.05. Indonesian Coconut exceeded this threshold overwhelmingly, winning 47–3, demonstrating not only superior policy quality but also consistent, repeatable outperformance across the full distribution of scoring events. The policy was trained on AWS EC2 over roughly 17.9 billion simulated timesteps, using parallelized RocketSim rollouts to collect experience at scale.",
-  technologies: ["Python", "RLGYM", "PyTorch", "RLBOT"],
-  githubUrl: "https://github.com/SentientPlatypus/indonesian_coconut",
-  liveUrl: "https://ballchasing.com/replay/41b8d475-dc5a-4488-9144-a2c86c9a649b",
+  description: "Indonesian Coconut is a 1v1 Rocket League bot trained with deep RL (PPO) and no human replays. The Rust-trained ST8 checkpoint beats Ripple v1.1 (Pro) 17–1 and Ripple v1.0 (SSL) 16–3; an earlier Python version beat Nexto (Grand Champion) 42–11 and Element (Diamond) 47–3. Training is ~1.7× faster than upstream (40.8k → 70.1k steps/s on one NVIDIA L4).\n\nEach tick is a 106-float observation; the policy picks one of 90 discrete actions every 8 physics ticks (~15 decisions/s). Actor and critic are 2048-2048-1024-1024 MLPs. Rewards cover goals, ball velocity toward goal, aerials, flip resets, air dribble bumps, demos, boost, and possession. Warm-started from the earlier Python policy, then trained in 1B-step stages in RocketSim on one L4 against a league of frozen past versions plus Rust ports of community bots (FR4, Galactus, Megabyte, a top C++ bot verified action-for-action against the original, and others). 200-game evals every 50M steps; a stage only becomes champion if it wins head-to-head without regressing. Current champion is ST11 after ~11.1B steps. Deploys as an RLBot v5 bot: compiled Rust binary on CPU, Windows and Linux.\n\nThe trainer is indococo-ppo (https://github.com/SentientPlatypus/indococo-ppo), a high-throughput learning framework for Rocket League bots — a Rust workspace forked from VirxEC's rlgymppo_rs and extended. Parallel RocketSim games on CPU thread pools, batched GPU inference, PPO (GAE, clipped loss) in Burn with a LibTorch backend, league/self-play opponents, checkpoints, metrics, a terminal dashboard, and RLBot export. Additions: GPU-side update metrics, optional per-network bf16, a TF32 path, external frozen opponents (foreign bots with their own obs/action tables/delay), and CI with tests. Bot: https://github.com/SentientPlatypus/indonesian_coconut/tree/indococo-ppo",
+  technologies: ["Rust", "PPO", "Burn", "RLBOT"],
+  githubUrl: "https://github.com/SentientPlatypus/indonesian_coconut/tree/indococo-ppo",
+  liveUrl: "https://github.com/SentientPlatypus/indococo-ppo",
+  liveUrlLabel: "indococo-ppo",
   paperUrl: null,
   date: "2025",
-  image: "images/cover.png",
+  image: "images/indococo_vs_ripple_v1.webp",
   images: [],
-  videos: [
-    "images/nextodunk1.mp4", "images/nextodunk2.mp4", "images/walldash.mp4","images/Flick_over.mp4", "images/wavedash.mp4", "images/speedflip_flick.mp4"
-  ],
+  videos: ["images/indococo_highlight.mp4"],
   award: "RLBOT Nexto Nullifier (GC2)"
 },
   {

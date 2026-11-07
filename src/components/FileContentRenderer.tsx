@@ -14,6 +14,15 @@ import { Settings } from './Settings';
 import { experienceAsJson } from '@/data/experience';
 import { InteractiveProjectView } from './interactive/InteractiveMedia';
 
+const youtubeId = (src: string) =>
+  src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/)?.[1] ?? null;
+
+const mediaSrc = (src: string) => {
+  if (src.startsWith('http') || src.startsWith('/')) return src;
+  if (src.startsWith('images/')) return `/${src}`;
+  return `/images/${src}`;
+};
+
 /**
  * experience.json preview: when there's room for the two-column commit tree,
  * the detailed timeline is the whole page (the branch graph lives in the
@@ -526,6 +535,12 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
         const project = projects.find(p => p.id === projectId);
         
         if (project) {
+          const videos = project.videos ?? [];
+          const fileVideos = videos.filter((src) => !youtubeId(src));
+          const extraVideos = project.interactive
+            ? videos
+            : [...fileVideos.slice(1), ...videos.filter((src) => youtubeId(src))];
+          const heroLoop = !project.interactive ? fileVideos[0] : undefined;
           return (
             <div className="p-4 sm:p-8">
               <div className="max-w-4xl mx-auto">
@@ -543,13 +558,23 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
                   </div>
                 </div>
 
-                {/* Project Image / interactive */}
+                {/* Project Image / interactive / looping highlight */}
                 <div className="mb-6 rounded-lg overflow-hidden border border-[var(--theme-border)] bg-[var(--theme-sidebar)]">
                   {project.interactive ? (
                     <InteractiveProjectView
                       kind={project.interactive}
                       poster={project.image}
                       title={project.title}
+                    />
+                  ) : heroLoop ? (
+                    <video
+                      src={mediaSrc(heroLoop)}
+                      poster={mediaSrc(project.image)}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="w-full h-auto bg-black"
                     />
                   ) : (
                     <img 
@@ -564,12 +589,12 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
                   )}
                 </div>
 
-                {project.videos && project.videos.length > 0 && (
+                {extraVideos.length > 0 && (
                   <div className="mb-6">
                     <h2 className="text-xl font-semibold mb-3 text-[var(--theme-type)]">Videos</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {project.videos.map((src) => {
-                        const youtube = src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+                      {extraVideos.map((src) => {
+                        const youtube = youtubeId(src);
                         if (youtube) {
                           return (
                             <div
@@ -577,7 +602,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
                               className="aspect-video overflow-hidden rounded-lg border border-[var(--theme-border)]"
                             >
                               <iframe
-                                src={`https://www.youtube.com/embed/${youtube[1]}`}
+                                src={`https://www.youtube.com/embed/${youtube}`}
                                 title={`${project.title} video`}
                                 loading="lazy"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -587,13 +612,10 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
                             </div>
                           );
                         }
-                        const file = src.startsWith('http') || src.startsWith('/')
-                          ? src
-                          : `/images/${src}`;
                         return (
                           <video
                             key={src}
-                            src={file}
+                            src={mediaSrc(src)}
                             controls
                             preload="none"
                             playsInline

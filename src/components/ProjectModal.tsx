@@ -34,20 +34,26 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
   
   if (!project) return null;
 
+  const mediaSrc = (src: string) => {
+    if (src.startsWith('http') || src.startsWith('/')) return src;
+    if (src.startsWith('images/')) return `/${src}`;
+    return `/images/${src}`;
+  };
+  const loopingHighlight = project.title === 'Indonesian Coconut';
+
   // Get all available media (images + videos)
   const mediaItems: Array<{ type: 'image' | 'video', url: string }> = [];
-  
-  // Add main image
-  mediaItems.push({ type: 'image', url: project.image });
-  
-  // Add additional images
-  if (project.images && project.images.length > 0) {
-    project.images.forEach(img => mediaItems.push({ type: 'image', url: img }));
-  }
-  
-  // Add videos
-  if (project.videos && project.videos.length > 0) {
+
+  if (loopingHighlight && project.videos && project.videos.length > 0) {
     project.videos.forEach(url => mediaItems.push({ type: 'video', url }));
+  } else {
+    mediaItems.push({ type: 'image', url: project.image });
+    if (project.images && project.images.length > 0) {
+      project.images.forEach(img => mediaItems.push({ type: 'image', url: img }));
+    }
+    if (project.videos && project.videos.length > 0) {
+      project.videos.forEach(url => mediaItems.push({ type: 'video', url }));
+    }
   }
   
   const hasMultipleMedia = mediaItems.length > 1;
@@ -78,9 +84,14 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
               />
             ) : (
               <video 
-                src={mediaItems[currentImageIndex].url}
-                className="w-full h-full object-contain"
-                controls
+                src={mediaSrc(mediaItems[currentImageIndex].url)}
+                className="w-full h-full object-contain bg-black"
+                autoPlay={loopingHighlight}
+                muted={loopingHighlight}
+                loop={loopingHighlight}
+                playsInline
+                poster={loopingHighlight ? mediaSrc(project.image) : undefined}
+                controls={!loopingHighlight}
                 controlsList="nodownload"
                 title={`${project.title} - Video ${currentImageIndex + 1}`}
               />
