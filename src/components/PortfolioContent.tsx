@@ -94,7 +94,7 @@ const projects: Project[] = [
   image: "images/indococo_vs_ripple_v1.webp",
   images: [],
   videos: ["images/indococo_highlight.mp4"],
-  award: "RLBOT Nexto Nullifier (GC2)"
+  award: "SSL->Pro tier"
 },
   {
   id: 6,
