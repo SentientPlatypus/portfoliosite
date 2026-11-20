@@ -37,6 +37,7 @@ export const CommandPalette = ({
     { path: '/portfolio/contact.md', name: 'contact.md', label: 'Contact Information' },
     { path: '/portfolio/experience.json', name: 'experience.json', label: 'Work Experience' },
     { path: '/portfolio/projects/all-projects.tsx', name: 'all-projects.tsx', label: 'All Projects' },
+    { path: '/portfolio/projects/archive/archive.tsx', name: 'archive.tsx', label: 'Archive' },
     { path: '/portfolio/pictures/gallery.tsx', name: 'gallery.tsx', label: 'Picture Gallery' },
     { path: '/portfolio/awards.tsx', name: 'awards.tsx', label: 'Awards & Achievements' },
     { path: '/portfolio/resume.pdf', name: 'resume.pdf', label: 'Resume' },

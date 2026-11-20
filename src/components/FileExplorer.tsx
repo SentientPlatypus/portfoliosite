@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { ChevronRight, ChevronDown, FileText, FileCode, Folder, FolderOpen, Image, FileJson, Award } from 'lucide-react';
 import { RustIcon } from './RustIcon';
+import { archivedProjects } from './PortfolioContent';
+
+const projectFileName = (title: string) =>
+  `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.md`;
 
 interface FileNode {
   name: string;
@@ -33,6 +37,20 @@ export const FileExplorer = ({ onFileSelect, selectedFile }: FileExplorerProps) 
           path: '/portfolio/projects',
           children: [
             { name: 'all-projects.tsx', type: 'file', extension: 'tsx', path: '/portfolio/projects/all-projects.tsx' },
+            {
+              name: 'archive',
+              type: 'folder',
+              path: '/portfolio/projects/archive',
+              children: [
+                { name: 'archive.tsx', type: 'file', extension: 'tsx', path: '/portfolio/projects/archive/archive.tsx' },
+                ...archivedProjects.map((project) => ({
+                  name: projectFileName(project.title),
+                  type: 'file' as const,
+                  extension: 'md',
+                  path: `/projects/${project.id}`,
+                })),
+              ],
+            },
           ]
         },
         {

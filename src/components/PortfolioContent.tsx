@@ -468,11 +468,32 @@ const projects: Project[] = [
   images: ["images/presidents.png"],
   award: null
 }];
+
+const ARCHIVE_TITLES = new Set([
+  "Scroll Nudge Experiment",
+  "Fight Rig",
+  "FKTXT",
+  "Beluga Sturgeon Financial",
+  "Toy Rocket League Car",
+  "Johns Hopkins CTY",
+  "Neural Network Traffic Simulation",
+  "IHS Social Credit",
+  "BozuBot",
+  "Reflex Testing Game",
+  "Amoris",
+  "Puzzles",
+  "Politician Scraping",
+]);
+
+const featuredProjects = projects.filter((project) => !ARCHIVE_TITLES.has(project.title));
+const archivedProjects = projects.filter((project) => ARCHIVE_TITLES.has(project.title));
+
 interface PortfolioContentProps {
   onProjectOpen?: (project: Project) => void;
+  view?: 'all' | 'archive';
 }
 
-export { projects };
+export { projects, featuredProjects, archivedProjects };
 export type { Project };
 
 const container = {
@@ -490,7 +511,71 @@ const item = {
   show: { opacity: 1, y: 0 }
 };
 
-export const PortfolioContent = ({ onProjectOpen }: PortfolioContentProps = {}) => {
+const ProjectGrid = ({
+  items,
+  onOpen,
+}: {
+  items: Project[];
+  onOpen: (project: Project) => void;
+}) => (
+  <motion.div
+    variants={container}
+    initial="hidden"
+    animate="show"
+    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+  >
+    {items.map((project) => (
+      <motion.div
+        key={project.id}
+        variants={item}
+        whileHover={{ y: -4, transition: { duration: 0.2 } }}
+        className="cursor-pointer"
+        onClick={() => onOpen(project)}
+      >
+        <div className="bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
+          <div className="aspect-video w-full overflow-hidden flex-shrink-0 bg-muted flex items-center justify-center">
+            <img
+              src={project.image}
+              alt={project.title}
+              className="max-w-full max-h-full object-contain sm:w-full sm:h-full sm:max-w-none sm:max-h-none sm:object-cover transition-transform duration-300 hover:scale-105"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const placeholder = target.parentElement?.querySelector('.image-placeholder');
+                if (placeholder) {
+                  (placeholder as HTMLElement).style.display = 'flex';
+                }
+              }}
+            />
+            <div className="image-placeholder hidden w-full h-full items-center justify-center flex-col bg-[var(--theme-sidebar)] border border-[var(--theme-border)]">
+              <div className="text-4xl mb-2">📦</div>
+              <div className="text-sm text-[var(--theme-comment)]">{project.title}</div>
+            </div>
+          </div>
+          <div className="p-4">
+            <h3 className="font-semibold text-lg mb-2 line-clamp-2">{project.title}</h3>
+            <p className="text-muted-foreground text-sm mb-3 line-clamp-3">{project.description}</p>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {project.technologies.slice(0, 3).map((tech) => (
+                <TechTag key={tech} tech={tech} />
+              ))}
+              {project.technologies.length > 3 && (
+                <span className="text-muted-foreground text-xs">+{project.technologies.length - 3} more</span>
+              )}
+            </div>
+            {project.award && (
+              <div className="text-yellow-600 text-sm font-medium">
+                {project.award}
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    ))}
+  </motion.div>
+);
+
+export const PortfolioContent = ({ onProjectOpen, view = 'all' }: PortfolioContentProps = {}) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -518,71 +603,30 @@ export const PortfolioContent = ({ onProjectOpen }: PortfolioContentProps = {}) 
     setSelectedProject(null);
   };
 
+  const openProject = (project: Project) => {
+    if (onProjectOpen) {
+      onProjectOpen(project);
+    } else {
+      handleProjectClick(project);
+    }
+  };
+
   return <div className="h-full overflow-x-hidden overflow-y-auto">
       <div className="pt-2 pb-6 sm:-mx-8">
         {/* Always use mobile-style linear layout */}
         <div className="px-2 sm:px-8">
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+          {view !== 'archive' && (
+            <ProjectGrid items={featuredProjects} onOpen={openProject} />
+          )}
+
+          <section
+            id="archive"
+            className={view === 'archive' ? 'pt-2' : 'mt-10 pt-6 border-t border-[var(--theme-border)]'}
           >
-            {projects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                variants={item}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="cursor-pointer"
-                onClick={() => {
-                  if (onProjectOpen) {
-                    onProjectOpen(project);
-                  } else {
-                    handleProjectClick(project);
-                  }
-                }}
-              >
-                <div className="bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                  <div className="aspect-video w-full overflow-hidden flex-shrink-0 bg-muted flex items-center justify-center">
-                    <img 
-                      src={project.image} 
-                      alt={project.title} 
-                      className="max-w-full max-h-full object-contain sm:w-full sm:h-full sm:max-w-none sm:max-h-none sm:object-cover transition-transform duration-300 hover:scale-105"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const placeholder = target.parentElement?.querySelector('.image-placeholder');
-                        if (placeholder) {
-                          (placeholder as HTMLElement).style.display = 'flex';
-                        }
-                      }}
-                    />
-                    <div className="image-placeholder hidden w-full h-full items-center justify-center flex-col bg-[var(--theme-sidebar)] border border-[var(--theme-border)]">
-                      <div className="text-4xl mb-2">📦</div>
-                      <div className="text-sm text-[var(--theme-comment)]">{project.title}</div>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-2 line-clamp-2">{project.title}</h3>
-                    <p className="text-muted-foreground text-sm mb-3 line-clamp-3">{project.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {project.technologies.slice(0, 3).map((tech) => (
-                        <TechTag key={tech} tech={tech} />
-                      ))}
-                      {project.technologies.length > 3 && (
-                        <span className="text-muted-foreground text-xs">+{project.technologies.length - 3} more</span>
-                      )}
-                    </div>
-                    {project.award && (
-                      <div className="text-yellow-600 text-sm font-medium">
-                        {project.award}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+            <h2 className="text-2xl font-bold mb-1 text-[var(--theme-method)]">Archive</h2>
+            <p className="text-sm text-[var(--theme-comment)] mb-4">archived from the earlier days</p>
+            <ProjectGrid items={archivedProjects} onOpen={openProject} />
+          </section>
         </div>
       </div>
 
