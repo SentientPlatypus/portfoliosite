@@ -92,7 +92,7 @@ const projects: Project[] = [
   {
   id: 36,
   title: "Electric Fire",
-  description: "Electric Fire is Cornell Team 10's autonomous drone-racing stack for the 2026 Anduril AI Grand Prix physical qualifier. A deep-RL flight policy trained in Isaac Lab flies through gates that a YOLO pose model finds in the camera image, using a vision–inertial state estimate, all running onboard an NVIDIA Jetson Orin NX.\n\nThe onboard loop: IMX477 camera at 30 fps into YOLOv8n-pose (8 corners per gate), PnP plus a pose filter and gate tracker that fuse vision with IMU, then a PPO policy at 40 Hz (55 channels × 32 frames) that outputs collective thrust and three body rates. A control adapter inverts Betaflight's rate curve and streams four RC channels over MSP. Training is Isaac Sim / Isaac Lab / skrl PPO on race and hover tasks (checkpoints race40 and race40drop). The team write-up lists me as Geneustace Wicaksono (GitHub SentientPlatypus); my commits include on-site camera calibration and gate-corner view alignment in the Isaac Sim stack.",
+  description: "Electric Fire is Cornell Team 10's autonomous drone-racing stack for the 2026 Anduril AI Grand Prix physical qualifier. A deep-RL flight policy trained in Isaac Lab flies through gates that a YOLO pose model finds in the camera image, using a vision–inertial state estimate, all running onboard an NVIDIA Jetson Orin NX.\n\nThe onboard loop: IMX477 camera at 30 fps into YOLOv8n-pose (8 corners per gate), PnP plus a pose filter and gate tracker that fuse vision with IMU, then a PPO policy at 40 Hz (55 channels × 32 frames) that outputs collective thrust and three body rates. A control adapter inverts Betaflight's rate curve and streams four RC channels over MSP. Training is Isaac Sim / Isaac Lab / skrl PPO on race and hover tasks (checkpoints race40 and race40drop). My contributions include on-site camera calibration and gate-corner view alignment in the Isaac Sim stack.",
   technologies: ["Python", "Isaac Lab", "PPO", "YOLOv8"],
   githubUrl: "https://github.com/Etienne-Sasenarine/AI-Grand-Prix",
   liveUrl: null,
@@ -101,7 +101,7 @@ const projects: Project[] = [
   image: "images/electric_fire_race_start.png",
   images: ["images/electric_fire_system.png", "images/electric_fire_camera.png"],
   videos: ["electric_fire_race_start.mp4"],
-  award: "#10 of 3,000+ teams"
+  award: "10th of 3,000+ teams"
 },
   {
   id: 5,
