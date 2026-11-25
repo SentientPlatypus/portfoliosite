@@ -367,7 +367,7 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
         language: 'rust',
         content: `let mut me = Dev {
   name: String::from("Gene"),
-  age: 19
+  age: 20
 };
 
 me.`

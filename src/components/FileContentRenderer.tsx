@@ -176,7 +176,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
           }`}>
             {animationStep === 'dev' && (
               <TypewriterAnimation
-                text='let mut me = Dev{name: String::from("Gene"), age: 19};'
+                text='let mut me = Dev{name: String::from("Gene"), age: 20};'
                 delay={38}
                 onComplete={handleDevComplete}
                 className="syntax-variable"
@@ -201,7 +201,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
                 <span className="text-white">,</span>{' '}
                 <span className="text-orange-400">age</span>
                 <span className="text-white">:</span>{' '}
-                <span className="text-[var(--theme-number)]">19</span>
+                <span className="text-[var(--theme-number)]">20</span>
                 <span className="text-white">{'}'}</span>
                 <span className="text-white">;</span>
               </>
@@ -243,7 +243,7 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
           <span className="text-white">,</span>{' '}
           <span className="text-orange-400">age</span>
           <span className="text-white">:</span>{' '}
-          <span className="text-[var(--theme-number)]">19</span>
+          <span className="text-[var(--theme-number)]">20</span>
           <span className="text-white">{'}'}</span>
           <span className="text-white">;</span>
         </div>

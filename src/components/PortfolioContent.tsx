@@ -101,7 +101,7 @@ const projects: Project[] = [
   image: "images/electric_fire_race_start.png",
   images: ["images/electric_fire_system.png", "images/electric_fire_camera.png"],
   videos: ["electric_fire_race_start.mp4"],
-  award: "10th of 3,000+ teams"
+  award: "Anduril AI-GP team #10"
 },
 {
   id: 5,
