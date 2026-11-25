@@ -367,20 +367,6 @@ export const FileContentRenderer = ({ path, theme, onPictureClick, onProjectClic
           }} />
         </div>
       );
-
-    case '/portfolio/projects/archive/archive.tsx':
-      return (
-        <div ref={contentRef}>
-          <PortfolioContent
-            view="archive"
-            onProjectOpen={(project) => {
-              if (onProjectClick) {
-                onProjectClick(project);
-              }
-            }}
-          />
-        </div>
-      );
       
     case '/portfolio/pictures/gallery.tsx':
       return (

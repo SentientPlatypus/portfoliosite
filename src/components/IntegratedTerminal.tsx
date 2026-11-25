@@ -279,9 +279,7 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
     if (depth === 'projects' || depth === './projects') {
       setLines(prev => [...prev,
         { type: 'output', content: 'projects/', color: 'cyan' },
-        { type: 'output', content: '├── all-projects.tsx', color: 'blue' },
-        { type: 'output', content: '└── archive/', color: 'cyan' },
-        { type: 'output', content: '    └── archive.tsx', color: 'blue' },
+        { type: 'output', content: '└── all-projects.tsx', color: 'blue' },
         { type: 'output', content: '' },
       ]);
     } else {
@@ -295,9 +293,7 @@ export const IntegratedTerminal = ({ isOpen, onClose, onFileOpen, onThemeChange 
         { type: 'output', content: '├── pictures/', color: 'cyan' },
         { type: 'output', content: '│   └── gallery.tsx', color: 'blue' },
         { type: 'output', content: '├── projects/', color: 'cyan' },
-        { type: 'output', content: '│   ├── all-projects.tsx', color: 'blue' },
-        { type: 'output', content: '│   └── archive/', color: 'cyan' },
-        { type: 'output', content: '│       └── archive.tsx', color: 'blue' },
+        { type: 'output', content: '│   └── all-projects.tsx', color: 'blue' },
         { type: 'output', content: '└── resume.pdf', color: 'red' },
         { type: 'output', content: '' },
       ]);
@@ -567,7 +563,6 @@ me.`
             'experience.json': { path: '/portfolio/experience.json', name: 'experience.json' },
             'awards.tsx': { path: '/portfolio/awards.tsx', name: 'awards.tsx' },
             'all-projects.tsx': { path: '/portfolio/projects/all-projects.tsx', name: 'all-projects.tsx' },
-            'archive.tsx': { path: '/portfolio/projects/archive/archive.tsx', name: 'archive.tsx' },
             'gallery.tsx': { path: '/portfolio/pictures/gallery.tsx', name: 'gallery.tsx' },
             'resume.pdf': { path: '/portfolio/resume.pdf', name: 'resume.pdf' },
             'me.rs': { path: '/me.rs', name: 'me.rs' },
