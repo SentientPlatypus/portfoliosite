@@ -26,6 +26,7 @@ const techDescriptions: Record<string, string> = {
   'Flask': 'Lightweight Python web framework',
   'ROS': 'Robot Operating System for robotics development',
   'YOLOv8': 'Real-time object detection algorithm',
+  'Isaac Lab': 'NVIDIA robot learning framework on Isaac Sim',
   'Fusion 360': 'CAD software for 3D modeling and design',
   'Matlab': 'Numerical computing environment',
   'Arduino': 'Open-source electronics platform',

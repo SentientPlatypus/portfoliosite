@@ -25,7 +25,7 @@ export const SearchPanel = ({ isOpen, onClose, onResultClick }: SearchPanelProps
   const searchableContent = [
     { path: '/portfolio/about.tsx', content: 'Geneustace Wicaksono Electrical Computer Engineering Cornell University AWS Jakarta Ithaca' },
     { path: '/portfolio/experience.json', content: getExperienceSearchText() },
-    { path: '/portfolio/projects/all-projects.tsx', content: `${featuredProjects.map((p) => p.title).join(' ')} Python Blender RLGYM PyTorch Rust PPO Burn RLBot Julia React TypeScript` },
+    { path: '/portfolio/projects/all-projects.tsx', content: `${featuredProjects.map((p) => p.title).join(' ')} Python Blender RLGYM PyTorch Rust PPO Burn RLBot Julia React TypeScript Isaac YOLO Jetson Anduril` },
     { path: '/portfolio/projects/archive/archive.tsx', content: `Archive archived from the earlier days ${archivedProjects.map((p) => p.title).join(' ')}` },
     { path: '/portfolio/contact.md', content: 'gjw62@cornell.edu Ithaca NY freelance collaboration open source email' },
     { path: '/me.rs', content: 'Dev Gene Rust portfolio welcome student engineer' },

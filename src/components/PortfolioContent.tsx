@@ -90,6 +90,20 @@ const projects: Project[] = [
   interactive: "optionspdf"
 },
   {
+  id: 36,
+  title: "Electric Fire",
+  description: "Electric Fire is Cornell Team 10's autonomous drone-racing stack for the 2026 Anduril AI Grand Prix physical qualifier. A deep-RL flight policy trained in Isaac Lab flies through gates that a YOLO pose model finds in the camera image, using a vision–inertial state estimate, all running onboard an NVIDIA Jetson Orin NX.\n\nThe onboard loop: IMX477 camera at 30 fps into YOLOv8n-pose (8 corners per gate), PnP plus a pose filter and gate tracker that fuse vision with IMU, then a PPO policy at 40 Hz (55 channels × 32 frames) that outputs collective thrust and three body rates. A control adapter inverts Betaflight's rate curve and streams four RC channels over MSP. Training is Isaac Sim / Isaac Lab / skrl PPO on race and hover tasks (checkpoints race40 and race40drop). The team write-up lists me as Geneustace Wicaksono (GitHub SentientPlatypus); my commits include on-site camera calibration and gate-corner view alignment in the Isaac Sim stack.",
+  technologies: ["Python", "Isaac Lab", "PPO", "YOLOv8"],
+  githubUrl: "https://github.com/Etienne-Sasenarine/AI-Grand-Prix",
+  liveUrl: null,
+  paperUrl: "https://github.com/Etienne-Sasenarine/AI-Grand-Prix/blob/main/docs/paper/paper.md",
+  date: "2026",
+  image: "images/electric_fire_race_start.png",
+  images: ["images/electric_fire_system.png", "images/electric_fire_camera.png"],
+  videos: ["electric_fire_race_start.mp4"],
+  award: "#10 of 3,000+ teams"
+},
+  {
   id: 5,
   title: "Indonesian Coconut",
   description: "Indonesian Coconut is a 1v1 Rocket League bot trained with deep RL (PPO) and no human replays.\n\nTraining is ~1.7× faster than upstream (40.8k → 70.1k steps/s on one NVIDIA L4).\n\nEach tick is a 106-float observation; the policy picks one of 90 discrete actions every 8 physics ticks (~15 decisions/s). Actor and critic are 2048-2048-1024-1024 MLPs. Rewards cover goals, ball velocity toward goal, aerials, flip resets, air dribble bumps, demos, boost, and possession. Warm-started from the earlier Python policy, then trained in 1B-step stages in RocketSim on one L4 against a league of frozen past versions plus Rust ports of community bots (FR4, Galactus, Megabyte, a top C++ bot verified action-for-action against the original, and others). 200-game evals every 50M steps; a stage only becomes champion if it wins head-to-head without regressing. Current champion is ST11 after ~11.1B steps. Deploys as an RLBot v5 bot: compiled Rust binary on CPU, Windows and Linux.\n\nThe trainer is indococo-ppo (https://github.com/SentientPlatypus/indococo-ppo), a high-throughput learning framework for Rocket League bots — a Rust workspace forked from VirxEC's rlgymppo_rs and extended. Parallel RocketSim games on CPU thread pools, batched GPU inference, PPO (GAE, clipped loss) in Burn with a LibTorch backend, league/self-play opponents, checkpoints, metrics, a terminal dashboard, and RLBot export. Additions: GPU-side update metrics, optional per-network bf16, a TF32 path, external frozen opponents (foreign bots with their own obs/action tables/delay), and CI with tests. Bot: https://github.com/SentientPlatypus/indonesian_coconut/tree/indococo-ppo",
